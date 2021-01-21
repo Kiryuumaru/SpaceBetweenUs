@@ -5,7 +5,7 @@
 
 # Additional downloadables
 Additionals/
-SpaceBetweenUs/env/
+SpaceBetweenUs/env*/
 
 # User-specific files
 *.rsuser
