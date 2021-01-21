@@ -24,9 +24,9 @@ namespace SpaceBetweenUsGUI.Views
     {
         public MainPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-
+            
         }
     }
 }
