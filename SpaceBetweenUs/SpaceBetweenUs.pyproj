@@ -33,23 +33,16 @@
     </Compile>
     <Compile Include="mylib\mailer.py" />
     <Compile Include="mylib\thread.py" />
-    <Compile Include="mylib\__init__.py" />
     <Compile Include="Run.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SpaceBetweenUs.py" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="mylib\__pycache__\config.cpython-37.pyc" />
-    <Content Include="mylib\__pycache__\detection.cpython-37.pyc" />
-    <Content Include="mylib\__pycache__\mailer.cpython-37.pyc" />
-    <Content Include="mylib\__pycache__\thread.cpython-37.pyc" />
-    <Content Include="mylib\__pycache__\__init__.cpython-37.pyc" />
     <Content Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="mylib\" />
-    <Folder Include="mylib\__pycache__\" />
   </ItemGroup>
   <ItemGroup>
     <Interpreter Include="env\">
