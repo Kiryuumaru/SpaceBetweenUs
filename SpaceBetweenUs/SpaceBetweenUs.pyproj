@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>ebd3b0b2-eeed-45e3-9a69-1ce6428b00e4</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>SpaceBetweenUs.py</StartupFile>
+    <StartupFile>Run.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>$(SolutionDir)</WorkingDirectory>
@@ -28,9 +28,15 @@
   <ItemGroup>
     <Compile Include="mylib\config.py" />
     <Compile Include="mylib\detection.py" />
+    <Compile Include="mylib\distance_calculator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="mylib\mailer.py" />
     <Compile Include="mylib\thread.py" />
     <Compile Include="mylib\__init__.py" />
+    <Compile Include="Run.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SpaceBetweenUs.py" />
   </ItemGroup>
   <ItemGroup>

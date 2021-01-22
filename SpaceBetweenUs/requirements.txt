@@ -3,3 +3,4 @@ scipy
 imutils
 opencv-python
 argparse
+guizero
