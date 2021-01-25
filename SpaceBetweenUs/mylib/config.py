@@ -11,7 +11,7 @@ NMS_THRESH = 0.3
 # To count the total number of people (True/False).
 People_Counter = True
 # Threading ON/OFF. Please refer 'mylib>thread.py'.
-Thread = False
+Thread = True
 # Set the threshold value for total violations limit.
 Threshold = 15
 # Enter the ip camera url (e.g., url = 'http://191.138.0.100:8040/video');

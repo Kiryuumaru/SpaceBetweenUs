@@ -1,6 +1,7 @@
-numpy
-scipy
-imutils
-opencv-python
-argparse
+pip
+setuptools
 guizero
+numpy
+imutils
+scipy
+opencv-python

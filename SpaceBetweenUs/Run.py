@@ -154,7 +154,7 @@ def change_text_size(slider_value):
 app = App(title="Hello world")
 
 app.set_full_screen()
-welcome_message = Text(app, text="Welcome to my app", size=40, font="Times New Roman", color="lightblue")
+welcome_message = Text(app, text="Welcome to my app", size=40, font="Roboto", color="lightblue")
 my_name = TextBox(app)
 update_text = PushButton(app, command=say_my_name, text="Display my name")
 openCV = PushButton(app, command=start_internal, text="OpenCV")

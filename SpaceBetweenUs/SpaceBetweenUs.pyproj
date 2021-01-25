@@ -16,6 +16,7 @@
     <CommandLineArguments>--input Additionals/SampleVideos/test1.mp4</CommandLineArguments>
     <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
     <IsWindowsApplication>False</IsWindowsApplication>
+    <TestFramework>Pytest</TestFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,15 +29,15 @@
   <ItemGroup>
     <Compile Include="mylib\config.py" />
     <Compile Include="mylib\detection.py" />
-    <Compile Include="mylib\distance_calculator.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="mylib\mailer.py" />
     <Compile Include="mylib\thread.py" />
     <Compile Include="Run.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SpaceBetweenUs.py" />
+    <Compile Include="test.py">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="requirements.txt" />
