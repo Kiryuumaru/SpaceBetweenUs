@@ -103,7 +103,7 @@ def start_internal():
 			# draw (1) a bounding box around the person and (2) the
 			# centroid coordinates of the person,
 			cv2.rectangle(frame, (startX, startY), (endX, endY), color, 2)
-			cv2.circle(frame, (cX, cY), 5, color, 2)
+			cv2.circle(frame, (cX, cY), 1, color, 2)
 
 		# draw some of the parameters
 		Threshold = "Threshold limit: {}".format(config.Threshold)
@@ -114,6 +114,11 @@ def start_internal():
 		text = "Total violations: {}".format(len(violation))
 		cv2.putText(frame, text, (470, frame.shape[0] - 25),
 			cv2.FONT_HERSHEY_SIMPLEX, 0.70, (0, 0, 255), 2)
+		
+		# draw extras
+		text = "Press 'Q' to quit"
+		cv2.putText(frame, text, (480, 15),
+			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
 
 	#------------------------------Alert function----------------------------------#
 		if len(violation) >= config.Threshold:
@@ -146,18 +151,16 @@ def start_internal():
 	cv2.destroyAllWindows()
 
 def say_my_name():
-    welcome_message.value = my_name.value
+    welcome_message.value = ip_endpoint.value
 
 def change_text_size(slider_value):
     welcome_message.size = slider_value
 
 app = App(title="Hello world")
 
-app.set_full_screen()
-welcome_message = Text(app, text="Welcome to my app", size=40, font="Roboto", color="lightblue")
-my_name = TextBox(app)
-update_text = PushButton(app, command=say_my_name, text="Display my name")
-openCV = PushButton(app, command=start_internal, text="OpenCV")
-text_size = Slider(app, command=change_text_size, start=10, end=80)
+#app.set_full_screen()
+welcome_message = Text(app, text="Space Between Us", size=40, font="Roboto")
+ip_endpoint = TextBox(app)
+start_button = PushButton(app, command=start_internal, text="Start")
 
 app.display()

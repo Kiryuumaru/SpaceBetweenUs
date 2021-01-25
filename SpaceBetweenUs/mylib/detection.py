@@ -2,20 +2,26 @@
 from .config import NMS_THRESH, MIN_CONF, People_Counter
 import numpy as np
 import cv2
+import time
 
 def detect_people(frame, net, ln, personIdx=0):
 	# grab the dimensions of the frame and  initialize the list of
 	# results
 	(H, W) = frame.shape[:2]
 	results = []
-
+	
 	# construct a blob from the input frame and then perform a forward
 	# pass of the YOLO object detector, giving us our bounding boxes
 	# and associated probabilities
 	blob = cv2.dnn.blobFromImage(frame, 1 / 255.0, (416, 416),
 		swapRB=True, crop=False)
 	net.setInput(blob)
+	
+	tic = time.perf_counter()
 	layerOutputs = net.forward(ln)
+	toc = time.perf_counter()
+	print(f"Yolo process {toc - tic:0.4f} seconds")
+	
 
 	# initialize our lists of detected bounding boxes, centroids, and
 	# confidences, respectively
