@@ -9,8 +9,8 @@
     </SearchPath>
     <WorkingDirectory>$(SolutionDir)</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>SpaceBetweenUs</Name>
-    <RootNamespace>SpaceBetweenUs</RootNamespace>
+    <Name>SpaceBetweenUsPy</Name>
+    <RootNamespace>SpaceBetweenUsPy</RootNamespace>
     <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <CommandLineArguments>--input Additionals/SampleVideos/test1.mp4</CommandLineArguments>
@@ -32,10 +32,6 @@
     <Compile Include="mylib\mailer.py" />
     <Compile Include="mylib\thread.py" />
     <Compile Include="Run.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="SpaceBetweenUs.py" />
-    <Compile Include="test.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
