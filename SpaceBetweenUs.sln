@@ -22,18 +22,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Alturos.Yolo", "Alturos.Yol
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|x64 = Debug|x64
-		Release|x64 = Release|x64
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Debug|x64.ActiveCfg = Debug|x64
-		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Debug|x64.Build.0 = Debug|x64
-		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Release|x64.ActiveCfg = Release|x64
-		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Release|x64.Build.0 = Release|x64
-		{797AC09F-4944-47D4-A223-CC247237CFC5}.Debug|x64.ActiveCfg = Debug|x64
-		{797AC09F-4944-47D4-A223-CC247237CFC5}.Debug|x64.Build.0 = Debug|x64
-		{797AC09F-4944-47D4-A223-CC247237CFC5}.Release|x64.ActiveCfg = Release|x64
-		{797AC09F-4944-47D4-A223-CC247237CFC5}.Release|x64.Build.0 = Release|x64
+		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7FC516DA-3B4F-4415-90ED-C75AB12F3DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{797AC09F-4944-47D4-A223-CC247237CFC5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{797AC09F-4944-47D4-A223-CC247237CFC5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{797AC09F-4944-47D4-A223-CC247237CFC5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{797AC09F-4944-47D4-A223-CC247237CFC5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
