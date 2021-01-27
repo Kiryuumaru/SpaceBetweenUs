@@ -14,22 +14,7 @@ namespace SpaceBetweenUs.Services
         {
             var report = new SystemValidationReport();
 
-#if NETSTANDARD
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                report.MicrosoftVisualCPlusPlusRedistributableExists = this.IsMicrosoftVisualCPlusPlus2017Available();
-            }
-            else
-            {
-                report.MicrosoftVisualCPlusPlusRedistributableExists = true;
-            }
-
-#endif
-
-#if NET461
             report.MicrosoftVisualCPlusPlusRedistributableExists = this.IsMicrosoftVisualCPlusPlus2017Available();
-#endif
 
             if (File.Exists("cudnn64_7.dll"))
             {

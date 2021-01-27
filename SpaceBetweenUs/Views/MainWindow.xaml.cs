@@ -54,7 +54,6 @@ namespace SpaceBetweenUs.Views
 
             if (mlModel.IsReady)
             {
-                ml.Start();
                 cvSource.Start();
                 worker.RunWorkerAsync();
             }
@@ -110,7 +109,7 @@ namespace SpaceBetweenUs.Views
                     if (!mat.Empty())
                     {
                         var items = ml.Detect(mat.ToBytes()).ToList();
-                        var s = items.Count;
+
                     }
 
                     worker.ReportProgress(0, mat);

@@ -10,7 +10,7 @@ echo Already cloned
 ) else (
 git clone https://https://github.com/Kiryuumaru/Alturos.Yolo
 )
-cd Checkmate.Core
+cd Alturos.Yolo
 git submodule update --init
 cd..
 echo ----------------------------------------------

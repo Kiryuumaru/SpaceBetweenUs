@@ -15,10 +15,8 @@ namespace SpaceBetweenUs.Services
     {
         #region Properties
 
-        private YoloWrapper yoloWrapper;
+        private readonly YoloWrapper yoloWrapper;
         public MLYoloModel MLYoloModel { get; private set; }
-        public bool UseGPU { get; private set; }
-        public bool IsStarted => yoloWrapper != null;
 
         #endregion
 
@@ -27,20 +25,15 @@ namespace SpaceBetweenUs.Services
         public MLYolo(MLYoloModel yoloModel, bool useGpu)
         {
             MLYoloModel = yoloModel;
-            UseGPU = useGpu;
+            yoloWrapper = new YoloWrapper(
+                new YoloConfiguration(MLYoloModel.ConfigFile.AbsolutePath, MLYoloModel.WeightsFile.AbsolutePath, MLYoloModel.NamesFile.AbsolutePath),
+                useGpu ? new GpuConfig() : null,
+                new MLYoloSystemValidator());
         }
 
         #endregion
 
         #region Methods
-
-        public void Start()
-        {
-            var yoloConfig = new YoloConfiguration(MLYoloModel.ConfigFile.AbsolutePath, MLYoloModel.WeightsFile.AbsolutePath, MLYoloModel.NamesFile.AbsolutePath);
-            var gpuConfig = UseGPU ? new GpuConfig() : null;
-            var validator = new MLYoloSystemValidator();
-            yoloWrapper = new YoloWrapper(yoloConfig, gpuConfig, validator);
-        }
 
         public IEnumerable<YoloItem> Detect(byte[] imageData)
         {
