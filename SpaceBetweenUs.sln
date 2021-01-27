@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "SpaceBetweenUsPy", "SpaceBetweenUsPy\SpaceBetweenUsPy.pyproj", "{EBD3B0B2-EEED-45E3-9A69-1CE6428B00E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpaceBetweenUs", "SpaceBetweenUs\SpaceBetweenUs.csproj", "{0A1279D8-CEFC-42E9-A6C7-030C38762076}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +59,26 @@ Global
 		{EBD3B0B2-EEED-45E3-9A69-1CE6428B00E4}.Release|ARM64.ActiveCfg = Release|Any CPU
 		{EBD3B0B2-EEED-45E3-9A69-1CE6428B00E4}.Release|x64.ActiveCfg = Release|Any CPU
 		{EBD3B0B2-EEED-45E3-9A69-1CE6428B00E4}.Release|x86.ActiveCfg = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|ARM.Build.0 = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|x64.Build.0 = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Debug|x86.Build.0 = Debug|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|ARM.ActiveCfg = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|ARM.Build.0 = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|ARM64.Build.0 = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|x64.ActiveCfg = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|x64.Build.0 = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|x86.ActiveCfg = Release|Any CPU
+		{0A1279D8-CEFC-42E9-A6C7-030C38762076}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
