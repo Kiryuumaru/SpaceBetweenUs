@@ -1,4 +1,4 @@
-﻿![Alturos.Yolo](doc/logo-banner.png)
+﻿![Alturos.Yolo](Docs/logo-banner.png)
 
 # SpaceBetweenUs
 

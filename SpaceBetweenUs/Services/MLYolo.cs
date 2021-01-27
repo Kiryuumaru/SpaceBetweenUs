@@ -17,16 +17,17 @@ namespace SpaceBetweenUs.Services
 
         private YoloWrapper yoloWrapper;
         public MLYoloModel MLYoloModel { get; private set; }
-        public bool IsDatasetReady => MLYoloModel.ConfigFile.LocalExist && MLYoloModel.NamesFile.LocalExist && MLYoloModel.WeightsFile.LocalExist;
+        public bool UseGPU { get; private set; }
         public bool IsStarted => yoloWrapper != null;
 
         #endregion
 
         #region Initializer
 
-        public MLYolo(MLYoloModel yoloModel)
+        public MLYolo(MLYoloModel yoloModel, bool useGpu)
         {
             MLYoloModel = yoloModel;
+            UseGPU = useGpu;
         }
 
         #endregion
@@ -35,19 +36,10 @@ namespace SpaceBetweenUs.Services
 
         public void Start()
         {
-            yoloWrapper = new YoloWrapper(MLYoloModel.ConfigFile.AbsolutePath, MLYoloModel.WeightsFile.AbsolutePath, MLYoloModel.NamesFile.AbsolutePath);
-
-        }
-
-        public async void DownloadDatasets(Action<OverallDowloadableFileOnProgress> onProgress)
-        {
-            var dfs = new DowloadableFile[]
-            {
-                MLYoloModel.ConfigFile,
-                MLYoloModel.NamesFile,
-                MLYoloModel.WeightsFile
-            };
-            await DowloadableFile.Download(dfs, onProgress);
+            var yoloConfig = new YoloConfiguration(MLYoloModel.ConfigFile.AbsolutePath, MLYoloModel.WeightsFile.AbsolutePath, MLYoloModel.NamesFile.AbsolutePath);
+            var gpuConfig = UseGPU ? new GpuConfig() : null;
+            var validator = new MLYoloSystemValidator();
+            yoloWrapper = new YoloWrapper(yoloConfig, gpuConfig, validator);
         }
 
         public IEnumerable<YoloItem> Detect(byte[] imageData)

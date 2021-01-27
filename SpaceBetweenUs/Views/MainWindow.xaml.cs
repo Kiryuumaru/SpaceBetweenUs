@@ -4,8 +4,10 @@ using SpaceBetweenUs.Services;
 using SpaceBetweenUs.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -25,25 +27,36 @@ namespace SpaceBetweenUs.Views
     /// </summary>
     public partial class MainWindow : Window
     {
+        private BackgroundWorker worker;
+
         public MLYoloModel mlModel;
         public CVFrameSource cvSource;
         public MLYolo ml;
-        public CVVideo cv;
 
         public MainWindow()
         {
             InitializeComponent();
             DataContext = new MainWindowViewModel();
 
-            mlModel = MLYoloModel.YoloV3();
-            cvSource = new CVFrameSource(@"..\..\Additionals\SampleVideos\test1.mp4");
-            ml = new MLYolo(mlModel);
-            cv = new CVVideo(cvSource, ml);
+            cvSource = new CVFrameSource(@"..\..\..\..\Additionals\SampleVideos\test1.mp4");
+            mlModel = MLYoloModel.YoloV3;
+            ml = new MLYolo(mlModel, false);
 
-            if (ml.IsDatasetReady)
+            worker = new BackgroundWorker
             {
-                cv.OnFrame += Cv_OnFrame;
-                cv.Start();
+                WorkerReportsProgress = true,
+                WorkerSupportsCancellation = true
+            };
+
+            worker.DoWork += Worker_DoWork;
+            worker.ProgressChanged += Worker_ProgressChanged;
+            worker.RunWorkerCompleted += Worker_RunWorkerCompleted;
+
+            if (mlModel.IsReady)
+            {
+                ml.Start();
+                cvSource.Start();
+                worker.RunWorkerAsync();
             }
             else
             {
@@ -59,16 +72,14 @@ namespace SpaceBetweenUs.Views
                 switch (rsltMessageBox)
                 {
                     case MessageBoxResult.Yes:
-                        ml.DownloadDatasets(args =>
+                        mlModel.DownloadDatasets(args =>
                         {
                             Console.WriteLine("Progress Download: " + args.File.FileName + " - " + args.OverallCurrentBytes + "/" + args.OverallTotalBytes);
                         });
                         break;
-
                     case MessageBoxResult.No:
 
                         break;
-
                     case MessageBoxResult.Cancel:
 
                         break;
@@ -76,11 +87,35 @@ namespace SpaceBetweenUs.Views
             }
         }
 
-        private void Cv_OnFrame(object sender, OnFrameEventArgs e)
+        private void Worker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            var mat = e.Mat;
-            var item = ml.Detect(mat.ToBytes());
+            worker.Dispose();
+            worker = null;
+        }
+
+        private void Worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            if (!(e.UserState is Mat mat)) return;
             image.Source = mat.ToWriteableBitmap(PixelFormats.Bgr24);
+        }
+
+        private void Worker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            using (var mat = new Mat())
+            {
+                while (worker != null && !worker.CancellationPending)
+                {
+                    cvSource.ReadFrame(mat);
+
+                    if (!mat.Empty())
+                    {
+                        var items = ml.Detect(mat.ToBytes()).ToList();
+                        var s = items.Count;
+                    }
+
+                    worker.ReportProgress(0, mat);
+                }
+            }
         }
     }
 }

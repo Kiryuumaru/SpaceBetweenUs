@@ -15,6 +15,7 @@ namespace SpaceBetweenUs.Services
         public DowloadableFile ConfigFile { get; private set; }
         public DowloadableFile NamesFile { get; private set; }
         public DowloadableFile WeightsFile { get; private set; }
+        public bool IsReady => ConfigFile.LocalExist && NamesFile.LocalExist && WeightsFile.LocalExist;
 
         private MLYoloModel() { }
 
@@ -29,41 +30,26 @@ namespace SpaceBetweenUs.Services
             };
         }
 
-        public static MLYoloModel YoloV3()
-        {
-            string name = "YOLOv3";
-            string configUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov3.cfg";
-            string namesFileUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names";
-            string weightsFileUrl = "https://pjreddie.com/media/files/yolov3.weights";
-            return FromUrl(name, configUrl, namesFileUrl, weightsFileUrl);
-        }
-
-        public static MLYoloModel YoloV3Tiny()
-        {
-            string name = "YOLOv3-tiny";
-            string configUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov3-tiny.cfg";
-            string namesFileUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names";
-            string weightsFileUrl = "https://pjreddie.com/media/files/yolov3-tiny.weights";
-            return FromUrl(name, configUrl, namesFileUrl, weightsFileUrl);
-        }
-
-        public static MLYoloModel YoloV2()
-        {
-            string name = "YOLOv2";
-            string configUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov2.cfg";
-            string namesFileUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names";
-            string weightsFileUrl = "https://pjreddie.com/media/files/yolov2.weights";
-            return FromUrl(name, configUrl, namesFileUrl, weightsFileUrl);
-        }
-
-        public static MLYoloModel YoloV2Tiny()
-        {
-            string name = "YOLOv2-tiny";
-            string configUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov2-tiny.cfg";
-            string namesFileUrl = "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/voc.names";
-            string weightsFileUrl = "https://pjreddie.com/media/files/yolov2-tiny.weights";
-            return FromUrl(name, configUrl, namesFileUrl, weightsFileUrl);
-        }
+        public static MLYoloModel YoloV3 => FromUrl(
+            "YOLOv3",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov3.cfg",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names",
+            "https://pjreddie.com/media/files/yolov3.weights");
+        public static MLYoloModel YoloV3Tiny => FromUrl(
+            "YOLOv3Tiny",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov3-tiny.cfg",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names",
+            "https://pjreddie.com/media/files/yolov3-tiny.weights");
+        public static MLYoloModel YoloV2 => FromUrl(
+            "YOLOv2",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov2.cfg",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names",
+            "https://pjreddie.com/media/files/yolov2.weights");
+        public static MLYoloModel YoloV2Tiny => FromUrl(
+            "YOLOv2Tiny",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov2-tiny.cfg",
+            "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/voc.names",
+            "https://pjreddie.com/media/files/yolov2-tiny.weights");
 
         public override bool Equals(object obj)
         {
@@ -87,6 +73,17 @@ namespace SpaceBetweenUs.Services
         public static bool operator !=(MLYoloModel left, MLYoloModel right)
         {
             return !(left == right);
+        }
+
+        public async void DownloadDatasets(Action<OverallDowloadableFileOnProgress> onProgress)
+        {
+            var dfs = new DowloadableFile[]
+            {
+                ConfigFile,
+                NamesFile,
+                WeightsFile
+            };
+            await DowloadableFile.Download(dfs, onProgress);
         }
     }
 }
