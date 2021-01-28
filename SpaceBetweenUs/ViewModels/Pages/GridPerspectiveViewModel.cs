@@ -35,22 +35,17 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private async void Start()
         {
             var s = new Stopwatch();
-            var ss = new Stopwatch();
             using var mat = new Mat();
             while (true)
             {
                 s.Restart();
-                ss.Restart();
 
                 Session.FrameSource.ReadFrame(mat);
-
-
-
+                //Cv2.Resize(mat, mat, sss);
                 Frame = mat.ToWriteableBitmap(PixelFormats.Bgr24);
 
                 int delayMillis = (int)((1000 / Fps) - s.ElapsedMilliseconds);
                 await Task.Delay(delayMillis > 0 ? delayMillis : 0);
-                Console.WriteLine(ss.ElapsedMilliseconds);
             }
         }
     }
