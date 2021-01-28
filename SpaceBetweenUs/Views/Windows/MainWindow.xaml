@@ -8,7 +8,7 @@
                   ContentSource="/Views/Pages/Introduction.xaml"
                   Width="900" Height="600"
                   WindowStyle="None"
-                  WindowState="Maximized">
+                  WindowState="Maximized" MinWidth="900" MinHeight="600">
 
     <mui:ModernWindow.TitleLinks>
         <mui:Link DisplayName="Settings" Source="/Views/Pages/Settings.xaml" />
@@ -16,6 +16,11 @@
     </mui:ModernWindow.TitleLinks>
 
     <mui:ModernWindow.MenuLinkGroups>
+        <mui:LinkGroup DisplayName="Welcome">
+            <mui:LinkGroup.Links>
+                <mui:Link DisplayName="Introduction" Source="/Views/Pages/Introduction.xaml" />
+            </mui:LinkGroup.Links>
+        </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Welcome">
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Introduction" Source="/Views/Pages/Introduction.xaml" />

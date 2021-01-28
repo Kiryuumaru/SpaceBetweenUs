@@ -9,7 +9,7 @@ namespace SpaceBetweenUs.Services
 {
     public static class Datastore
     {
-        private static string fileContent = "";
+        private static string fileContent;
         private static string filePath;
         private static bool isWriting = false;
         private static bool isInitialize = false;
@@ -17,21 +17,16 @@ namespace SpaceBetweenUs.Services
         public static async Task Initialize()
         {
             if (isInitialize) return;
-            if (Environment.GetEnvironmentVariable("USERPROFILE").Length >= 1)
-            {
-                filePath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "Roaming", "SpaceBetweenUs");
-            }
-            else
-            {
-                filePath = Path.Combine("data");
-            }
+            filePath = Path.Combine(Directory.GetCurrentDirectory(), "Datastore");
             await Task.Run(async delegate
             {
                 while (isWriting) { await Task.Delay(100); }
                 isWriting = true;
                 try
                 {
-                    if (File.Exists(filePath)) fileContent = File.ReadAllText(filePath);
+                    if (!Directory.Exists(Path.GetDirectoryName(filePath))) Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+                    if (!File.Exists(filePath)) File.WriteAllText(filePath, "");
+                    fileContent = File.ReadAllText(filePath);
                 }
                 catch { }
                 isWriting = false;
