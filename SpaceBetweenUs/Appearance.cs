@@ -19,9 +19,9 @@ namespace SpaceBetweenUs
             new Link { DisplayName = "dark", Source = AppearanceManager.DarkThemeSource },
 
             // add additional themes
-            new Link { DisplayName = "hello kitty", Source = new Uri("/ModernUIDemo;component/Assets/ModernUI.HelloKitty.xaml", UriKind.Relative) },
-            new Link { DisplayName = "love", Source = new Uri("/ModernUIDemo;component/Assets/ModernUI.Love.xaml", UriKind.Relative) },
-            new Link { DisplayName = "snowflakes", Source = new Uri("/ModernUIDemo;component/Assets/ModernUI.Snowflakes.xaml", UriKind.Relative) }
+            new Link { DisplayName = "hello kitty", Source = new Uri("/SpaceBetweenUs;component/Assets/ModernUI.HelloKitty.xaml", UriKind.Relative) },
+            new Link { DisplayName = "love", Source = new Uri("/SpaceBetweenUs;component/Assets/ModernUI.Love.xaml", UriKind.Relative) },
+            new Link { DisplayName = "snowflakes", Source = new Uri("/SpaceBetweenUs;component/Assets/ModernUI.Snowflakes.xaml", UriKind.Relative) }
         };
 
         public static Color DefaultAccentColor = Color.FromRgb(0x33, 0x99, 0xff);
