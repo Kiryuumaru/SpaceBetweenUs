@@ -94,7 +94,6 @@ namespace SpaceBetweenUs
 
         public static void Initialize()
         {
-            var s = SelectedTheme.Source;
             AppearanceManager.Current.ThemeSource = SelectedTheme.Source;
             AppearanceManager.Current.AccentColor = SelectedColor;
             AppearanceManager.Current.FontSize = SelectedFontSize.Equals("small") ? FontSize.Small : FontSize.Large;
