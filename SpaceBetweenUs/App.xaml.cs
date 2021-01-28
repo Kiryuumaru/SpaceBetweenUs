@@ -1,4 +1,5 @@
 ﻿using FirstFloor.ModernUI.Presentation;
+using SpaceBetweenUs.Services;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -15,9 +16,10 @@ namespace SpaceBetweenUs
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            await Datastore.Initialize();
             Appearance.Initialize();
         }
     }

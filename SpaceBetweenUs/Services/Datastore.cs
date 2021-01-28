@@ -14,8 +14,9 @@ namespace SpaceBetweenUs.Services
         private static bool isWriting = false;
         private static bool isInitialize = false;
 
-        private static void Initialize()
+        public static async Task Initialize()
         {
+            if (isInitialize) return;
             if (Environment.GetEnvironmentVariable("USERPROFILE").Length >= 1)
             {
                 filePath = Path.Combine(Environment.GetEnvironmentVariable("USERPROFILE"), "AppData", "Roaming", "SpaceBetweenUs");
@@ -24,14 +25,13 @@ namespace SpaceBetweenUs.Services
             {
                 filePath = Path.Combine("data");
             }
-            Task.Run(async delegate
+            await Task.Run(async delegate
             {
                 while (isWriting) { await Task.Delay(100); }
                 isWriting = true;
                 try
                 {
-                    if (!File.Exists(filePath)) File.WriteAllText(filePath, "");
-                    fileContent = File.ReadAllText(filePath);
+                    if (File.Exists(filePath)) fileContent = File.ReadAllText(filePath);
                 }
                 catch { }
                 isWriting = false;
@@ -41,7 +41,6 @@ namespace SpaceBetweenUs.Services
 
         private static void Save()
         {
-            if (!isInitialize) Initialize();
             Task.Run(async delegate
             {
                 while (isWriting) { await Task.Delay(100); }
@@ -57,14 +56,12 @@ namespace SpaceBetweenUs.Services
 
         public static void SetValue(string key, string value)
         {
-            if (!isInitialize) Initialize();
             fileContent = Helpers.BlobSetValue(fileContent, key, value);
             Save();
         }
 
         public static string GetValue(string key)
         {
-            if (!isInitialize) Initialize();
             return Helpers.BlobGetValue(fileContent, key);
         }
     }
