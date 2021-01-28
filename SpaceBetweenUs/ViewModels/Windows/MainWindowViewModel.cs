@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SpaceBetweenUs.ViewModels
+namespace SpaceBetweenUs.ViewModels.Windows
 {
     public class MainWindowViewModel : BaseViewModel
     {

@@ -1,4 +1,5 @@
 ﻿using FirstFloor.ModernUI.Presentation;
+using SpaceBetweenUs.ViewsModels.Contents;
 using System;
 using System.Collections.Generic;
 using System.Linq;

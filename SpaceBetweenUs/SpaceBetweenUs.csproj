@@ -21,7 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
@@ -31,7 +31,7 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
-    <LangVersion>7.3</LangVersion>
+    <LangVersion>8.0</LangVersion>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
@@ -60,16 +60,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Appearance.cs" />
     <Compile Include="Services\CVFrameSource.cs" />
+    <Compile Include="Services\Datastore.cs" />
     <Compile Include="Services\DowloadableFile.cs" />
+    <Compile Include="Services\Helpers.cs" />
     <Compile Include="Services\MLYolo.cs" />
     <Compile Include="Services\MLYoloModel.cs" />
     <Compile Include="Services\MLYoloSystemValidator.cs" />
-    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
     <Compile Include="Views\Contents\SettingsAppearance.xaml.cs">
       <DependentUpon>SettingsAppearance.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Contents\SettingsAppearanceViewModel.cs" />
+    <Compile Include="ViewModels\Contents\SettingsAppearanceViewModel.cs" />
     <Compile Include="Views\Pages\Introduction.xaml.cs">
       <DependentUpon>Introduction.xaml</DependentUpon>
     </Compile>
@@ -198,6 +201,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
+    <Folder Include="ViewModels\Pages\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Alturos.Yolo\src\Alturos.Yolo\Alturos.Yolo.csproj">
