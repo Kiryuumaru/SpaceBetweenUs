@@ -4,16 +4,9 @@
 
 A state of the art real-time human social distance detection system for C# (Visual Studio). This project has CPU and GPU support, with GPU the detection works much faster. The primary goal of this project is an easy use of yolo, this package is available on nuget and you must only install two packages to start detection. In the background we use the Windows Yolo version of [AlexeyAB/darknet](https://github.com/AlexeyAB/darknet). Send an image path or the byte array to [yolo](https://github.com/pjreddie/darknet) and receive the position of the detected objects. Our project is meant to return the object-type and -position as processable data. This library supports [YoloV3 and YoloV2 Pre-Trained Datasets](#pre-trained-dataset)
 
-## NuGet
-Quick install Alturos.Yolo over [NuGet](https://www.nuget.org/packages/Alturos.Yolo)
-```
-PM> install-package Alturos.Yolo (C# wrapper and C++ dlls 28MB)
-PM> install-package Alturos.YoloV2TinyVocData (YOLOv2-tiny Pre-Trained Dataset 56MB)
-```
+## Sample
 
-## Object Detection
-
-![object detection result](doc/objectdetectionanimated.png)
+![sample](Docs/sample.png)
 
 ## Performance
 It is important to use GPU mode for fast object detection. It is also important not to instantiate the wrapper over and over again. A further optimization is to transfer the images as byte stream instead of passing a file path. GPU detection is usually 10 times faster!
@@ -34,7 +27,7 @@ It is important to use the mentioned version `10.2`
 - Visual Studio 2019
 
 ## Benchmark / Performance
-Average processing speed of test images bird1.png, bird2.png, car1.png, motorbike1.png
+Average processing speed of test frames
 
 ### CPU
 
@@ -72,17 +65,3 @@ If you have some error like `NotSupportedException` check if you use the latest 
 ### Debugging Tool for Nvidia Gpu
 
 Check graphic device usage `"%PROGRAMFILES%\NVIDIA Corporation\NVSMI\nvidia-smi.exe"`
-
-### Directory Structure
-
-You should have this files in your program directory.
-
-    .
-    ├── Alturos.Yolo.dll              # C# yolo wrapper
-    ├── yolo_cpp_dll_cpu.dll      # yolo runtime for cpu
-    ├── yolo_cpp_dll_gpu.dll      # yolo runtime for gpu
-    ├── cudnn64_7.dll             # required by yolo_cpp_dll_gpu (optional only required for gpu processig)
-    ├── opencv_world340.dll       # required by yolo_cpp_dll_xxx (process image as byte data detect_mat)
-    ├── pthreadGC2.dll            # required by yolo_cpp_dll_xxx (POSIX Threads)
-    ├── pthreadVC2.dll            # required by yolo_cpp_dll_xxx (POSIX Threads)
-    ├── msvcr100.dll              # required by pthread (POSIX Threads)
