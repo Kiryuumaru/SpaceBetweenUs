@@ -7,34 +7,36 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
-    public static class Datastore
+    public class Datastore
     {
-        private static string fileContent;
-        private static string filePath;
-        private static bool isWriting = false;
-        private static bool isInitialize = false;
+        private string filePath;
+        private string fileContent;
+        private bool isWriting = false;
 
-        public static async Task Initialize()
+        private Datastore() { }
+
+        public static async Task<Datastore> Initialize()
         {
-            if (isInitialize) return;
-            filePath = Path.Combine(Directory.GetCurrentDirectory(), "Datastore");
-            await Task.Run(async delegate
+            return await Task.Run(delegate
             {
-                while (isWriting) { await Task.Delay(100); }
-                isWriting = true;
+                var datastore = new Datastore
+                {
+                    filePath = Path.Combine(Directory.GetCurrentDirectory(), "Datastore")
+                };
                 try
                 {
-                    if (!Directory.Exists(Path.GetDirectoryName(filePath))) Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-                    if (!File.Exists(filePath)) File.WriteAllText(filePath, "");
-                    fileContent = File.ReadAllText(filePath);
+                    if (!Directory.Exists(Path.GetDirectoryName(datastore.filePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(datastore.filePath));
+                    if (!File.Exists(datastore.filePath))
+                        File.WriteAllText(datastore.filePath, "");
+                    datastore.fileContent = File.ReadAllText(datastore.filePath);
                 }
                 catch { }
-                isWriting = false;
-                isInitialize = true;
+                return datastore;
             });
         }
 
-        private static void Save()
+        private void Save()
         {
             Task.Run(async delegate
             {
@@ -49,13 +51,13 @@ namespace SpaceBetweenUs.Services
             });
         }
 
-        public static void SetValue(string key, string value)
+        public void SetValue(string key, string value)
         {
             fileContent = Helpers.BlobSetValue(fileContent, key, value);
             Save();
         }
 
-        public static string GetValue(string key)
+        public string GetValue(string key)
         {
             return Helpers.BlobGetValue(fileContent, key);
         }

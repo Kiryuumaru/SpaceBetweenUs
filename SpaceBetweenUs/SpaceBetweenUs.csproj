@@ -61,18 +61,31 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Appearance.cs" />
-    <Compile Include="Services\CVFrameSource.cs" />
+    <Compile Include="Services\FrameSourceFile.cs" />
+    <Compile Include="Services\FrameSource.cs" />
     <Compile Include="Services\Datastore.cs" />
+    <Compile Include="Services\GridInitializer.cs" />
     <Compile Include="Services\DowloadableFile.cs" />
     <Compile Include="Services\Helpers.cs" />
     <Compile Include="Services\MLYolo.cs" />
     <Compile Include="Services\MLYoloModel.cs" />
     <Compile Include="Services\MLYoloSystemValidator.cs" />
+    <Compile Include="Services\Session.cs" />
+    <Compile Include="ViewModels\Pages\GridPerspectiveViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
     <Compile Include="Views\Contents\SettingsAppearance.xaml.cs">
       <DependentUpon>SettingsAppearance.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Contents\SettingsAppearanceViewModel.cs" />
+    <Compile Include="Views\Pages\GridPerspective.xaml.cs">
+      <DependentUpon>GridPerspective.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\MLModel.xaml.cs">
+      <DependentUpon>MLModel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\GPUSupport.xaml.cs">
+      <DependentUpon>GPUSupport.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\Introduction.xaml.cs">
       <DependentUpon>Introduction.xaml</DependentUpon>
     </Compile>
@@ -189,6 +202,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Pages\GridPerspective.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Pages\MLModel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Pages\GPUSupport.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Pages\Introduction.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -204,7 +229,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Models\" />
-    <Folder Include="ViewModels\Pages\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Alturos.Yolo\src\Alturos.Yolo\Alturos.Yolo.csproj">

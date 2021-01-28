@@ -29,8 +29,9 @@
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Setup">
             <mui:LinkGroup.Links>
-                <mui:Link DisplayName="ML Model" Source="/Views/Pages/Introduction.xaml" />
-                <mui:Link DisplayName="Grid Perspective" Source="/Views/Pages/Introduction.xaml" />
+                <mui:Link DisplayName="ML Model" Source="/Views/Pages/MLModel.xaml" />
+                <mui:Link DisplayName="GPU Support" Source="/Views/Pages/GPUSupport.xaml" />
+                <mui:Link DisplayName="Grid Perspective" Source="/Views/Pages/GridPerspective.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Settings" GroupKey="settings">
