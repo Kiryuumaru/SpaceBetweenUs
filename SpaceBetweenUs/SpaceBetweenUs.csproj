@@ -64,7 +64,7 @@
     <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />
     <Compile Include="Services\Datastore.cs" />
-    <Compile Include="Services\GridInitializer.cs" />
+    <Compile Include="Services\GridProjection.cs" />
     <Compile Include="Services\DowloadableFile.cs" />
     <Compile Include="Services\Helpers.cs" />
     <Compile Include="Services\MLYolo.cs" />

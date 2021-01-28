@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
-    public static class GridInitializer
+    public enum Anchor
+    {
+        BottomLeft, TopLeft, TopRight, BottomRight
+    }
+
+    public static class GridProjection
     {
         public static void Start()
         {
