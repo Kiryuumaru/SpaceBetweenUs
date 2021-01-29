@@ -16,6 +16,14 @@ namespace SpaceBetweenUs
     /// </summary>
     public partial class App : Application
     {
+        public App() : base()
+        {
+            // Setup Quick Converter.
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(object));
+            QuickConverter.EquationTokenizer.AddNamespace(typeof(Visibility));
+            QuickConverter.EquationTokenizer.AddExtensionMethods(typeof(Enumerable));
+        }
+
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

@@ -10,11 +10,13 @@ namespace SpaceBetweenUs.Services
     {
         public static Datastore Datastore;
         public static FrameSourceFile FrameSource;
+        public static GridProjection GridProjection;
 
         public static async Task Start(string frameSourceFile)
         {
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
+            GridProjection = await GridProjection.Initialize();
         }
     }
 }

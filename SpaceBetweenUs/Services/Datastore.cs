@@ -53,13 +53,13 @@ namespace SpaceBetweenUs.Services
 
         public void SetValue(string key, string value)
         {
-            fileContent = Helpers.BlobSetValue(fileContent, key, value);
+            fileContent = CommonHelpers.BlobSetValue(fileContent, key, value);
             Save();
         }
 
         public string GetValue(string key)
         {
-            return Helpers.BlobGetValue(fileContent, key);
+            return CommonHelpers.BlobGetValue(fileContent, key);
         }
     }
 }

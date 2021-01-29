@@ -12,6 +12,9 @@ namespace SpaceBetweenUs.Services
     {
         private VideoCapture capture;
 
+        public double Width => capture.FrameWidth;
+        public double Height => capture.FrameHeight;
+
         private FrameSourceFile() { }
 
         public static async Task<FrameSourceFile> Initialize(string file)

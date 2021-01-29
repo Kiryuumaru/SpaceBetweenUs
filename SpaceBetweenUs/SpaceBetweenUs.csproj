@@ -61,12 +61,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Appearance.cs" />
+    <Compile Include="Defaults.cs" />
     <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />
     <Compile Include="Services\Datastore.cs" />
+    <Compile Include="Services\GeometryHelpers.cs" />
     <Compile Include="Services\GridProjection.cs" />
     <Compile Include="Services\DowloadableFile.cs" />
-    <Compile Include="Services\Helpers.cs" />
+    <Compile Include="Services\CommonHelpers.cs" />
     <Compile Include="Services\MLYolo.cs" />
     <Compile Include="Services\MLYoloModel.cs" />
     <Compile Include="Services\MLYoloSystemValidator.cs" />
@@ -242,6 +244,9 @@
     </PackageReference>
     <PackageReference Include="OpenCvSharp4.Windows">
       <Version>4.5.1.20210123</Version>
+    </PackageReference>
+    <PackageReference Include="QuickConverter">
+      <Version>1.2.5</Version>
     </PackageReference>
     <PackageReference Include="Refractored.MvvmHelpers">
       <Version>1.6.2</Version>

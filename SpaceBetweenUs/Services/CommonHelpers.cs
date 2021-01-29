@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
-    public static class Helpers
+    public static class CommonHelpers
     {
         #region Serializer
 
@@ -223,7 +223,7 @@ namespace SpaceBetweenUs.Services
             if (datas == null) return NullIdentifier;
             if (datas.Length == 0) return EmptyIdentifier;
             int maxLength = datas.Max(i => i == null ? 0 : i.Length);
-            int indexDigits = Math.Max(maxLength.ToString().Length, Math.Max(NullIdentifier.Length, EmptyIdentifier.Length));
+            int indexDigits = Math.Max(datas.Length.ToString().Length, Math.Max(maxLength.ToString().Length, Math.Max(NullIdentifier.Length, EmptyIdentifier.Length)));
             string serializedDataHeader = datas.Length.ToString("D" + indexDigits);
             for (int i = 0; i < datas.Length; i++)
             {

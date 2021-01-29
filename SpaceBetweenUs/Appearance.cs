@@ -63,16 +63,16 @@ namespace SpaceBetweenUs
             get
             {
                 string accent = Session.Datastore.GetValue("accent");
-                string r = Helpers.BlobGetValue(accent, "r", DefaultAccentColor.R.ToString());
-                string g = Helpers.BlobGetValue(accent, "g", DefaultAccentColor.G.ToString());
-                string b = Helpers.BlobGetValue(accent, "b", DefaultAccentColor.B.ToString());
+                string r = CommonHelpers.BlobGetValue(accent, "r", DefaultAccentColor.R.ToString());
+                string g = CommonHelpers.BlobGetValue(accent, "g", DefaultAccentColor.G.ToString());
+                string b = CommonHelpers.BlobGetValue(accent, "b", DefaultAccentColor.B.ToString());
                 return Color.FromRgb(byte.Parse(r), byte.Parse(g), byte.Parse(b));
             }
             set
             {
-                string data = Helpers.BlobSetValue("", "r", value.R.ToString());
-                data = Helpers.BlobSetValue(data, "g", value.G.ToString());
-                data = Helpers.BlobSetValue(data, "b", value.B.ToString());
+                string data = CommonHelpers.BlobSetValue("", "r", value.R.ToString());
+                data = CommonHelpers.BlobSetValue(data, "g", value.G.ToString());
+                data = CommonHelpers.BlobSetValue(data, "b", value.B.ToString());
                 Session.Datastore.SetValue("accent", data);
                 AppearanceManager.Current.AccentColor = value;
             }

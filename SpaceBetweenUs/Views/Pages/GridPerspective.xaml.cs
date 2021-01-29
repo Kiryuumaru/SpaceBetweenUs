@@ -24,8 +24,6 @@ namespace SpaceBetweenUs.Views.Pages
     public partial class GridPerspective : UserControl
     {
         private readonly GridPerspectiveViewModel viewModel = new GridPerspectiveViewModel();
-        private bool isMouseDown = false;
-        private Anchor? selectedAnchor;
 
         public GridPerspective()
         {
@@ -33,19 +31,37 @@ namespace SpaceBetweenUs.Views.Pages
             DataContext = viewModel;
         }
 
+        private void SelectAxis(MouseEventArgs e)
+        {
+            if (Mouse.LeftButton == MouseButtonState.Pressed && viewModel.SelectedEditAnchor.HasValue)
+            {
+                var viewPoint = e.GetPosition(frameHolder);
+                var imagePoint = new OpenCvSharp.Point(
+                    frameHolder.Source.Width * (viewPoint.X / frameHolder.ActualWidth),
+                    frameHolder.Source.Height * (viewPoint.Y / frameHolder.ActualHeight));
+                var point = RelativePoint.FromFrame(imagePoint, frameHolder.Source.Width, frameHolder.Source.Height);
+                viewModel.SetAnchorAxis(viewModel.SelectedEditAnchor.Value, point);
+            }
+        }
+
         private void FrameHolder_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = true;
+            SelectAxis(e);
         }
 
         private void FrameHolder_MouseMove(object sender, MouseEventArgs e)
         {
-
+            SelectAxis(e);
         }
 
         private void FrameHolder_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            isMouseDown = false;
+            viewModel.SetAnchorPersistent();
+        }
+
+        private void RadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            viewModel.SetAnchorPersistent();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -58,78 +74,64 @@ namespace SpaceBetweenUs.Views.Pages
             var button = (Button)sender;
             if (button == buttonBL)
             {
-                if (selectedAnchor.HasValue && selectedAnchor.Value == Anchor.BottomLeft) selectedAnchor = null;
+                if (viewModel.SelectedEditAnchor.HasValue && viewModel.SelectedEditAnchor.Value == Anchor.BottomLeft) viewModel.SelectedEditAnchor = null;
                 else
                 {
-                    button.Content = "Cancel";
-                    selectedAnchor = Anchor.BottomLeft;
+                    button.Content = "Done";
+                    viewModel.SelectedEditAnchor = Anchor.BottomLeft;
                 }
             }
             else if (button == buttonTL)
             {
-                if (selectedAnchor.HasValue && selectedAnchor.Value == Anchor.TopLeft) selectedAnchor = null;
+                if (viewModel.SelectedEditAnchor.HasValue && viewModel.SelectedEditAnchor.Value == Anchor.TopLeft) viewModel.SelectedEditAnchor = null;
                 else
                 {
-                    button.Content = "Cancel";
-                    selectedAnchor = Anchor.TopLeft;
+                    button.Content = "Done";
+                    viewModel.SelectedEditAnchor = Anchor.TopLeft;
                 }
             }
             else if (button == buttonTR)
             {
-                if (selectedAnchor.HasValue && selectedAnchor.Value == Anchor.TopRight) selectedAnchor = null;
+                if (viewModel.SelectedEditAnchor.HasValue && viewModel.SelectedEditAnchor.Value == Anchor.TopRight) viewModel.SelectedEditAnchor = null;
                 else
                 {
-                    button.Content = "Cancel";
-                    selectedAnchor = Anchor.TopRight;
+                    button.Content = "Done";
+                    viewModel.SelectedEditAnchor = Anchor.TopRight;
                 }
             }
             else if (button == buttonBR)
             {
-                if (selectedAnchor.HasValue && selectedAnchor.Value == Anchor.BottomRight) selectedAnchor = null;
+                if (viewModel.SelectedEditAnchor.HasValue && viewModel.SelectedEditAnchor.Value == Anchor.BottomRight) viewModel.SelectedEditAnchor = null;
                 else
                 {
-                    button.Content = "Cancel";
-                    selectedAnchor = Anchor.BottomRight;
+                    button.Content = "Done";
+                    viewModel.SelectedEditAnchor = Anchor.BottomRight;
                 }
             }
+
+            viewModel.DrawResult();
         }
 
-        private static readonly Regex regexUInt = new Regex(@"^[0-9]*$");
-        private void TextBox_PreviewTextInputUInt(object sender, TextCompositionEventArgs e)
+        private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var text = ((TextBox)e.Source).Text + e.Text;
-            e.Handled = !regexUInt.IsMatch(text);
+            bool isMatch = regex.IsMatch(text);
+            e.Handled = !isMatch;
+            if (isMatch) viewModel.SetAnchorPersistent();
         }
-        private void TextBox_PastingUInt(object sender, DataObjectPastingEventArgs e)
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 string text = (string)e.DataObject.GetData(typeof(string));
-                if (!regexUInt.IsMatch(text))
+                if (!regex.IsMatch(text))
                 {
                     e.CancelCommand();
                 }
-            }
-            else
-            {
-                e.CancelCommand();
-            }
-        }
-
-        private static readonly Regex regexUDouble = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
-        private void TextBox_PreviewTextInputUDouble(object sender, TextCompositionEventArgs e)
-        {
-            var text = ((TextBox)e.Source).Text + e.Text;
-            e.Handled = !regexUDouble.IsMatch(text);
-        }
-        private void TextBox_PastingUDouble(object sender, DataObjectPastingEventArgs e)
-        {
-            if (e.DataObject.GetDataPresent(typeof(string)))
-            {
-                string text = (string)e.DataObject.GetData(typeof(string));
-                if (!regexUDouble.IsMatch(text))
+                else
                 {
-                    e.CancelCommand();
+                    viewModel.SetAnchorPersistent();
                 }
             }
             else
