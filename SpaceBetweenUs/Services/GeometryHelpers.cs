@@ -127,7 +127,7 @@ namespace SpaceBetweenUs.Services
         {
             if (points.Length < 2) return true;
             var first = points[0];
-            return points.All(s => s.Equals(first));
+            return points.All(s => s.FrameWidth == first.FrameWidth && s.FrameHeight == first.FrameHeight);
         }
 
         public static bool IsInside(RelativePoint interest, params RelativePoint[] polygon)
@@ -149,6 +149,16 @@ namespace SpaceBetweenUs.Services
                 }
             }
             return isInside;
+        }
+
+        public static bool IsInside(RelativePoint interest, RelativePoint point, double normalRadius)
+        {
+            var points = new List<RelativePoint> { interest, point };
+            if (!IsRelated(points.ToArray()))
+            {
+                throw new Exception("Points are unrelated");
+            }
+            return GetDistance(interest, point) <= normalRadius;
         }
 
         public static double GetPointX(RelativePoint point1, RelativePoint point2, double yOffSet)

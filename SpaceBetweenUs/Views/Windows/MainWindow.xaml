@@ -23,8 +23,7 @@
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Stream">
             <mui:LinkGroup.Links>
-                <mui:Link DisplayName="Camera" Source="/Views/Pages/Introduction.xaml" />
-                <mui:Link DisplayName="Grid Perspective" Source="/Views/Pages/GridPerspective.xaml" />
+                <mui:Link DisplayName="Camera" Source="/Views/Pages/Camera.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Setup">

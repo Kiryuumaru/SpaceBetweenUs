@@ -11,8 +11,9 @@ namespace SpaceBetweenUs
     {
         public const double MaxNormWidth = 1000;
         public const double MaxNormHeight = 1000;
+        public const double GridEdgeOffset = 10;
         public const double Fps = 40;
-        public const int DotRadius = 5;
+        public const int DotRadius = 7;
         public const int LineThickness = 2;
         public const double GridDistance = 0.5; // meters
 

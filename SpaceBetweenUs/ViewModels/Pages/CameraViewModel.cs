@@ -1,7 +1,9 @@
-﻿using MvvmHelpers;
+﻿using FirstFloor.ModernUI.Windows.Controls;
+using MvvmHelpers;
 using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;
 using SpaceBetweenUs.Services;
+using SpaceBetweenUs.Views.Contents;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,12 +11,14 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using Point = OpenCvSharp.Point;
 
 namespace SpaceBetweenUs.ViewModels.Pages
 {
-    public class GridPerspectiveViewModel : BaseViewModel
+    public class CameraViewModel : BaseViewModel
     {
         public Anchor? SelectedEditAnchor;
 
@@ -22,7 +26,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private Mat resultFrame;
         private int dotRelativeRadius;
         private int lineRelativeThickness;
-
 
         #region ViewBindings
 
@@ -33,215 +36,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref frame, value);
         }
 
-        private double blxAxis;
-        public double BLXAxis
-        {
-            get => blxAxis;
-            set => SetProperty(ref blxAxis, Math.Round(value, 2));
-        }
+        #endregion
 
-        private double blyAxis;
-        public double BLYAxis
-        {
-            get => blyAxis;
-            set => SetProperty(ref blyAxis, Math.Round(value, 2));
-        }
+        #region Properties
 
-        private double bldepth;
-        public double BLDepth
-        {
-            get => bldepth;
-            set => SetProperty(ref bldepth, Math.Round(value, 2));
-        }
-
-        private double tlxAxis;
-        public double TLXAxis
-        {
-            get => tlxAxis;
-            set => SetProperty(ref tlxAxis, Math.Round(value, 2));
-        }
-
-        private double tlyAxis;
-        public double TLYAxis
-        {
-            get => tlyAxis;
-            set => SetProperty(ref tlyAxis, Math.Round(value, 2));
-        }
-
-        private double tldepth;
-        public double TLDepth
-        {
-            get => tldepth;
-            set => SetProperty(ref tldepth, Math.Round(value, 2));
-        }
-
-        private double trxAxis;
-        public double TRXAxis
-        {
-            get => trxAxis;
-            set => SetProperty(ref trxAxis, Math.Round(value, 2));
-        }
-
-        private double tryAxis;
-        public double TRYAxis
-        {
-            get => tryAxis;
-            set => SetProperty(ref tryAxis, Math.Round(value, 2));
-        }
-
-        private double trdepth;
-        public double TRDepth
-        {
-            get => trdepth;
-            set => SetProperty(ref trdepth, Math.Round(value, 2));
-        }
-
-        private double brxAxis;
-        public double BRXAxis
-        {
-            get => brxAxis;
-            set => SetProperty(ref brxAxis, Math.Round(value, 2));
-        }
-
-        private double bryAxis;
-        public double BRYAxis
-        {
-            get => bryAxis;
-            set => SetProperty(ref bryAxis, Math.Round(value, 2));
-        }
-
-        private double brdepth;
-        public double BRDepth
-        {
-            get => brdepth;
-            set => SetProperty(ref brdepth, Math.Round(value, 2));
-        }
-
-        private bool blRef;
-        public bool BLRef
-        {
-            get => blRef;
-            set
-            {
-                SetProperty(ref blRef, value);
-            }
-        }
-
-        private bool tlRef;
-        public bool TLRef
-        {
-            get => tlRef;
-            set
-            {
-                SetProperty(ref tlRef, value);
-            }
-        }
-
-        private bool trRef;
-        public bool TRRef
-        {
-            get => trRef;
-            set
-            {
-                SetProperty(ref trRef, value);
-            }
-        }
-
-        private bool brRef;
-        public bool BRRef
-        {
-            get => brRef;
-            set => SetProperty(ref brRef, value);
-        }
+        public Anchor ReferencedAnchor { get; private set; }
+        public GridPoint BL { get; private set; }
+        public GridPoint TL { get; private set; }
+        public GridPoint TR { get; private set; }
+        public GridPoint BR { get; private set; }
 
         #endregion
 
-        #region ConvertedBindings
-
-        public Anchor ReferencedAnchor
-        {
-            get
-            {
-                if (blRef) return Anchor.BottomLeft;
-                else if (tlRef) return Anchor.TopLeft;
-                else if (trRef) return Anchor.TopRight;
-                else return Anchor.BottomRight;
-            }
-            set
-            {
-                switch (value)
-                {
-                    case Anchor.BottomLeft:
-                        BLRef = true;
-                        break;
-                    case Anchor.TopLeft:
-                        TLRef = true;
-                        break;
-                    case Anchor.TopRight:
-                        TRRef = true;
-                        break;
-                    case Anchor.BottomRight:
-                        BRRef = true;
-                        break;
-                }
-            }
-        }
-
-        public GridPoint BL
-        {
-            get => new GridPoint(
-                RelativePoint.FromNorm(new Point(BLXAxis, BLYAxis), Session.FrameSource.Width, Session.FrameSource.Height),
-                BLDepth);
-            set
-            {
-                BLXAxis = value.Point.Norm.X;
-                BLYAxis = value.Point.Norm.Y;
-                BLDepth = value.Depth;
-            }
-        }
-
-        public GridPoint TL
-        {
-            get => new GridPoint(
-                RelativePoint.FromNorm(new Point(TLXAxis, TLYAxis), Session.FrameSource.Width, Session.FrameSource.Height),
-                TLDepth);
-            set
-            {
-                TLXAxis = value.Point.Norm.X;
-                TLYAxis = value.Point.Norm.Y;
-                TLDepth = value.Depth;
-            }
-        }
-
-        public GridPoint TR
-        {
-            get => new GridPoint(
-                RelativePoint.FromNorm(new Point(TRXAxis, TRYAxis), Session.FrameSource.Width, Session.FrameSource.Height),
-                TRDepth);
-            set
-            {
-                TRXAxis = value.Point.Norm.X;
-                TRYAxis = value.Point.Norm.Y;
-                TRDepth = value.Depth;
-            }
-        }
-
-        public GridPoint BR
-        {
-            get => new GridPoint(
-                RelativePoint.FromNorm(new Point(BRXAxis, BRYAxis), Session.FrameSource.Width, Session.FrameSource.Height),
-                BRDepth);
-            set
-            {
-                BRXAxis = value.Point.Norm.X;
-                BRYAxis = value.Point.Norm.Y;
-                BRDepth = value.Depth;
-            }
-        }
-
-        #endregion
-
-        public GridPerspectiveViewModel()
+        public CameraViewModel()
         {
             GetAnchorPersistent();
             Start();
@@ -337,6 +144,100 @@ namespace SpaceBetweenUs.ViewModels.Pages
             Frame = resultFrame.ToWriteableBitmap(PixelFormats.Bgr24);
         }
 
+        private void OpenGridEditWindow(Anchor anchor)
+        {
+            string title = "Grid Point Edit ";
+            switch (anchor)
+            {
+                case Anchor.BottomLeft:
+                    title += "(Bottom Left)";
+                    break;
+                case Anchor.TopLeft:
+                    title += "(Top Left)";
+                    break;
+                case Anchor.TopRight:
+                    title += "(Top Right)";
+                    break;
+                case Anchor.BottomRight:
+                    title += "(Bottom Right)";
+                    break;
+            }
+            var gridEditor = new GridPointEdit(anchor);
+            var dlg = new ModernDialog
+            {
+                Title = title,
+                Content = gridEditor,
+            };
+            var cancelButton = dlg.CancelButton;
+            cancelButton.Content = "Cancel";
+            var okButton = dlg.OkButton;
+            okButton.Content = "Ok";
+            dlg.Buttons = new Button[] { cancelButton, okButton };
+            dlg.MinWidth = 0;
+            dlg.MinHeight = 0;
+            dlg.SizeChanged += (s, e) =>
+            {
+                double screenWidth = SystemParameters.PrimaryScreenWidth;
+                double screenHeight = SystemParameters.PrimaryScreenHeight;
+                double windowWidth = e.NewSize.Width;
+                double windowHeight = e.NewSize.Height;
+                dlg.Left = (screenWidth / 2) - (windowWidth / 2);
+                dlg.Top = (screenHeight / 2) - (windowHeight / 2);
+            };
+            dlg.ShowDialog();
+            if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+            {
+                gridEditor.Save();
+                GetAnchorPersistent();
+            }
+        }
+
+        private Anchor? GetPointAnchor(RelativePoint point)
+        {
+            if (GeometryHelpers.IsInside(point, BL.Point, Defaults.DotRadius))
+            {
+                return Anchor.BottomLeft;
+            }
+            else if (GeometryHelpers.IsInside(point, TL.Point, Defaults.DotRadius))
+            {
+                return Anchor.TopLeft;
+            }
+            else if (GeometryHelpers.IsInside(point, TR.Point, Defaults.DotRadius))
+            {
+                return Anchor.TopRight;
+            }
+            else if (GeometryHelpers.IsInside(point, BR.Point, Defaults.DotRadius))
+            {
+                return Anchor.BottomRight;
+            }
+            return null;
+        }
+
+        public void PointerDown(RelativePoint point)
+        {
+            SelectedEditAnchor = GetPointAnchor(point);
+        }
+
+        public void PointerDoubleDown(RelativePoint point)
+        {
+            var anchor = GetPointAnchor(point);
+            if (anchor.HasValue)  OpenGridEditWindow(anchor.Value);
+        }
+
+        public void PointerMove(RelativePoint point)
+        {
+            if (SelectedEditAnchor != null)
+            {
+                SetAnchorAxis(SelectedEditAnchor.Value, point);
+            }
+        }
+
+        public void PointerUp()
+        {
+            SelectedEditAnchor = null;
+            SetAnchorPersistent();
+        }
+
         public void SetAnchorAxis(Anchor anchor, RelativePoint point)
         {
             switch (anchor)
@@ -378,6 +279,14 @@ namespace SpaceBetweenUs.ViewModels.Pages
             TL = Session.GridProjection.TL;
             TR = Session.GridProjection.TR;
             BR = Session.GridProjection.BR;
+            if (BL.Point.FrameWidth == 0 || BL.Point.FrameHeight == 0)
+                BL = new GridPoint(RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height), 0);
+            if (TL.Point.FrameWidth == 0 || TL.Point.FrameHeight == 0)
+                TL = new GridPoint(RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height), 0);
+            if (TR.Point.FrameWidth == 0 || TR.Point.FrameHeight == 0)
+                TR = new GridPoint(RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height), 0);
+            if (BR.Point.FrameWidth == 0 || BR.Point.FrameHeight == 0)
+                BR = new GridPoint(RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height), 0);
         }
     }
 }

@@ -54,6 +54,15 @@ namespace SpaceBetweenUs.Services
         }
     }
 
+    public class StateChangeEventArgs : EventArgs
+    {
+        public DownloadableFileState State { get; private set; }
+        public StateChangeEventArgs(DownloadableFileState state)
+        {
+            State = state;
+        }
+    }
+
     public class DowloadableFile
     {
         private const string TempFileNameAddition = ".temp";
@@ -73,6 +82,8 @@ namespace SpaceBetweenUs.Services
                 else return DownloadableFileState.NotDownloaded;
             }
         }
+
+        public event EventHandler<StateChangeEventArgs> OnStateChange;
 
         public DowloadableFile(string url, string absolutePath)
         {
@@ -108,6 +119,7 @@ namespace SpaceBetweenUs.Services
 
         public async Task Download(Action<DowloadableFileOnProgress> onProgress)
         {
+            OnStateChange?.Invoke(this, new StateChangeEventArgs(State));
             isDownloading = true;
             try
             {
@@ -128,6 +140,7 @@ namespace SpaceBetweenUs.Services
                     totalBytes = e.TotalBytesToReceive;
                     onProgress?.Invoke(new DowloadableFileOnProgress(this, e.BytesReceived, e.TotalBytesToReceive));
                 };
+                OnStateChange?.Invoke(this, new StateChangeEventArgs(State));
                 onProgress?.Invoke(new DowloadableFileOnProgress(this, 0, await GetOnlineFileSize()));
                 await client.DownloadFileTaskAsync(uri, tempAbsFile);
                 if (currentBytes == totalBytes)
@@ -135,11 +148,13 @@ namespace SpaceBetweenUs.Services
                     if (File.Exists(tempAbsFile))
                     {
                         File.Move(tempAbsFile, AbsolutePath);
+                        await Task.Delay(5000);
                     }
                 }
             }
             catch { }
             isDownloading = false;
+            OnStateChange?.Invoke(this, new StateChangeEventArgs(State));
         }
 
         public void CancelDownload()

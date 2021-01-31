@@ -72,10 +72,14 @@
     <Compile Include="Services\MLModel.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />
+    <Compile Include="ViewModels\Contents\GridPointEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\MachineLearningSelectViewModel.cs" />
-    <Compile Include="ViewModels\Pages\GridPerspectiveViewModel.cs" />
+    <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
     <Compile Include="ViewModels\Pages\MachineLearningViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
+    <Compile Include="Views\Contents\GridPointEdit.xaml.cs">
+      <DependentUpon>GridPointEdit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Contents\MachineLearningSelect.xaml.cs">
       <DependentUpon>MachineLearningSelect.xaml</DependentUpon>
     </Compile>
@@ -83,8 +87,8 @@
       <DependentUpon>SettingsAppearance.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Contents\SettingsAppearanceViewModel.cs" />
-    <Compile Include="Views\Pages\GridPerspective.xaml.cs">
-      <DependentUpon>GridPerspective.xaml</DependentUpon>
+    <Compile Include="Views\Pages\Camera.xaml.cs">
+      <DependentUpon>Camera.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\MachineLearning.xaml.cs">
       <DependentUpon>MachineLearning.xaml</DependentUpon>
@@ -204,6 +208,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Contents\GridPointEdit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Contents\MachineLearningSelect.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -212,7 +220,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Pages\GridPerspective.xaml">
+    <Page Include="Views\Pages\Camera.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

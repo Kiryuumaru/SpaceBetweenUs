@@ -75,36 +75,42 @@ namespace SpaceBetweenUs.ViewModels.Contents
             {
                 var file = new UIDownloadableFile();
                 string stringSize = Session.Datastore.GetValue(downloadableFile.Url + "_size");
+                void update()
+                {
+                    file.CurrentState = downloadableFile.State;
+                    file.OnDowloadStateChange?.Invoke(downloadableFile.State);
+                    switch (downloadableFile.State)
+                    {
+                        case DownloadableFileState.NotDownloaded:
+                            file.Status = "Not Downloaded";
+                            break;
+                        case DownloadableFileState.Downloading:
+                            file.Status = "Downloading";
+                            break;
+                        case DownloadableFileState.Downloaded:
+                            file.Status = "Downloaded";
+                            break;
+                    }
+                }
                 file.AbsolutePath = downloadableFile.AbsolutePath;
                 file.FileName = downloadableFile.FileName;
                 file.Url = downloadableFile.Url;
-                file.Status = downloadableFile.LocalExist ? "Downloaded" : "Not downloaded";
+                file.CachedFileSizeString = string.IsNullOrEmpty(stringSize) ? "N/A" : stringSize;
                 file.onDownload = async onFinish =>
                 {
-                    file.CurrentState = DownloadableFileState.Downloading;
-                    file.OnDowloadStateChange?.Invoke(DownloadableFileState.Downloading);
                     await downloadableFile.Download(progress =>
                     {
-                        file.Status = "Downloading - " + progress.Percentage.ToString("0.##") + "%";
-                        if (progress.Percentage == 100)
-                        {
-                            file.CurrentState = DownloadableFileState.Downloaded;
-                            file.OnDowloadStateChange?.Invoke(DownloadableFileState.Downloaded);
-                            file.Status = "Downloaded";
-                        }
+                        file.Status = progress.Percentage == 100 ? "Downloaded" : "Downloading " + progress.Percentage.ToString("0.##") + "%";
                     });
                     onFinish?.Invoke();
                 };
                 file.onCancel = delegate
                 {
                     downloadableFile.CancelDownload();
-                    file.CurrentState = DownloadableFileState.NotDownloaded;
-                    file.OnDowloadStateChange?.Invoke(DownloadableFileState.NotDownloaded);
-                    file.Status = downloadableFile.LocalExist ? "Downloaded" : "Not downloaded";
+                    update();
                 };
-                file.CachedFileSizeString = string.IsNullOrEmpty(stringSize) ? "N/A" : stringSize;
-                file.CurrentState = downloadableFile.State;
-                file.OnDowloadStateChange?.Invoke(downloadableFile.State);
+                downloadableFile.OnStateChange += delegate { update(); };
+                update();
                 Task.Run(async delegate
                 {
                     var size = await downloadableFile.GetOnlineFileSize();
