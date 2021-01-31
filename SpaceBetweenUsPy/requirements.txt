@@ -1,7 +1,0 @@
-pip
-setuptools
-guizero
-numpy
-imutils
-scipy
-opencv-python

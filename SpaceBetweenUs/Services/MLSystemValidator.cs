@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace SpaceBetweenUs.Services
 {
-    public class MLYoloSystemValidator : IYoloSystemValidator
+    public class MLSystemValidator : IYoloSystemValidator
     {
         public SystemValidationReport Validate()
         {

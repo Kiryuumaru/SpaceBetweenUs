@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SpaceBetweenUs.Services;
+using SpaceBetweenUs.ViewModels.Contents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,16 +15,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SpaceBetweenUs.Views.Pages
+namespace SpaceBetweenUs.Views.Contents
 {
     /// <summary>
-    /// Interaction logic for MLModel.xaml
+    /// Interaction logic for Introduction.xaml
     /// </summary>
-    public partial class MLModel : UserControl
+    public partial class MachineLearningSelect : UserControl
     {
-        public MLModel()
+        public MachineLearningSelectViewModel viewModel = new MachineLearningSelectViewModel();
+
+        public MachineLearningSelect()
         {
             InitializeComponent();
+            DataContext = viewModel;
         }
     }
 }

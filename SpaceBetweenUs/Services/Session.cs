@@ -8,9 +8,21 @@ namespace SpaceBetweenUs.Services
 {
     public static class Session
     {
-        public static Datastore Datastore;
-        public static FrameSourceFile FrameSource;
-        public static GridProjection GridProjection;
+        public static Datastore Datastore { get; private set; }
+        public static FrameSourceFile FrameSource { get; private set; }
+        public static GridProjection GridProjection { get; private set; }
+        public static MLModel MLModel
+        {
+            get
+            {
+                string data = Datastore.GetValue("ml_model");
+                return MLModel.GetMLModels().FirstOrDefault(i => i.Name.Equals(data));
+            }
+            set
+            {
+                Datastore.SetValue("ml_model", value.Name);
+            }
+        }
 
         public static async Task Start(string frameSourceFile)
         {

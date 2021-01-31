@@ -12,7 +12,7 @@
 
     <mui:ModernWindow.TitleLinks>
         <mui:Link DisplayName="Settings" Source="/Views/Pages/Settings.xaml" />
-        <mui:Link DisplayName="Help" Source="https://github.com/firstfloorsoftware/mui/wiki" />
+        <mui:Link DisplayName="Help" Source="https://github.com/Kiryuumaru/SpaceBetweenUs/blob/master/README.md" />
     </mui:ModernWindow.TitleLinks>
 
     <mui:ModernWindow.MenuLinkGroups>
@@ -24,14 +24,13 @@
         <mui:LinkGroup DisplayName="Stream">
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Camera" Source="/Views/Pages/Introduction.xaml" />
-                <mui:Link DisplayName="Logs" Source="/Views/Pages/Introduction.xaml" />
+                <mui:Link DisplayName="Grid Perspective" Source="/Views/Pages/GridPerspective.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Setup">
             <mui:LinkGroup.Links>
-                <mui:Link DisplayName="ML Model" Source="/Views/Pages/MLModel.xaml" />
+                <mui:Link DisplayName="ML Model" Source="/Views/Pages/MachineLearning.xaml" />
                 <mui:Link DisplayName="GPU Support" Source="/Views/Pages/GPUSupport.xaml" />
-                <mui:Link DisplayName="Grid Perspective" Source="/Views/Pages/GridPerspective.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Settings" GroupKey="settings">

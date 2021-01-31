@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
+    public enum DownloadableFileState
+    {
+        NotDownloaded, Downloading, Downloaded
+    }
+
     public class DowloadableFileOnProgress
     {
         public DowloadableFile File { get; private set; }
@@ -52,11 +57,22 @@ namespace SpaceBetweenUs.Services
     public class DowloadableFile
     {
         private const string TempFileNameAddition = ".temp";
+        private bool isDownloading = false;
+        private WebClient client;
 
         public string Url { get; private set; }
         public string AbsolutePath { get; private set; }
         public bool LocalExist => File.Exists(AbsolutePath);
         public string FileName => Path.GetFileName(Url);
+        public DownloadableFileState State
+        {
+            get
+            {
+                if (LocalExist) return DownloadableFileState.Downloaded;
+                else if (isDownloading) return DownloadableFileState.Downloading;
+                else return DownloadableFileState.NotDownloaded;
+            }
+        }
 
         public DowloadableFile(string url, string absolutePath)
         {
@@ -75,51 +91,60 @@ namespace SpaceBetweenUs.Services
         {
             var uri = new Uri(Url);
 
-            using (var httpClient = new HttpClient())
+            using var httpClient = new HttpClient
             {
-                httpClient.Timeout = TimeSpan.FromMinutes(30);
+                Timeout = TimeSpan.FromMinutes(30)
+            };
 
-                using (var httpResponseMessage = await httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
-                {
-                    if (!httpResponseMessage.IsSuccessStatusCode) return -1;
+            using var httpResponseMessage = await httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false);
+            if (!httpResponseMessage.IsSuccessStatusCode) return -1;
 
-                    if (httpResponseMessage.Content.Headers.ContentLength.HasValue)
-                    {
-                        return httpResponseMessage.Content.Headers.ContentLength.Value;
-                    }
-                    else return -1;
-                }
+            if (httpResponseMessage.Content.Headers.ContentLength.HasValue)
+            {
+                return httpResponseMessage.Content.Headers.ContentLength.Value;
             }
+            else return -1;
         }
 
         public async Task Download(Action<DowloadableFileOnProgress> onProgress)
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(AbsolutePath));
-            var uri = new Uri(Url);
-            WebClient client = new WebClient();
-            var fileInfo = new FileInfo(AbsolutePath);
-            string tempAbsFile = AbsolutePath + TempFileNameAddition;
-            if (fileInfo.Exists)
+            isDownloading = true;
+            try
             {
-                File.Delete(AbsolutePath);
-            }
-            long currentBytes = 0;
-            long totalBytes = 0;
-            client.DownloadProgressChanged += (s, e) =>
-            {
-                currentBytes = e.BytesReceived;
-                totalBytes = e.TotalBytesToReceive;
-                onProgress?.Invoke(new DowloadableFileOnProgress(this, e.BytesReceived, e.TotalBytesToReceive));
-            };
-            onProgress?.Invoke(new DowloadableFileOnProgress(this, 0, await GetOnlineFileSize()));
-            await client.DownloadFileTaskAsync(uri, tempAbsFile);
-            if (currentBytes == totalBytes)
-            {
-                if (File.Exists(tempAbsFile))
+                Directory.CreateDirectory(Path.GetDirectoryName(AbsolutePath));
+                var uri = new Uri(Url);
+                client = new WebClient();
+                var fileInfo = new FileInfo(AbsolutePath);
+                string tempAbsFile = AbsolutePath + TempFileNameAddition;
+                if (fileInfo.Exists)
                 {
-                    File.Move(tempAbsFile, AbsolutePath);
+                    File.Delete(AbsolutePath);
+                }
+                long currentBytes = 0;
+                long totalBytes = 0;
+                client.DownloadProgressChanged += (s, e) =>
+                {
+                    currentBytes = e.BytesReceived;
+                    totalBytes = e.TotalBytesToReceive;
+                    onProgress?.Invoke(new DowloadableFileOnProgress(this, e.BytesReceived, e.TotalBytesToReceive));
+                };
+                onProgress?.Invoke(new DowloadableFileOnProgress(this, 0, await GetOnlineFileSize()));
+                await client.DownloadFileTaskAsync(uri, tempAbsFile);
+                if (currentBytes == totalBytes)
+                {
+                    if (File.Exists(tempAbsFile))
+                    {
+                        File.Move(tempAbsFile, AbsolutePath);
+                    }
                 }
             }
+            catch { }
+            isDownloading = false;
+        }
+
+        public void CancelDownload()
+        {
+            client?.CancelAsync();
         }
 
         public static async Task Download(IEnumerable<DowloadableFile> dowloadableFiles, Action<OverallDowloadableFileOnProgress> onProgress)

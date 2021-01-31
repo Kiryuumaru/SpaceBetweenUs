@@ -1,0 +1,54 @@
+﻿<UserControl x:Class="SpaceBetweenUs.Views.Contents.MachineLearningSelect"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             mc:Ignorable="d" >
+    <Grid x:Name="grid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <DockPanel Grid.Row="0"
+                   Grid.Column="0" >
+            <TextBlock DockPanel.Dock="Top"
+                       Text="FILES NEEDED"
+                       Style="{StaticResource Heading2}"
+                       Margin="0,0,0,8" />
+            <DataGrid ItemsSource="{Binding DownloadableFiles, Mode=OneWay}"
+                      AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <mui:DataGridTextColumn Header="File Name"
+                                            Binding="{Binding FileName, Mode=OneWay}"/>
+                    <mui:DataGridTextColumn Header="File Size"
+                                            Binding="{Binding CachedFileSizeString, Mode=OneWay}"/>
+                    <mui:DataGridTextColumn Header="Status"
+                                            Binding="{Binding Status, Mode=OneWay}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+        <Grid Grid.Row="1"
+              Grid.Column="0"
+              Margin="0,8,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="1"
+                    Margin="4,0,4,0"
+                    Content="{Binding DownloadButtonContent}"
+                    Command="{Binding DownloadFiles}"/>
+            <Button Grid.Column="2"
+                    Margin="4,0,4,0"
+                    Content="{Binding SelectButtonContent}"
+                    IsEnabled="{Binding IsButtonSelectActive}"
+                    Command="{Binding SelectCurrentModel}"/>
+        </Grid>
+    </Grid>
+</UserControl>
