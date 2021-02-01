@@ -1,5 +1,6 @@
 ﻿using Alturos.Yolo;
 using Alturos.Yolo.Model;
+using SpaceBetweenUs.Services.Detectors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,14 +13,12 @@ namespace SpaceBetweenUs.Services
     public class MLModel
     {
         private static readonly string ModelsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Models");
-        private YoloWrapper yoloWrapper;
 
         public string Name { get; private set; }
         public DowloadableFile ConfigFile { get; private set; }
         public DowloadableFile NamesFile { get; private set; }
         public DowloadableFile WeightsFile { get; private set; }
         public bool IsUsingGPU { get; private set; }
-        public bool IsReady => yoloWrapper != null;
 
         private MLModel() { }
 
@@ -83,23 +82,23 @@ namespace SpaceBetweenUs.Services
             await DowloadableFile.Download(dfs, onProgress);
         }
 
-        public YoloWrapper Start(bool useGpu)
+        public IHumanDetector GetDetector(double frameWidth, double frameHeight, bool useGpu)
         {
-            return new YoloWrapper(
+            if (useGpu)
+            {
+                try
+                {
+                    return new YoloDetector(frameWidth, frameHeight,
+                        new YoloConfiguration(ConfigFile.AbsolutePath, WeightsFile.AbsolutePath, NamesFile.AbsolutePath),
+                        new GpuConfig(),
+                        new MLSystemValidator());
+                }
+                catch { }
+            }
+            return new YoloDetector(frameWidth, frameHeight,
                 new YoloConfiguration(ConfigFile.AbsolutePath, WeightsFile.AbsolutePath, NamesFile.AbsolutePath),
-                useGpu ? new GpuConfig() : null,
+                null,
                 new MLSystemValidator());
-        }
-
-        public void Stop()
-        {
-            yoloWrapper = null;
-        }
-
-        public IEnumerable<YoloItem> Detect(byte[] imageData)
-        {
-            if (yoloWrapper == null) return new List<YoloItem>();
-            return yoloWrapper.Detect(imageData);
         }
 
         #endregion

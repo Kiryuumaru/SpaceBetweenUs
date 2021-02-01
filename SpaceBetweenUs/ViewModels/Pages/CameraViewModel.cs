@@ -29,7 +29,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private int dotRelativeRadius;
         private int borderLineRelativeThickness;
         private int itemLineRelativeThickness;
-        private IEnumerable<YoloItem> items = new List<YoloItem>();
+        private IEnumerable<Human> items = new List<Human>();
 
         #region ViewBindings
 
@@ -61,7 +61,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private async void Start()
         {
-            var ss = Session.MLModel.Start(false);
+            var d = Session.MLModel.GetDetector(Session.FrameSource.Width, Session.FrameSource.Height, true);
             currentFrame = new Mat();
             resultFrame = new Mat();
             dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
@@ -74,8 +74,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 s.Restart();
 
                 Session.FrameSource.ReadFrame(currentFrame);
-                //Detect();
-                items = ss.Detect(currentFrame.ToBytes());
+                items = d.DetectHuman(currentFrame.ToBytes());
+                Detect();
                 DrawResult();
 
                 int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
@@ -85,7 +85,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void Detect()
         {
-            if (!Session.MLModel.IsReady) return;
+            //if (!Session.MLModel.IsReady) return;
         }
 
         public void DrawResult()
@@ -157,10 +157,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
             foreach (var item in items)
             {
-                Cv2.Line(resultFrame, item.X, item.Y + item.Height, item.X, item.Y, Defaults.GreenColor, itemLineRelativeThickness);
-                Cv2.Line(resultFrame, item.X, item.Y, item.X + item.Width, item.Y, Defaults.GreenColor, itemLineRelativeThickness);
-                Cv2.Line(resultFrame, item.X + item.Width, item.Y, item.X + item.Width, item.Y + item.Height, Defaults.GreenColor, itemLineRelativeThickness);
-                Cv2.Line(resultFrame, item.X + item.Width, item.Y + item.Height, item.X, item.Y + item.Height, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.BL.Norm, item.TL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.TL.Norm, item.TR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.TR.Norm, item.BR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.BR.Norm, item.BL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
             }
             dispatcher.Invoke(delegate
             {

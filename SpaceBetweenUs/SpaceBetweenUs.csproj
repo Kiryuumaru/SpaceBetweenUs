@@ -62,6 +62,7 @@
     </Compile>
     <Compile Include="Appearance.cs" />
     <Compile Include="Defaults.cs" />
+    <Compile Include="Services\Detectors\YoloDetector.cs" />
     <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />
     <Compile Include="Services\Datastore.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="Services\GridProjection.cs" />
     <Compile Include="Services\DowloadableFile.cs" />
     <Compile Include="Services\CommonHelpers.cs" />
+    <Compile Include="Services\Detectors\IHumanDetector.cs" />
     <Compile Include="Services\MLModel.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />

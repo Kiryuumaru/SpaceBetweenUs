@@ -84,8 +84,7 @@ namespace SpaceBetweenUs.Views.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!Session.MLModel.IsReady) Session.MLModel.Start(true);
-            else Session.MLModel.Stop();
+            //Session.MLModel.Start(false);
         }
     }
 }
