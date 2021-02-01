@@ -5,21 +5,32 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              mc:Ignorable="d" >
-    <Grid Style="{StaticResource ContentRoot}">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <Button Grid.Column="2"
-                    Content="Start"
-                    Click="Button_Click"/>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0"
+              Margin="0,32,32,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Text="TOTAL VIOLATIONS"
+                           Margin="0,0,0,4" />
+                <mui:BBCodeBlock BBCode="{Binding ViolationCount}"
+                                 HorizontalAlignment="Center"
+                                 Margin="0,0,0,32"
+                                 Style="{StaticResource Heading1}"/>
+                <Button Content="Start"
+                        Click="Button_Click"
+                        Margin="0,0,0,4"/>
+                <Button Content="Stop"
+                        Click="Button_Click_1"/>
+            </StackPanel>
         </Grid>
-        <Image Grid.Row="1"
+        <Image Grid.Column="1"
                x:Name="frameHolder"
                Source="{Binding Frame}"
                MouseDown="FrameHolder_MouseDown"

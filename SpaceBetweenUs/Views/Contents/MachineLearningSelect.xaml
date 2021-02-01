@@ -12,6 +12,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <DockPanel Grid.Row="0"
@@ -34,7 +35,7 @@
         </DockPanel>
         <Grid Grid.Row="1"
               Grid.Column="0"
-              Margin="0,8,0,0">
+              Margin="0,16,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -49,6 +50,11 @@
                     Content="{Binding SelectButtonContent}"
                     IsEnabled="{Binding IsButtonSelectActive}"
                     Command="{Binding SelectCurrentModel}"/>
-        </Grid>
+            </Grid>
+            <mui:ModernProgressRing Grid.Row="1"
+                                    Grid.Column="1"
+                                    IsActive="True"
+                                    Margin="0,16,0,0"
+                                    Style="{StaticResource CircleProgressRingStyle}" />
     </Grid>
 </UserControl>

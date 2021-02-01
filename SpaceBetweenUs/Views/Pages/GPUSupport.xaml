@@ -15,12 +15,25 @@
             <TextBlock Text="CUDA ENABLED NVIDIA GPU CARD"
                        Style="{StaticResource Heading1}"
                        Margin="0,0,0,8"/>
-            <mui:BBCodeBlock BBCode="It is important to use GPU mode for fast object detection. GPU detection is usually 10 times faster!. Please refer to [url=https://github.com/Kiryuumaru/SpaceBetweenUs/blob/master/README.md]our wiki[/url] for more information on how to enable CUDA on NVIDIA GPU card."
+            <mui:BBCodeBlock BBCode="It is important to use GPU mode for fast object detection. GPU detection is usually 10 times faster!. Please refer to [url=https://github.com/Kiryuumaru/SpaceBetweenUs/blob/master/README.md]our wiki[/url] for more information on how to install CUDA on NVIDIA GPU card."
                              Margin="0,0,0,32" />
-            <TextBlock Text="CHOOSE ML MODEL TO BE USED"
+            <TextBlock Text="CUDA IS INSTALLED"
                        Style="{StaticResource Heading2}" />
-            <mui:BBCodeBlock BBCode=""
-                             Margin="0,0,0,32"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox Grid.Column="0"
+                          Content="Enable CUDA GPU Processing"
+                          Margin="0,8,0,0"
+                          IsChecked="{Binding GPUEnabled}"/>
+                <mui:ModernProgressRing Grid.Column="1"
+                                        IsActive="True"
+                                        Margin="8,8,0,0"
+                                        Style="{StaticResource CircleProgressRingStyle}" />
+            </Grid>
         </StackPanel>
     </Grid>
 </UserControl>

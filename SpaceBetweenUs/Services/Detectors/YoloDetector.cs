@@ -1,4 +1,5 @@
 ﻿using Alturos.Yolo;
+using Alturos.Yolo.Model;
 using OpenCvSharp;
 using OpenCvSharp.Dnn;
 using System;
@@ -32,11 +33,21 @@ namespace SpaceBetweenUs.Services.Detectors
                 (float)Defaults.ConfidenceThreshold,
                 (float)Defaults.NonMaximaSupressionThreshold,
                 out int[] indices);
-
             var humans = new List<Human>();
             foreach (var i in indices)
             {
-                humans.Add(new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight));
+                humans.Add(new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight, false));
+            }
+            foreach (var i in humans)
+            {
+                foreach (var j in humans)
+                {
+                    if (GeometryHelpers.GetDistance(i.BottomCenter, j.BottomCenter) <= 50)
+                    {
+                        i.IsViolation = true;
+                        j.IsViolation = true;
+                    }
+                }
             }
             return humans;
         }

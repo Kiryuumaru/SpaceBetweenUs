@@ -40,6 +40,13 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref frame, value);
         }
 
+        public int violationCount;
+        public int ViolationCount
+        {
+            get => violationCount;
+            set => SetProperty(ref violationCount, value);
+        }
+
         #endregion
 
         #region Properties
@@ -61,7 +68,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private async void Start()
         {
-            var d = Session.MLModel.GetDetector(Session.FrameSource.Width, Session.FrameSource.Height, true);
+            ViolationCount = 0;
+
             currentFrame = new Mat();
             resultFrame = new Mat();
             dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
@@ -74,7 +82,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 s.Restart();
 
                 Session.FrameSource.ReadFrame(currentFrame);
-                items = d.DetectHuman(currentFrame.ToBytes());
                 Detect();
                 DrawResult();
 
@@ -85,7 +92,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void Detect()
         {
-            //if (!Session.MLModel.IsReady) return;
+            items = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
         }
 
         public void DrawResult()
@@ -155,12 +162,15 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     SelectedEditAnchor == Anchor.BottomRight ? Defaults.GreenColor : Defaults.BlueColor,
                     borderLineRelativeThickness);
 
-            foreach (var item in items)
+            if (items != null)
             {
-                Cv2.Line(resultFrame, item.BL.Norm, item.TL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
-                Cv2.Line(resultFrame, item.TL.Norm, item.TR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
-                Cv2.Line(resultFrame, item.TR.Norm, item.BR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
-                Cv2.Line(resultFrame, item.BR.Norm, item.BL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                foreach (var item in items)
+                {
+                    Cv2.Line(resultFrame, item.BL.Norm, item.TL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.TL.Norm, item.TR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.TR.Norm, item.BR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.BR.Norm, item.BL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                }
             }
             dispatcher.Invoke(delegate
             {

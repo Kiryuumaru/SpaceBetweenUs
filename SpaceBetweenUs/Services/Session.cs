@@ -11,6 +11,19 @@ namespace SpaceBetweenUs.Services
         public static Datastore Datastore { get; private set; }
         public static FrameSourceFile FrameSource { get; private set; }
         public static GridProjection GridProjection { get; private set; }
+        public static bool UseGPU
+        {
+            get
+            {
+                string data = Datastore.GetValue("use_gpu");
+                return data?.Equals("1") ?? false;
+            }
+            set
+            {
+                Datastore.SetValue("use_gpu", value ? "1" : "0");
+            }
+        }
+        public static IHumanDetector HumanDetector { get; private set; }
         public static MLModel MLModel
         {
             get
@@ -29,6 +42,19 @@ namespace SpaceBetweenUs.Services
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
+        }
+
+        public static async Task InitializeHumanDetector()
+        {
+            await Task.Run(delegate
+            {
+                HumanDetector = MLModel.GetDetector(FrameSource.Width, FrameSource.Height, UseGPU);
+            });
+        }
+
+        public static void DisposeHumanDetector()
+        {
+            HumanDetector = null;
         }
     }
 }

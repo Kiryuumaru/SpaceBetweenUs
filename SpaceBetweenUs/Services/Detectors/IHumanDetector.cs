@@ -7,21 +7,25 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
-    public struct Human
+    public class Human
     {
         public RelativePoint BL;
         public RelativePoint TL;
         public RelativePoint TR;
         public RelativePoint BR;
         public RelativePoint Center;
+        public RelativePoint BottomCenter;
+        public bool IsViolation;
 
-        public Human(double x, double y, double width, double height, double frameWidth, double frameHeight)
+        public Human(double x, double y, double width, double height, double frameWidth, double frameHeight, bool isViolation)
         {
             BL = RelativePoint.FromNorm(new Point(x, y + height), frameWidth, frameHeight);
             TL = RelativePoint.FromNorm(new Point(x, y), frameWidth, frameHeight);
             TR = RelativePoint.FromNorm(new Point(x + width, y), frameWidth, frameHeight);
             BR = RelativePoint.FromNorm(new Point(x + width, y + height), frameWidth, frameHeight);
             Center = RelativePoint.FromNorm(new Point(x + width / 2, y + height / 2), frameWidth, frameHeight);
+            BottomCenter = RelativePoint.FromNorm(new Point(x + width / 2, y + height), frameWidth, frameHeight);
+            IsViolation = isViolation;
         }
 
         public override bool Equals(object obj)
@@ -32,7 +36,8 @@ namespace SpaceBetweenUs.Services
                 TL == human.TL &&
                 TR == human.TR &&
                 BR == human.BR &&
-                Center == human.Center;
+                Center == human.Center &&
+                BottomCenter == human.BottomCenter;
         }
 
         public override int GetHashCode()
