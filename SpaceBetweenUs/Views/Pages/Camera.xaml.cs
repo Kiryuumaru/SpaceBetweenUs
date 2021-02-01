@@ -23,12 +23,13 @@ namespace SpaceBetweenUs.Views.Pages
     /// </summary>
     public partial class Camera : UserControl
     {
-        private readonly CameraViewModel viewModel = new CameraViewModel();
+        private readonly CameraViewModel viewModel;
         private bool isMouseLeaveWithDown = false;
 
         public Camera()
         {
             InitializeComponent();
+            viewModel = new CameraViewModel(Dispatcher);
             DataContext = viewModel;
         }
 
@@ -83,7 +84,7 @@ namespace SpaceBetweenUs.Views.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (!Session.MLModel.IsReady) Session.MLModel.Start(false);
+            if (!Session.MLModel.IsReady) Session.MLModel.Start(true);
             else Session.MLModel.Stop();
         }
     }

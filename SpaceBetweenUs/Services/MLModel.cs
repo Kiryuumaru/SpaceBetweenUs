@@ -83,9 +83,9 @@ namespace SpaceBetweenUs.Services
             await DowloadableFile.Download(dfs, onProgress);
         }
 
-        public void Start(bool useGpu)
+        public YoloWrapper Start(bool useGpu)
         {
-            yoloWrapper = new YoloWrapper(
+            return new YoloWrapper(
                 new YoloConfiguration(ConfigFile.AbsolutePath, WeightsFile.AbsolutePath, NamesFile.AbsolutePath),
                 useGpu ? new GpuConfig() : null,
                 new MLSystemValidator());

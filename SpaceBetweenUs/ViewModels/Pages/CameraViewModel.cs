@@ -15,14 +15,15 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Point = OpenCvSharp.Point;
 
 namespace SpaceBetweenUs.ViewModels.Pages
 {
     public class CameraViewModel : BaseViewModel
     {
+        private readonly Dispatcher dispatcher;
         public Anchor? SelectedEditAnchor;
-
         private Mat currentFrame;
         private Mat resultFrame;
         private int dotRelativeRadius;
@@ -51,14 +52,16 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         #endregion
 
-        public CameraViewModel()
+        public CameraViewModel(Dispatcher dispatcher)
         {
+            this.dispatcher = dispatcher;
             GetAnchorPersistent();
-            Start();
+            Task.Run(Start);
         }
 
         private async void Start()
         {
+            var ss = Session.MLModel.Start(false);
             currentFrame = new Mat();
             resultFrame = new Mat();
             dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
@@ -71,7 +74,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 s.Restart();
 
                 Session.FrameSource.ReadFrame(currentFrame);
-                Detect();
+                //Detect();
+                items = ss.Detect(currentFrame.ToBytes());
                 DrawResult();
 
                 int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
@@ -82,7 +86,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public void Detect()
         {
             if (!Session.MLModel.IsReady) return;
-            items = Session.MLModel.Detect(currentFrame.ToBytes());
         }
 
         public void DrawResult()
@@ -158,9 +161,11 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 Cv2.Line(resultFrame, item.X, item.Y, item.X + item.Width, item.Y, Defaults.GreenColor, itemLineRelativeThickness);
                 Cv2.Line(resultFrame, item.X + item.Width, item.Y, item.X + item.Width, item.Y + item.Height, Defaults.GreenColor, itemLineRelativeThickness);
                 Cv2.Line(resultFrame, item.X + item.Width, item.Y + item.Height, item.X, item.Y + item.Height, Defaults.GreenColor, itemLineRelativeThickness);
-            }    
-
-            Frame = resultFrame.ToWriteableBitmap(PixelFormats.Bgr24);
+            }
+            dispatcher.Invoke(delegate
+            {
+                Frame = resultFrame.ToWriteableBitmap(PixelFormats.Bgr24);
+            });
         }
 
         private void OpenGridEditWindow(Anchor anchor)

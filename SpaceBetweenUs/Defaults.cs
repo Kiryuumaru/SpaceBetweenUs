@@ -17,7 +17,7 @@ namespace SpaceBetweenUs
         public const int BorderLineThickness = 2;
         public const int GridlineThickness = 1;
         public const double GridlineDistance = 0.5; // meters
-        public const int ItemLineThickness = 1;
+        public const int ItemLineThickness = 2;
 
         public static Scalar RedColor = new Scalar(0, 0, 255);
         public static Scalar GreenColor = new Scalar(0, 255, 0);
