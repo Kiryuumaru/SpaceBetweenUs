@@ -10,6 +10,15 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="2"
+                    Content="Start"
+                    Click="Button_Click"/>
+        </Grid>
         <Image Grid.Row="1"
                x:Name="frameHolder"
                Source="{Binding Frame}"

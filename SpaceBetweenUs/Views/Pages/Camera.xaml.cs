@@ -80,5 +80,11 @@ namespace SpaceBetweenUs.Views.Pages
         {
             isMouseLeaveWithDown = Mouse.LeftButton == MouseButtonState.Pressed;
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (!Session.MLModel.IsReady) Session.MLModel.Start(false);
+            else Session.MLModel.Stop();
+        }
     }
 }

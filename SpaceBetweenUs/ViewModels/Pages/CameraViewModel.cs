@@ -1,4 +1,5 @@
-﻿using FirstFloor.ModernUI.Windows.Controls;
+﻿using Alturos.Yolo.Model;
+using FirstFloor.ModernUI.Windows.Controls;
 using MvvmHelpers;
 using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;
@@ -25,7 +26,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private Mat currentFrame;
         private Mat resultFrame;
         private int dotRelativeRadius;
-        private int lineRelativeThickness;
+        private int borderLineRelativeThickness;
+        private int itemLineRelativeThickness;
+        private IEnumerable<YoloItem> items = new List<YoloItem>();
 
         #region ViewBindings
 
@@ -58,20 +61,28 @@ namespace SpaceBetweenUs.ViewModels.Pages
         {
             currentFrame = new Mat();
             resultFrame = new Mat();
-            dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.DotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            lineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.LineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
-
+            dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            
             var s = new Stopwatch();
             while (true)
             {
                 s.Restart();
 
                 Session.FrameSource.ReadFrame(currentFrame);
+                Detect();
                 DrawResult();
 
                 int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
                 await Task.Delay(delayMillis > 0 ? delayMillis : 0);
             }
+        }
+
+        public void Detect()
+        {
+            if (!Session.MLModel.IsReady) return;
+            items = Session.MLModel.Detect(currentFrame.ToBytes());
         }
 
         public void DrawResult()
@@ -89,28 +100,28 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     bl.Point.Frame,
                     tl.Point.Frame,
                     Defaults.YellowColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
             if ((tl.Point.Frame.X != 0 || tl.Point.Frame.Y != 0) && (tr.Point.Frame.X != 0 || tr.Point.Frame.Y != 0))
                 Cv2.Line(
                     resultFrame,
                     tl.Point.Frame,
                     tr.Point.Frame,
                     Defaults.YellowColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
             if ((tr.Point.Frame.X != 0 || tr.Point.Frame.Y != 0) && (br.Point.Frame.X != 0 || br.Point.Frame.Y != 0))
                 Cv2.Line(
                     resultFrame,
                     tr.Point.Frame,
                     br.Point.Frame,
                     Defaults.YellowColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
             if ((br.Point.Frame.X != 0 || br.Point.Frame.Y != 0) && (bl.Point.Frame.X != 0 || bl.Point.Frame.Y != 0))
                 Cv2.Line(
                     resultFrame,
                     br.Point.Frame,
                     bl.Point.Frame,
                     Defaults.YellowColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
 
             if (bl.Point.Frame.X != 0 || bl.Point.Frame.Y != 0)
                 Cv2.Circle(
@@ -118,28 +129,36 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     bl.Point.Frame,
                     dotRelativeRadius,
                     SelectedEditAnchor == Anchor.BottomLeft ? Defaults.GreenColor : Defaults.BlueColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
             if (tl.Point.Frame.X != 0 || tl.Point.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
                     tl.Point.Frame,
                     dotRelativeRadius,
                     SelectedEditAnchor == Anchor.TopLeft ? Defaults.GreenColor : Defaults.BlueColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
             if (tr.Point.Frame.X != 0 || tr.Point.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
                     tr.Point.Frame,
                     dotRelativeRadius,
                     SelectedEditAnchor == Anchor.TopRight ? Defaults.GreenColor : Defaults.BlueColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
             if (br.Point.Frame.X != 0 || br.Point.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
                     br.Point.Frame,
                     dotRelativeRadius,
                     SelectedEditAnchor == Anchor.BottomRight ? Defaults.GreenColor : Defaults.BlueColor,
-                    lineRelativeThickness);
+                    borderLineRelativeThickness);
+
+            foreach (var item in items)
+            {
+                Cv2.Line(resultFrame, item.X, item.Y + item.Height, item.X, item.Y, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.X, item.Y, item.X + item.Width, item.Y, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.X + item.Width, item.Y, item.X + item.Width, item.Y + item.Height, Defaults.GreenColor, itemLineRelativeThickness);
+                Cv2.Line(resultFrame, item.X + item.Width, item.Y + item.Height, item.X, item.Y + item.Height, Defaults.GreenColor, itemLineRelativeThickness);
+            }    
 
             Frame = resultFrame.ToWriteableBitmap(PixelFormats.Bgr24);
         }
@@ -194,19 +213,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private Anchor? GetPointAnchor(RelativePoint point)
         {
-            if (GeometryHelpers.IsInside(point, BL.Point, Defaults.DotRadius))
+            if (GeometryHelpers.IsInside(point, BL.Point, Defaults.AnchorDotRadius))
             {
                 return Anchor.BottomLeft;
             }
-            else if (GeometryHelpers.IsInside(point, TL.Point, Defaults.DotRadius))
+            else if (GeometryHelpers.IsInside(point, TL.Point, Defaults.AnchorDotRadius))
             {
                 return Anchor.TopLeft;
             }
-            else if (GeometryHelpers.IsInside(point, TR.Point, Defaults.DotRadius))
+            else if (GeometryHelpers.IsInside(point, TR.Point, Defaults.AnchorDotRadius))
             {
                 return Anchor.TopRight;
             }
-            else if (GeometryHelpers.IsInside(point, BR.Point, Defaults.DotRadius))
+            else if (GeometryHelpers.IsInside(point, BR.Point, Defaults.AnchorDotRadius))
             {
                 return Anchor.BottomRight;
             }

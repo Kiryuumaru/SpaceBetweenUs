@@ -91,8 +91,14 @@ namespace SpaceBetweenUs.Services
                 new MLSystemValidator());
         }
 
+        public void Stop()
+        {
+            yoloWrapper = null;
+        }
+
         public IEnumerable<YoloItem> Detect(byte[] imageData)
         {
+            if (yoloWrapper == null) return new List<YoloItem>();
             return yoloWrapper.Detect(imageData);
         }
 
