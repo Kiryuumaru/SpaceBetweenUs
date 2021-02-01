@@ -166,10 +166,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 foreach (var item in items)
                 {
-                    Cv2.Line(resultFrame, item.BL.Norm, item.TL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TL.Norm, item.TR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TR.Norm, item.BR.Norm, Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.BR.Norm, item.BL.Norm, Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.BL.Norm, item.TL.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.TL.Norm, item.TR.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.TR.Norm, item.BR.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.BR.Norm, item.BL.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
                 }
             }
             dispatcher.Invoke(delegate
