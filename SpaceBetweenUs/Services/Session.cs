@@ -42,13 +42,15 @@ namespace SpaceBetweenUs.Services
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
+            await InitializeHumanDetector();
         }
 
         public static async Task InitializeHumanDetector()
         {
+            HumanDetector = null;
             await Task.Run(delegate
             {
-                HumanDetector = MLModel.GetDetector(FrameSource.Width, FrameSource.Height, UseGPU);
+                HumanDetector = MLModel?.GetDetector(FrameSource.Width, FrameSource.Height, UseGPU);
             });
         }
 

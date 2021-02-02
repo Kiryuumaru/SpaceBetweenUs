@@ -136,9 +136,10 @@ namespace SpaceBetweenUs.ViewModels.Contents
             {
                 if (selectCurrentModel == null)
                 {
-                    selectCurrentModel = new RelayCommand(delegate
+                    selectCurrentModel = new RelayCommand(async delegate
                     {
                         Session.MLModel = model;
+                        await Session.InitializeHumanDetector();
                         Update();
                     });
                 }

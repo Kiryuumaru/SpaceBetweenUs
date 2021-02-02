@@ -26,9 +26,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
             GPUEnabled = Session.UseGPU;
         }
 
-        public void Save()
+        public async void Save()
         {
             Session.UseGPU = GPUEnabled;
+            await Session.InitializeHumanDetector();
         }
     }
 }
