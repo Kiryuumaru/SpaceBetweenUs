@@ -32,6 +32,10 @@ namespace SpaceBetweenUs.Services
 
         public void ReadFrame(Mat mat)
         {
+            capture.Grab();
+            capture.Grab();
+            capture.Grab();
+            capture.Grab();
             capture.Read(mat);
             if (mat.Empty())
             {

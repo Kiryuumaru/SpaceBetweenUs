@@ -93,6 +93,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public void Detect()
         {
             items = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
+            ViolationCount = items?.Where(i => i.IsViolation).Count() ?? 0;
         }
 
         public void DrawResult()
@@ -166,10 +167,16 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 foreach (var item in items)
                 {
-                    Cv2.Line(resultFrame, item.BL.Norm, item.TL.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TL.Norm, item.TR.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TR.Norm, item.BR.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.BR.Norm, item.BL.Norm, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                    Cv2.Circle(
+                        resultFrame,
+                        item.BottomCenter.Frame,
+                        dotRelativeRadius,
+                        item.IsViolation ? Defaults.RedColor : Defaults.GreenColor,
+                        borderLineRelativeThickness);
                 }
             }
             dispatcher.Invoke(delegate

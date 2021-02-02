@@ -19,12 +19,12 @@ namespace SpaceBetweenUs.Services
 
         public Human(double x, double y, double width, double height, double frameWidth, double frameHeight, bool isViolation)
         {
-            BL = RelativePoint.FromNorm(new Point(x, y + height), frameWidth, frameHeight);
-            TL = RelativePoint.FromNorm(new Point(x, y), frameWidth, frameHeight);
-            TR = RelativePoint.FromNorm(new Point(x + width, y), frameWidth, frameHeight);
-            BR = RelativePoint.FromNorm(new Point(x + width, y + height), frameWidth, frameHeight);
-            Center = RelativePoint.FromNorm(new Point(x + width / 2, y + height / 2), frameWidth, frameHeight);
-            BottomCenter = RelativePoint.FromNorm(new Point(x + width / 2, y + height), frameWidth, frameHeight);
+            BL = RelativePoint.FromFrame(new Point(x, y + height), frameWidth, frameHeight);
+            TL = RelativePoint.FromFrame(new Point(x, y), frameWidth, frameHeight);
+            TR = RelativePoint.FromFrame(new Point(x + width, y), frameWidth, frameHeight);
+            BR = RelativePoint.FromFrame(new Point(x + width, y + height), frameWidth, frameHeight);
+            Center = RelativePoint.FromFrame(new Point(x + width / 2, y + height / 2), frameWidth, frameHeight);
+            BottomCenter = RelativePoint.FromFrame(new Point(x + width / 2, y + height), frameWidth, frameHeight);
             IsViolation = isViolation;
         }
 
