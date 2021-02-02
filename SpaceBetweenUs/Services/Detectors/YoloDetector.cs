@@ -51,7 +51,9 @@ namespace SpaceBetweenUs.Services.Detectors
             {
                 foreach (var j in humans)
                 {
-                    if (GeometryHelpers.GetDistance(i.BottomCenter, j.BottomCenter) <= 50)
+                    if (i == j) continue;
+                    double dis = GeometryHelpers.GetDistance(i.BottomCenter, j.BottomCenter);
+                    if (dis <= 100)
                     {
                         i.IsViolation = true;
                         j.IsViolation = true;
