@@ -39,10 +39,10 @@ namespace SpaceBetweenUs.Services.Detectors
                 var human = new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight, false);
                 if (GeometryHelpers.IsInside(
                     human.BottomCenter,
-                    Session.GridProjection.BL.Point,
-                    Session.GridProjection.TL.Point,
-                    Session.GridProjection.TR.Point,
-                    Session.GridProjection.BR.Point))
+                    Session.GridProjection.BL,
+                    Session.GridProjection.TL,
+                    Session.GridProjection.TR,
+                    Session.GridProjection.BR))
                 {
                     humans.Add(human);
                 }

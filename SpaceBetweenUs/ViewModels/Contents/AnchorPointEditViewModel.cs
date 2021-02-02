@@ -8,24 +8,22 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.ViewModels.Contents
 {
-    public class GridPointEditViewModel : BaseViewModel
+    public class AnchorPointEditViewModel : BaseViewModel
     {
-        private Anchor anchor;
-        private double frameWidth;
-        private double frameHeight;
+        private readonly Anchor anchor;
+        private readonly double frameWidth;
+        private readonly double frameHeight;
 
-        public GridPoint GridPoint
+        public RelativePoint RelativePoint
         {
             get
             {
-                var point = RelativePoint.FromNorm(new OpenCvSharp.Point(XAxis, YAxis), frameWidth, frameHeight);
-                return new GridPoint(point, Depth);
+                return RelativePoint.FromNorm(new OpenCvSharp.Point(XAxis, YAxis), frameWidth, frameHeight);
             }
             set
             {
-                XAxis = value.Point.Norm.X;
-                YAxis = value.Point.Norm.Y;
-                Depth = value.Depth;
+                XAxis = value.Norm.X;
+                YAxis = value.Norm.Y;
             }
         }
 
@@ -43,13 +41,6 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref yAxis, value);
         }
 
-        private double depth;
-        public double Depth
-        {
-            get => depth;
-            set => SetProperty(ref depth, value);
-        }
-
         private bool isRefDepth;
         public bool IsRefDepth
         {
@@ -57,10 +48,10 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref isRefDepth, value);
         }
 
-        public GridPointEditViewModel(Anchor anchor)
+        public AnchorPointEditViewModel(Anchor anchor)
         {
             this.anchor = anchor;
-            var gridPoint = anchor switch
+            var point = anchor switch
             {
                 Anchor.BottomLeft => Session.GridProjection.BL,
                 Anchor.TopLeft => Session.GridProjection.TL,
@@ -68,9 +59,9 @@ namespace SpaceBetweenUs.ViewModels.Contents
                 Anchor.BottomRight => Session.GridProjection.BR,
                 _ => Session.GridProjection.BL
             };
-            frameWidth = gridPoint.Point.FrameWidth;
-            frameHeight = gridPoint.Point.FrameHeight;
-            GridPoint = gridPoint;
+            frameWidth = point.FrameWidth;
+            frameHeight = point.FrameHeight;
+            RelativePoint = point;
             IsRefDepth = Session.GridProjection.ReferenceAnchor == anchor;
         }
 
@@ -80,16 +71,16 @@ namespace SpaceBetweenUs.ViewModels.Contents
             switch (anchor)
             {
                 case Anchor.BottomLeft:
-                    Session.GridProjection.BL = GridPoint;
+                    Session.GridProjection.BL = RelativePoint;
                     break;
                 case Anchor.TopLeft:
-                    Session.GridProjection.TL = GridPoint;
+                    Session.GridProjection.TL = RelativePoint;
                     break;
                 case Anchor.TopRight:
-                    Session.GridProjection.TR = GridPoint;
+                    Session.GridProjection.TR = RelativePoint;
                     break;
                 case Anchor.BottomRight:
-                    Session.GridProjection.BR = GridPoint;
+                    Session.GridProjection.BR = RelativePoint;
                     break;
             }
         }

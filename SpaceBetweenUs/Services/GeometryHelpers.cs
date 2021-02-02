@@ -181,9 +181,14 @@ namespace SpaceBetweenUs.Services
             return line.A.Norm.Y + ((line.B.Norm.Y - line.A.Norm.Y) * xOffSet);
         }
 
-        public static Point GetPoint(RelativePoint a, RelativePoint b, double offSet)
+        public static RelativePoint GetPoint(RelativePoint a, RelativePoint b, double offSet)
         {
-            return new Point(GetPointX(a, b, offSet), GetPointY(a, b, offSet));
+            var points = new List<RelativePoint> { a, b };
+            if (!IsRelated(points.ToArray()))
+            {
+                throw new Exception("Points are unrelated");
+            }
+            return RelativePoint.FromNorm(new Point(GetPointX(a, b, offSet), GetPointY(a, b, offSet)), a.FrameWidth, a.FrameHeight);
         }
 
         public static Point GetPoint(RelativeLine line, double offSet)

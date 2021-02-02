@@ -21,18 +21,18 @@ namespace SpaceBetweenUs.Views.Contents
     /// <summary>
     /// Interaction logic for Introduction.xaml
     /// </summary>
-    public partial class GridPointEdit : UserControl
+    public partial class GridSideEdit : UserControl
     {
         private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
 
-        private readonly GridPointEditViewModel viewModel;
+        private readonly GridSideEditViewModel viewModel;
 
         public bool IsReferencedDepth;
 
-        public GridPointEdit(Anchor anchor)
+        public GridSideEdit(GridSide side)
         {
             InitializeComponent();
-            viewModel = new GridPointEditViewModel(anchor);
+            viewModel = new GridSideEditViewModel(side);
             DataContext = viewModel;
         }
 

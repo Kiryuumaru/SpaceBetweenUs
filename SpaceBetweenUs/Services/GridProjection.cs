@@ -12,47 +12,9 @@ namespace SpaceBetweenUs.Services
         BottomLeft, TopLeft, TopRight, BottomRight
     }
 
-    public struct GridPoint
+    public enum GridSide
     {
-        public RelativePoint Point;
-        public double Depth;
-
-        public GridPoint(RelativePoint point, double depth)
-        {
-            Point = point;
-            Depth = depth;
-        }
-
-        public static GridPoint Zero()
-        {
-            return new GridPoint(RelativePoint.Zero(), 0);
-        }
-
-        public static GridPoint Zero(double frameWidth, double frameHeight)
-        {
-            return new GridPoint(RelativePoint.Zero(frameWidth, frameHeight), 0);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is GridPoint gridPoint)) return false;
-            return Point == gridPoint.Point && Depth == gridPoint.Depth;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public static bool operator ==(GridPoint left, GridPoint right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(GridPoint left, GridPoint right)
-        {
-            return !(left == right);
-        }
+        Left, Top, Right, Bottom
     }
 
     public class GridProjection
@@ -112,131 +74,179 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public GridPoint BL
+        public RelativePoint BL
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return GridPoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
                 string data = Session.Datastore.GetValue("grid_bl");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "depth"), out double depth)) return GridPoint.Zero();
-                return new GridPoint(
-                    new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight),
-                    depth);
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
             {
                 string data = "";
-                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Point.Norm.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Point.Norm.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Point.Frame.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Point.Frame.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "w_frame", value.Point.FrameWidth.ToString());
-                data = CommonHelpers.BlobSetValue(data, "h_frame", value.Point.FrameHeight.ToString());
-                data = CommonHelpers.BlobSetValue(data, "depth", value.Depth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Norm.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Norm.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Frame.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_bl", data);
             }
         }
 
-        public GridPoint TL
+        public RelativePoint TL
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return GridPoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
                 string data = Session.Datastore.GetValue("grid_tl");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "depth"), out double depth)) return GridPoint.Zero();
-                return new GridPoint(
-                    new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight),
-                    depth);
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
             {
                 string data = "";
-                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Point.Norm.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Point.Norm.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Point.Frame.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Point.Frame.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "w_frame", value.Point.FrameWidth.ToString());
-                data = CommonHelpers.BlobSetValue(data, "h_frame", value.Point.FrameHeight.ToString());
-                data = CommonHelpers.BlobSetValue(data, "depth", value.Depth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Norm.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Norm.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Frame.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_tl", data);
             }
         }
 
-        public GridPoint TR
+        public RelativePoint TR
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return GridPoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
                 string data = Session.Datastore.GetValue("grid_tr");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "depth"), out double depth)) return GridPoint.Zero();
-                return new GridPoint(
-                    new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight),
-                    depth);
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
             {
                 string data = "";
-                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Point.Norm.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Point.Norm.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Point.Frame.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Point.Frame.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "w_frame", value.Point.FrameWidth.ToString());
-                data = CommonHelpers.BlobSetValue(data, "h_frame", value.Point.FrameHeight.ToString());
-                data = CommonHelpers.BlobSetValue(data, "depth", value.Depth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Norm.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Norm.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Frame.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_tr", data);
             }
         }
 
-        public GridPoint BR
+        public RelativePoint BR
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return GridPoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
                 string data = Session.Datastore.GetValue("grid_br");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "depth"), out double depth)) return GridPoint.Zero();
-                return new GridPoint(
-                    new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight),
-                    depth);
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
             {
                 string data = "";
-                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Point.Norm.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Point.Norm.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Point.Frame.X.ToString());
-                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Point.Frame.Y.ToString());
-                data = CommonHelpers.BlobSetValue(data, "w_frame", value.Point.FrameWidth.ToString());
-                data = CommonHelpers.BlobSetValue(data, "h_frame", value.Point.FrameHeight.ToString());
-                data = CommonHelpers.BlobSetValue(data, "depth", value.Depth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_norm", value.Norm.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_norm", value.Norm.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "x_frame", value.Frame.X.ToString());
+                data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
+                data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
+                data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_br", data);
+            }
+        }
+
+        public double LeftDistance
+        {
+            get
+            {
+                if (Defaults.MaxNormWidth != MaxNormWidth ||
+                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
+                string data = Session.Datastore.GetValue("l_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
+            }
+            set
+            {
+                Session.Datastore.SetValue("l_dist", value.ToString());
+            }
+        }
+
+        public double TopDistance
+        {
+            get
+            {
+                if (Defaults.MaxNormWidth != MaxNormWidth ||
+                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
+                string data = Session.Datastore.GetValue("t_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
+            }
+            set
+            {
+                Session.Datastore.SetValue("t_dist", value.ToString());
+            }
+        }
+
+        public double RightDistance
+        {
+            get
+            {
+                if (Defaults.MaxNormWidth != MaxNormWidth ||
+                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
+                string data = Session.Datastore.GetValue("r_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
+            }
+            set
+            {
+                Session.Datastore.SetValue("r_dist", value.ToString());
+            }
+        }
+
+        public double BottomDistance
+        {
+            get
+            {
+                if (Defaults.MaxNormWidth != MaxNormWidth ||
+                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
+                string data = Session.Datastore.GetValue("b_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
+            }
+            set
+            {
+                Session.Datastore.SetValue("b_dist", value.ToString());
             }
         }
 

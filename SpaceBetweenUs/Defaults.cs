@@ -13,11 +13,12 @@ namespace SpaceBetweenUs
         public const double MaxNormHeight = 1000;
         public const double GridEdgeOffset = 10;
         public const double Fps = 40;
-        public const int AnchorDotRadius = 7;
-        public const int BorderLineThickness = 2;
-        public const int GridlineThickness = 1;
+        public const double AnchorDotRadius = 7;
+        public const double InnerDotRadius = 7;
+        public const double BorderLineThickness = 2;
+        public const double GridlineThickness = 1;
         public const double GridlineDistance = 0.5; // meters
-        public const int ItemLineThickness = 2;
+        public const double ItemLineThickness = 1.5;
 
         public const double ConfidenceThreshold = 0.3;
         public const double NonMaximaSupressionThreshold = 0.3;
