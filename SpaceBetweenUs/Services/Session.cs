@@ -37,24 +37,30 @@ namespace SpaceBetweenUs.Services
             }
         }
 
+        public static event Action OnHumanDetectorChanges;
+        public static bool IsHumanDetectorInitializing { get; private set; } = false;
+
         public static async Task Start(string frameSourceFile)
         {
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
+            InitializeHumanDetector();
         }
 
-        public static async Task InitializeHumanDetector()
+        public static void InitializeHumanDetector()
         {
-            await Task.Run(delegate
+            Task.Run(async delegate
             {
-                HumanDetector = MLModel.GetDetector(FrameSource.Width, FrameSource.Height, UseGPU);
+                while (IsHumanDetectorInitializing) { }
+                IsHumanDetectorInitializing = true;
+                OnHumanDetectorChanges?.Invoke();
+                HumanDetector = null;
+                await Task.Delay(5000);
+                HumanDetector = MLModel?.GetDetector(FrameSource.Width, FrameSource.Height, UseGPU);
+                IsHumanDetectorInitializing = false;
+                OnHumanDetectorChanges?.Invoke();
             });
-        }
-
-        public static void DisposeHumanDetector()
-        {
-            HumanDetector = null;
         }
     }
 }

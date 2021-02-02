@@ -28,9 +28,10 @@
                 <CheckBox Grid.Column="0"
                           Content="Enable CUDA GPU Processing"
                           Margin="0,8,0,0"
+                          IsEnabled="{Binding GPUClickable}"
                           IsChecked="{Binding GPUEnabled}"/>
                 <mui:ModernProgressRing Grid.Column="1"
-                                        IsActive="True"
+                                        IsActive="{Binding ProgressActive}"
                                         Margin="8,8,0,0"
                                         Style="{StaticResource CircleProgressRingStyle}" />
             </Grid>

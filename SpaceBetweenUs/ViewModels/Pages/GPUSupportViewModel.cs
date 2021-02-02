@@ -21,14 +21,39 @@ namespace SpaceBetweenUs.ViewModels.Pages
             }
         }
 
+        private bool gpuClickable;
+        public bool GPUClickable
+        {
+            get => gpuClickable;
+            set => SetProperty(ref gpuClickable, value);
+        }
+
+        private bool progressActive;
+        public bool ProgressActive
+        {
+            get => progressActive;
+            set => SetProperty(ref progressActive, value);
+        }
+
         public GPUSupportViewModel()
         {
             GPUEnabled = Session.UseGPU;
+            GPUClickable = !Session.IsHumanDetectorInitializing;
+            ProgressActive = Session.IsHumanDetectorInitializing;
+            Session.OnHumanDetectorChanges += delegate
+            {
+                GPUClickable = !Session.IsHumanDetectorInitializing;
+                ProgressActive = Session.IsHumanDetectorInitializing;
+            };
         }
 
         public void Save()
         {
-            Session.UseGPU = GPUEnabled;
+            if (Session.UseGPU != GPUEnabled)
+            {
+                Session.UseGPU = GPUEnabled;
+                Session.InitializeHumanDetector();
+            }
         }
     }
 }

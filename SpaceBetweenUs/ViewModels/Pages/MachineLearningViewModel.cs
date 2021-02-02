@@ -77,5 +77,11 @@ namespace SpaceBetweenUs.ViewModels.Pages
         }
 
         #endregion
+
+        #region Methods
+
+
+
+        #endregion
     }
 }

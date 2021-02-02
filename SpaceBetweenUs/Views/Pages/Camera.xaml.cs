@@ -82,14 +82,9 @@ namespace SpaceBetweenUs.Views.Pages
             isMouseLeaveWithDown = Mouse.LeftButton == MouseButtonState.Pressed;
         }
 
-        private async void Button_Click(object sender, RoutedEventArgs e)
+        private void Button_Click(object sender, RoutedEventArgs e)
         {
-            await Session.InitializeHumanDetector();
-        }
-
-        private void Button_Click_1(object sender, RoutedEventArgs e)
-        {
-            Session.DisposeHumanDetector();
+            Session.InitializeHumanDetector();
         }
     }
 }

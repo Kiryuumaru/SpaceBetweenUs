@@ -139,6 +139,7 @@ namespace SpaceBetweenUs.ViewModels.Contents
                     selectCurrentModel = new RelayCommand(delegate
                     {
                         Session.MLModel = model;
+                        Session.InitializeHumanDetector();
                         Update();
                     });
                 }
@@ -208,6 +209,13 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref downloadButtonContent, value);
         }
 
+        private bool progressActive;
+        public bool ProgressActive
+        {
+            get => progressActive;
+            set => SetProperty(ref progressActive, value);
+        }
+
         private DownloadableFileState state;
         public DownloadableFileState State
         {
@@ -236,6 +244,7 @@ namespace SpaceBetweenUs.ViewModels.Contents
         {
             Update();
             MachineLearningViewModel.JumperModelTabChange += delegate { Update(); };
+            Session.OnHumanDetectorChanges += delegate { Update(); };
             foreach (var file in DownloadableFiles)
             {
                 file.OnDowloadStateChange = state =>
@@ -271,6 +280,8 @@ namespace SpaceBetweenUs.ViewModels.Contents
 
             DownloadableFiles = uiFiles;
             IsSelected = MachineLearningViewModel.JumperCurrentModelSelect.Equals(Session.MLModel?.Name);
+            IsButtonSelectActive = !Session.IsHumanDetectorInitializing && !IsSelected;
+            ProgressActive = Session.IsHumanDetectorInitializing;
         }
     }
 }

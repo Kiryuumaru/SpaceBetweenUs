@@ -53,7 +53,7 @@
             </Grid>
             <mui:ModernProgressRing Grid.Row="1"
                                     Grid.Column="1"
-                                    IsActive="True"
+                                    IsActive="{Binding ProgressActive}"
                                     Margin="0,16,0,0"
                                     Style="{StaticResource CircleProgressRingStyle}" />
     </Grid>

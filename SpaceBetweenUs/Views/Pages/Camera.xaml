@@ -26,8 +26,6 @@
                 <Button Content="Start"
                         Click="Button_Click"
                         Margin="0,0,0,4"/>
-                <Button Content="Stop"
-                        Click="Button_Click_1"/>
             </StackPanel>
         </Grid>
         <Image Grid.Column="1"
