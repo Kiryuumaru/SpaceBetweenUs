@@ -62,7 +62,7 @@ namespace SpaceBetweenUs.Services
                 FromUrl(
                     "YOLOv2-Tiny",
                     "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov2-tiny.cfg",
-                    "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/voc.names",
+                    "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/voc.data",
                     "https://pjreddie.com/media/files/yolov2-tiny.weights")
             };
         }
