@@ -41,8 +41,8 @@ namespace SpaceBetweenUs.Services
             {
                 FromUrl(
                     "YOLOv4",
-                    "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/yolov4.cfg",
-                    "https://raw.githubusercontent.com/AlexeyAB/darknet/master/cfg/coco.names",
+                    "https://raw.githubusercontent.com/Kiryuumaru/darknet/master/cfg/yolov4.cfg",
+                    "https://raw.githubusercontent.com/Kiryuumaru/darknet/master/cfg/coco.names",
                     "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.weights"),
                 FromUrl(
                     "YOLOv3",
