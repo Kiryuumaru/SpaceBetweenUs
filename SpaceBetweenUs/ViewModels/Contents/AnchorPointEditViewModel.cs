@@ -41,13 +41,6 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref yAxis, value);
         }
 
-        private bool isRefDepth;
-        public bool IsRefDepth
-        {
-            get => isRefDepth;
-            set => SetProperty(ref isRefDepth, value);
-        }
-
         public AnchorPointEditViewModel(Anchor anchor)
         {
             this.anchor = anchor;
@@ -62,12 +55,10 @@ namespace SpaceBetweenUs.ViewModels.Contents
             frameWidth = point.FrameWidth;
             frameHeight = point.FrameHeight;
             RelativePoint = point;
-            IsRefDepth = Session.GridProjection.ReferenceAnchor == anchor;
         }
 
         public void Save()
         {
-            if (IsRefDepth) Session.GridProjection.ReferenceAnchor = anchor;
             switch (anchor)
             {
                 case Anchor.BottomLeft:

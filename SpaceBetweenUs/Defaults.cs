@@ -14,14 +14,16 @@ namespace SpaceBetweenUs
         public const double GridEdgeOffset = 10;
         public const double Fps = 40;
         public const double AnchorDotRadius = 7;
-        public const double InnerDotRadius = 7;
+        public const double InnerDotRadius = 6;
+        public const double ItemDotRadius = 3.5;
         public const double BorderLineThickness = 2;
         public const double GridlineThickness = 1;
-        public const double GridlineDistance = 0.5; // meters
         public const double ItemLineThickness = 1.5;
 
         public const double ConfidenceThreshold = 0.3;
         public const double NonMaximaSupressionThreshold = 0.3;
+
+        public const double GridNotchDistance = 1; // meters
 
         public static Scalar RedColor = new Scalar(0, 0, 255);
         public static Scalar GreenColor = new Scalar(0, 255, 0);

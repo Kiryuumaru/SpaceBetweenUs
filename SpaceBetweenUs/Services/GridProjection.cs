@@ -47,33 +47,6 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public Anchor ReferenceAnchor
-        {
-            get
-            {
-                string data = Session.Datastore.GetValue("grid_ref");
-                return data switch
-                {
-                    "bl" => Anchor.BottomLeft,
-                    "tl" => Anchor.TopLeft,
-                    "tr" => Anchor.TopRight,
-                    "br" => Anchor.BottomRight,
-                    _ => Anchor.BottomLeft,
-                };
-            }
-            set
-            {
-                Session.Datastore.SetValue("grid_ref", value switch
-                {
-                    Anchor.BottomLeft => "bl",
-                    Anchor.TopLeft => "tl",
-                    Anchor.TopRight => "tr",
-                    Anchor.BottomRight => "br",
-                    _ => "br"
-                });
-            }
-        }
-
         public RelativePoint BL
         {
             get

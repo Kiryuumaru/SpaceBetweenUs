@@ -37,12 +37,19 @@ namespace SpaceBetweenUs.Services.Detectors
             foreach (var i in indices)
             {
                 var human = new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight, false);
-                if (GeometryHelpers.IsInside(
-                    human.BottomCenter,
-                    Session.GridProjection.BL,
-                    Session.GridProjection.TL,
-                    Session.GridProjection.TR,
-                    Session.GridProjection.BR))
+                try
+                {
+                    if (GeometryHelpers.IsInside(
+                        human.BottomCenter,
+                        Session.GridProjection.BL,
+                        Session.GridProjection.TL,
+                        Session.GridProjection.TR,
+                        Session.GridProjection.BR))
+                    {
+                        humans.Add(human);
+                    }
+                }
+                catch
                 {
                     humans.Add(human);
                 }

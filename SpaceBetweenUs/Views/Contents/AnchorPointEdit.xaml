@@ -9,7 +9,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -24,10 +23,6 @@
                    Grid.Column="0"
                    Text="Y Axis"
                    Margin="3,3,3,3"/>
-        <TextBlock Grid.Row="2"
-                   Grid.Column="0"
-                   Text="Is Referenced Depth"
-                   Margin="3,3,3,3"/>
 
         <TextBox Grid.Row="0"
                  Grid.Column="1"
@@ -41,10 +36,6 @@
                  Text="{Binding YAxis}"
                  PreviewTextInput="TextBox_PreviewTextInput"
                  DataObject.Pasting="TextBox_Pasting" />
-
-        <RadioButton Grid.Row="2"
-                     Grid.Column="1"
-                     Margin="3,3,3,3"
-                     IsChecked="{Binding IsRefDepth}"/>
+        
     </Grid>
 </UserControl>

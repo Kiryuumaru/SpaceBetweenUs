@@ -22,13 +22,14 @@ namespace SpaceBetweenUs.ViewModels.Pages
 {
     public class CameraViewModel : BaseViewModel
     {
-        private readonly Dispatcher dispatcher;
         public Anchor? SelectedEditAnchor;
         public GridSide? SelectedEditGridSide;
+        private readonly Dispatcher dispatcher;
         private Mat currentFrame;
         private Mat resultFrame;
         private int dotRelativeRadius;
         private int innerDotRelativeRadius;
+        private int itemDotRelativeRadius;
         private int borderLineRelativeThickness;
         private int itemLineRelativeThickness;
         private IEnumerable<Human> items = new List<Human>();
@@ -53,19 +54,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         #region Properties
 
-        public Anchor ReferencedAnchor { get; private set; }
-        public RelativePoint BL { get; private set; }
-        public RelativePoint TL { get; private set; }
-        public RelativePoint TR { get; private set; }
-        public RelativePoint BR { get; private set; }
-        public double LeftDistance { get; private set; }
-        public double TopDistance { get; private set; }
-        public double RightDistance { get; private set; }
-        public double BottomDistance { get; private set; }
-        public RelativePoint LeftMidPoint { get; private set; }
-        public RelativePoint TopMidPoint { get; private set; }
-        public RelativePoint RightMidPoint { get; private set; }
-        public RelativePoint BottomMidPoint { get; private set; }
+        private RelativePoint bl;
+        private RelativePoint tl;
+        private RelativePoint tr;
+        private RelativePoint br;
+        private double leftDistance;
+        private double topDistance;
+        private double rightDistance;
+        private double bottomDistance;
+        private RelativePoint leftMidPoint;
+        private RelativePoint topMidPoint;
+        private RelativePoint rightMidPoint;
+        private RelativePoint bottomMidPoint;
+        private List<RelativePoint> gridPoints;
 
         #endregion
 
@@ -84,6 +85,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             resultFrame = new Mat();
             dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             innerDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.InnerDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            itemDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.ItemDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             
@@ -111,39 +113,15 @@ namespace SpaceBetweenUs.ViewModels.Pages
         {
             resultFrame = currentFrame.Clone();
 
-            var bl = BL;
-            var tl = TL;
-            var tr = TR;
-            var br = BR;
-
-            if ((bl.Frame.X != 0 || bl.Frame.Y != 0) && (tl.Frame.X != 0 || tl.Frame.Y != 0))
-                Cv2.Line(
+            foreach (var point in gridPoints)
+            {
+                Cv2.Circle(
                     resultFrame,
-                    bl.Frame,
-                    tl.Frame,
+                    point.Frame,
+                    itemDotRelativeRadius,
                     Defaults.YellowColor,
-                    borderLineRelativeThickness);
-            if ((tl.Frame.X != 0 || tl.Frame.Y != 0) && (tr.Frame.X != 0 || tr.Frame.Y != 0))
-                Cv2.Line(
-                    resultFrame,
-                    tl.Frame,
-                    tr.Frame,
-                    Defaults.YellowColor,
-                    borderLineRelativeThickness);
-            if ((tr.Frame.X != 0 || tr.Frame.Y != 0) && (br.Frame.X != 0 || br.Frame.Y != 0))
-                Cv2.Line(
-                    resultFrame,
-                    tr.Frame,
-                    br.Frame,
-                    Defaults.YellowColor,
-                    borderLineRelativeThickness);
-            if ((br.Frame.X != 0 || br.Frame.Y != 0) && (bl.Frame.X != 0 || bl.Frame.Y != 0))
-                Cv2.Line(
-                    resultFrame,
-                    br.Frame,
-                    bl.Frame,
-                    Defaults.YellowColor,
-                    borderLineRelativeThickness);
+                    Cv2.FILLED);
+            }
 
             if (bl.Frame.X != 0 || bl.Frame.Y != 0)
                 Cv2.Circle(
@@ -177,28 +155,28 @@ namespace SpaceBetweenUs.ViewModels.Pages
             if (bl.Frame.X != 0 || bl.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
-                    LeftMidPoint.Frame,
+                    leftMidPoint.Frame,
                     innerDotRelativeRadius,
                     SelectedEditGridSide == GridSide.Left ? Defaults.GreenColor : Defaults.BlueColor,
                     Cv2.FILLED);
             if (tl.Frame.X != 0 || tl.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
-                    TopMidPoint.Frame,
+                    topMidPoint.Frame,
                     innerDotRelativeRadius,
                     SelectedEditGridSide == GridSide.Top ? Defaults.GreenColor : Defaults.BlueColor,
                     Cv2.FILLED);
             if (tr.Frame.X != 0 || tr.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
-                    RightMidPoint.Frame,
+                    rightMidPoint.Frame,
                     innerDotRelativeRadius,
                     SelectedEditGridSide == GridSide.Right ? Defaults.GreenColor : Defaults.BlueColor,
                     Cv2.FILLED);
             if (br.Frame.X != 0 || br.Frame.Y != 0)
                 Cv2.Circle(
                     resultFrame,
-                    BottomMidPoint.Frame,
+                    bottomMidPoint.Frame,
                     innerDotRelativeRadius,
                     SelectedEditGridSide == GridSide.Bottom ? Defaults.GreenColor : Defaults.BlueColor,
                     Cv2.FILLED);
@@ -214,7 +192,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     Cv2.Circle(
                         resultFrame,
                         item.BottomCenter.Frame,
-                        innerDotRelativeRadius,
+                        itemDotRelativeRadius,
                         item.IsViolation ? Defaults.RedColor : Defaults.GreenColor,
                         Cv2.FILLED);
                 }
@@ -327,19 +305,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private Anchor? GetPointAnchor(RelativePoint point)
         {
-            if (GeometryHelpers.IsInside(point, BL, Defaults.AnchorDotRadius))
+            if (GeometryHelpers.IsInside(point, bl, Defaults.AnchorDotRadius))
             {
                 return Anchor.BottomLeft;
             }
-            else if (GeometryHelpers.IsInside(point, TL, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, tl, Defaults.AnchorDotRadius))
             {
                 return Anchor.TopLeft;
             }
-            else if (GeometryHelpers.IsInside(point, TR, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, tr, Defaults.AnchorDotRadius))
             {
                 return Anchor.TopRight;
             }
-            else if (GeometryHelpers.IsInside(point, BR, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, br, Defaults.AnchorDotRadius))
             {
                 return Anchor.BottomRight;
             }
@@ -348,19 +326,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private GridSide? GetGridSide(RelativePoint point)
         {
-            if (GeometryHelpers.IsInside(point, LeftMidPoint, Defaults.AnchorDotRadius))
+            if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius))
             {
                 return GridSide.Left;
             }
-            else if (GeometryHelpers.IsInside(point, TopMidPoint, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius))
             {
                 return GridSide.Top;
             }
-            else if (GeometryHelpers.IsInside(point, RightMidPoint, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius))
             {
                 return GridSide.Right;
             }
-            else if (GeometryHelpers.IsInside(point, BottomMidPoint, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius))
             {
                 return GridSide.Bottom;
             }
@@ -401,66 +379,103 @@ namespace SpaceBetweenUs.ViewModels.Pages
             switch (anchor)
             {
                 case Anchor.BottomLeft:
-                    BL = point;
+                    bl = point;
                     DrawResult();
                     break;
                 case Anchor.TopLeft:
-                    TL = point;
+                    tl = point;
                     DrawResult();
                     break;
                 case Anchor.TopRight:
-                    TR = point;
+                    tr = point;
                     DrawResult();
                     break;
                 case Anchor.BottomRight:
-                    BR = point;
+                    br = point;
                     DrawResult();
                     break;
             }
-            LeftMidPoint = GeometryHelpers.GetPoint(BL, TL, 0.5);
-            TopMidPoint = GeometryHelpers.GetPoint(TL, TR, 0.5);
-            RightMidPoint = GeometryHelpers.GetPoint(TR, BR, 0.5);
-            BottomMidPoint = GeometryHelpers.GetPoint(BR, BL, 0.5);
+            UpdateGridPoints();
         }
 
         public void SetPersistent()
         {
             Session.GridProjection.MaxNormWidth = Defaults.MaxNormWidth;
             Session.GridProjection.MaxNormHeight = Defaults.MaxNormHeight;
-            Session.GridProjection.ReferenceAnchor = ReferencedAnchor;
-            Session.GridProjection.BL = BL;
-            Session.GridProjection.TL = TL;
-            Session.GridProjection.TR = TR;
-            Session.GridProjection.BR = BR;
-            Session.GridProjection.LeftDistance = LeftDistance;
-            Session.GridProjection.TopDistance = TopDistance;
-            Session.GridProjection.RightDistance = RightDistance;
-            Session.GridProjection.BottomDistance = BottomDistance;
+            Session.GridProjection.BL = bl;
+            Session.GridProjection.TL = tl;
+            Session.GridProjection.TR = tr;
+            Session.GridProjection.BR = br;
+            Session.GridProjection.LeftDistance = leftDistance;
+            Session.GridProjection.TopDistance = topDistance;
+            Session.GridProjection.RightDistance = rightDistance;
+            Session.GridProjection.BottomDistance = bottomDistance;
         }
 
         public void GetPersistent()
         {
-            ReferencedAnchor = Session.GridProjection.ReferenceAnchor;
-            BL = Session.GridProjection.BL;
-            TL = Session.GridProjection.TL;
-            TR = Session.GridProjection.TR;
-            BR = Session.GridProjection.BR;
-            LeftDistance = Session.GridProjection.LeftDistance;
-            TopDistance = Session.GridProjection.TopDistance;
-            RightDistance = Session.GridProjection.RightDistance;
-            BottomDistance = Session.GridProjection.BottomDistance;
-            if (BL.FrameWidth == 0 || BL.FrameHeight == 0)
-                BL = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            if (TL.FrameWidth == 0 || TL.FrameHeight == 0)
-                TL = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            if (TR.FrameWidth == 0 || TR.FrameHeight == 0)
-                TR = RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            if (BR.FrameWidth == 0 || BR.FrameHeight == 0)
-                BR = RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            LeftMidPoint = GeometryHelpers.GetPoint(BL, TL, 0.5);
-            TopMidPoint = GeometryHelpers.GetPoint(TL, TR, 0.5);
-            RightMidPoint = GeometryHelpers.GetPoint(TR, BR, 0.5);
-            BottomMidPoint = GeometryHelpers.GetPoint(BR, BL, 0.5);
+            bl = Session.GridProjection.BL;
+            tl = Session.GridProjection.TL;
+            tr = Session.GridProjection.TR;
+            br = Session.GridProjection.BR;
+            leftDistance = Session.GridProjection.LeftDistance;
+            topDistance = Session.GridProjection.TopDistance;
+            rightDistance = Session.GridProjection.RightDistance;
+            bottomDistance = Session.GridProjection.BottomDistance;
+            if (bl.FrameWidth == 0 || bl.FrameHeight == 0)
+                bl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+            if (tl.FrameWidth == 0 || tl.FrameHeight == 0)
+                tl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+            if (tr.FrameWidth == 0 || tr.FrameHeight == 0)
+                tr = RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+            if (br.FrameWidth == 0 || br.FrameHeight == 0)
+                br = RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+            UpdateGridPoints();
+        }
+
+        private void UpdateGridPoints()
+        {
+            leftMidPoint = GeometryHelpers.GetPoint(bl, tl, 0.5);
+            topMidPoint = GeometryHelpers.GetPoint(tl, tr, 0.5);
+            rightMidPoint = GeometryHelpers.GetPoint(tr, br, 0.5);
+            bottomMidPoint = GeometryHelpers.GetPoint(br, bl, 0.5);
+            gridPoints = new List<RelativePoint>();
+            if (leftDistance != 0)
+            {
+                double currentDist = 0;
+                while (leftDistance > (currentDist + Defaults.GridNotchDistance))
+                {
+                    currentDist += Defaults.GridNotchDistance;
+                    gridPoints.Add(GeometryHelpers.GetPoint(bl, tl, currentDist / leftDistance));
+                }
+            }
+            if (topDistance != 0)
+            {
+                double currentDist = 0;
+                while (topDistance > (currentDist + Defaults.GridNotchDistance))
+                {
+                    currentDist += Defaults.GridNotchDistance;
+                    gridPoints.Add(GeometryHelpers.GetPoint(tl, tr, currentDist / topDistance));
+                }
+            }
+            if (rightDistance != 0)
+            {
+                double currentDist = 0;
+                while (rightDistance > (currentDist + Defaults.GridNotchDistance))
+                {
+                    currentDist += Defaults.GridNotchDistance;
+                    gridPoints.Add(GeometryHelpers.GetPoint(br, tr, currentDist / rightDistance));
+                }
+            }
+            if (bottomDistance != 0)
+            {
+                double currentDist = 0;
+                while (bottomDistance > (currentDist + Defaults.GridNotchDistance))
+                {
+                    currentDist += Defaults.GridNotchDistance;
+                    gridPoints.Add(GeometryHelpers.GetPoint(bl, br, currentDist / bottomDistance));
+                }
+            }
         }
     }
 }
