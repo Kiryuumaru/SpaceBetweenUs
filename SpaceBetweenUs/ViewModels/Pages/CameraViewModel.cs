@@ -54,7 +54,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             get => violationCount;
             set
             {
-                if (violationCount > 0 && lastSpeak + spanRangeSpeak > DateTime.UtcNow)
+                if (violationCount > 0 && lastSpeak + spanRangeSpeak < DateTime.UtcNow)
                 {
                     var synthesizer = new SpeechSynthesizer();
                     synthesizer.SetOutputToDefaultAudioDevice();

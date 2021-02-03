@@ -147,15 +147,35 @@ namespace SpaceBetweenUs.Services
 
         public double GetDistance(RelativePoint a, RelativePoint b)
         {
-            //if (!GeometryHelpers.IsInside(a, bl, tl, tr, br) ||
-            //    !GeometryHelpers.IsInside(b, bl, tl, tr, br)) throw new Exception("Outside polygon");
-            //var axplane = -1;
-            //double currentDist = 0;
-            //while (topBottomDistance > (currentDist + Defaults.GridPrecision))
-            //{
-            //    currentDist += Defaults.GridNotchDistance;
-            //    if ()
-            //}
+            if (!GeometryHelpers.IsInside(a, bl, tl, tr, br) ||
+                !GeometryHelpers.IsInside(b, bl, tl, tr, br)) throw new Exception("Outside polygon");
+            /*
+             * relative position
+             */
+            double rx = (double)x / sx;
+            double ry = (double)y / sy;
+
+            /*
+             * get top and bottom position
+             */
+            double topX = TL.X + rx * (TR.X - TL.X);
+            double topY = TL.Y + rx * (TR.Y - TL.Y);
+            double bottomX = LL.X + rx * (LR.X - LL.X);
+            double bottomY = LL.Y + rx * (LR.Y - LL.Y);
+
+            /*
+             * select center between top and bottom point
+             */
+            double centerX = topX + ry * (bottomX - topX);
+            double centerY = topY + ry * (bottomY - topY);
+
+            var axplane = -1;
+            double currentDist = 0;
+            while (topBottomDistance > (currentDist + Defaults.GridPrecision))
+            {
+                currentDist += Defaults.GridPrecision;
+                if ()
+            }
             return 0;
         }
     }
