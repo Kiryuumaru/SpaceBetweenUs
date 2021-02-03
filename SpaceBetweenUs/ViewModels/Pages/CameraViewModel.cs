@@ -23,8 +23,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
 {
     public class CameraViewModel : BaseViewModel
     {
-        private TimeSpan spanRangeSpeak = TimeSpan.FromSeconds(10);
-        private DateTime lastSpeak = DateTime.UtcNow;
         private readonly Dispatcher dispatcher;
         private RelativePoint downPoint;
         private ProjectivePlane plane;
@@ -48,6 +46,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref frame, value);
         }
 
+        private bool isSpeaking = false;
+
         public int violationCount;
         public int ViolationCount
         {
@@ -56,14 +56,17 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 try
                 {
-                    Task.Run(delegate
+                    Task.Run(async delegate
                     {
-                        if (violationCount > 0 && lastSpeak + spanRangeSpeak < DateTime.UtcNow)
+                        if (violationCount > 0)
                         {
+                            while (isSpeaking) { }
+                            isSpeaking = true;
                             var synthesizer = new SpeechSynthesizer();
                             synthesizer.SetOutputToDefaultAudioDevice();
                             synthesizer.Speak("Please observe social distancing");
-                            lastSpeak = DateTime.UtcNow;
+                            await Task.Delay(5000);
+                            isSpeaking = false;
                         }
                     });
                 }
