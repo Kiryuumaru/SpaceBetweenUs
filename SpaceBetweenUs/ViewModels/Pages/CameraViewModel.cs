@@ -54,13 +54,20 @@ namespace SpaceBetweenUs.ViewModels.Pages
             get => violationCount;
             set
             {
-                if (violationCount > 0 && lastSpeak + spanRangeSpeak < DateTime.UtcNow)
+                try
                 {
-                    var synthesizer = new SpeechSynthesizer();
-                    synthesizer.SetOutputToDefaultAudioDevice();
-                    synthesizer.Speak("Please observe social distancing");
-                    lastSpeak = DateTime.UtcNow;
+                    Task.Run(delegate
+                    {
+                        if (violationCount > 0 && lastSpeak + spanRangeSpeak < DateTime.UtcNow)
+                        {
+                            var synthesizer = new SpeechSynthesizer();
+                            synthesizer.SetOutputToDefaultAudioDevice();
+                            synthesizer.Speak("Please observe social distancing");
+                            lastSpeak = DateTime.UtcNow;
+                        }
+                    });
                 }
+                catch { }
                 SetProperty(ref violationCount, value);
             }
         }

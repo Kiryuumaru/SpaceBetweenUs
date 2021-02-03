@@ -32,7 +32,6 @@ namespace SpaceBetweenUs.Services
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
-            return;
             try
             {
                 HumanDetector = new YoloDetector(
