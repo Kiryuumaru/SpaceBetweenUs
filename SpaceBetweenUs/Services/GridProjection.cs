@@ -159,35 +159,35 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double TopBottomDistance
+        public double CenterDistance
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("tb_dist");
+                string data = Session.Datastore.GetValue("center_dist");
                 if (!double.TryParse(data, out double dist)) return 0;
                 return dist;
             }
             set
             {
-                Session.Datastore.SetValue("tb_dist", value.ToString());
+                Session.Datastore.SetValue("center_dist", value.ToString());
             }
         }
 
-        public double LeftRightDistance
+        public double OriginAngle
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("lr_dist");
-                if (!double.TryParse(data, out double dist)) return 0;
-                return dist;
+                string data = Session.Datastore.GetValue("orig_angle");
+                if (!double.TryParse(data, out double angle)) return 0;
+                return angle;
             }
             set
             {
-                Session.Datastore.SetValue("lr_dist", value.ToString());
+                Session.Datastore.SetValue("orig_angle", value.ToString());
             }
         }
 

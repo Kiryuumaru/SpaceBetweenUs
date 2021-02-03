@@ -156,8 +156,8 @@ namespace SpaceBetweenUs.Services
         {
             if (!GeometryHelpers.IsInside(a, bl, tl, tr, br)) throw new Exception("Outside polygon");
             double currentDistX = 0;
-            RelativePoint currentBL = RelativePoint.Zero();
-            RelativePoint currentTL = RelativePoint.Zero();
+            RelativePoint currentBL;
+            RelativePoint currentTL;
             RelativePoint currentTR = RelativePoint.Zero();
             RelativePoint currentBR = RelativePoint.Zero();
             while (topBottomDistance > (currentDistX + Defaults.GridPrecision))
@@ -170,8 +170,6 @@ namespace SpaceBetweenUs.Services
                 if (GeometryHelpers.IsInside(a, currentBL, currentTL, currentTR, currentBR)) break;
             }
             double currentDistY = 0;
-            currentBL = RelativePoint.Zero();
-            currentTL = RelativePoint.Zero();
             currentTR = RelativePoint.Zero();
             currentBR = RelativePoint.Zero();
             while (leftRightDistance > (currentDistY + Defaults.GridPrecision))

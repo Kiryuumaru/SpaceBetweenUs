@@ -73,13 +73,9 @@
     <Compile Include="Services\Detectors\IHumanDetector.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />
-    <Compile Include="ViewModels\Contents\GridSideEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\AnchorPointEditViewModel.cs" />
     <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
-    <Compile Include="Views\Contents\GridSideEdit.xaml.cs">
-      <DependentUpon>GridSideEdit.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Contents\AnchorPointEdit.xaml.cs">
       <DependentUpon>AnchorPointEdit.xaml</DependentUpon>
     </Compile>
@@ -208,10 +204,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Assets\ModernUI.Snowflakes.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Contents\GridSideEdit.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

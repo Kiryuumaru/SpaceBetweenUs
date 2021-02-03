@@ -23,6 +23,7 @@ namespace SpaceBetweenUs.Views.Pages
     /// </summary>
     public partial class Camera : UserControl
     {
+        private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
         private readonly CameraViewModel viewModel;
         private bool isMouseLeaveWithDown = false;
 
@@ -82,9 +83,36 @@ namespace SpaceBetweenUs.Views.Pages
             isMouseLeaveWithDown = Mouse.LeftButton == MouseButtonState.Pressed;
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+            (sender as TextBox).SelectAll();
+        }
 
+        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var text = ((TextBox)e.Source).Text + e.Text;
+            bool isMatch = regex.IsMatch(text);
+            e.Handled = !isMatch;
+        }
+
+        private void TextBox_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string text = (string)e.DataObject.GetData(typeof(string));
+                if (regex.IsMatch(text)) return;
+            }
+            e.CancelCommand();
         }
     }
 }

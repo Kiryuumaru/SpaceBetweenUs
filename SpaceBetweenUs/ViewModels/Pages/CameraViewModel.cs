@@ -24,10 +24,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
     public class CameraViewModel : BaseViewModel
     {
         private readonly Dispatcher dispatcher;
-        private RelativePoint downPoint;
         private ProjectivePlane plane;
         private Anchor? selectedEditAnchor;
-        private GridSide? selectedEditGridSide;
         private Mat currentFrame;
         private Mat resultFrame;
         private int dotRelativeRadius;
@@ -52,27 +50,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public int ViolationCount
         {
             get => violationCount;
-            set
-            {
-                try
-                {
-                    Task.Run(async delegate
-                    {
-                        if (violationCount > 0)
-                        {
-                            while (isSpeaking) { }
-                            isSpeaking = true;
-                            var synthesizer = new SpeechSynthesizer();
-                            synthesizer.SetOutputToDefaultAudioDevice();
-                            synthesizer.Speak("Please observe social distancing");
-                            await Task.Delay(5000);
-                            isSpeaking = false;
-                        }
-                    });
-                }
-                catch { }
-                SetProperty(ref violationCount, value);
-            }
+            set => SetProperty(ref violationCount, value);
         }
 
         #endregion
@@ -83,8 +61,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private RelativePoint tl;
         private RelativePoint tr;
         private RelativePoint br;
-        private double topBottomDistance;
-        private double leftRightDistance;
+        private double centerDistance;
+        private double originAngle;
         private RelativePoint leftMidPoint;
         private RelativePoint topMidPoint;
         private RelativePoint rightMidPoint;
@@ -130,6 +108,20 @@ namespace SpaceBetweenUs.ViewModels.Pages
         {
             items = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
             ViolationCount = items?.Where(i => i.IsViolation).Count() ?? 0;
+
+            if (ViolationCount > 0)
+            {
+                Task.Run(async delegate
+                {
+                    while (isSpeaking) { }
+                    isSpeaking = true;
+                    var synthesizer = new SpeechSynthesizer();
+                    synthesizer.SetOutputToDefaultAudioDevice();
+                    synthesizer.Speak("Please observe social distancing");
+                    await Task.Delay(5000);
+                    isSpeaking = false;
+                });
+            }
         }
 
         public void DrawResult()
@@ -181,25 +173,25 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     resultFrame,
                     topMidPoint.Frame,
                     innerDotRelativeRadius,
-                    selectedEditGridSide == GridSide.TopBottom ? Defaults.GreenColor : Defaults.BlueColor,
+                    Defaults.BlueColor,
                     Cv2.FILLED);
                 Cv2.Circle(
                     resultFrame,
                     bottomMidPoint.Frame,
                     innerDotRelativeRadius,
-                    selectedEditGridSide == GridSide.TopBottom ? Defaults.GreenColor : Defaults.BlueColor,
+                    Defaults.BlueColor,
                     Cv2.FILLED);
                 Cv2.Circle(
                     resultFrame,
                     leftMidPoint.Frame,
                     innerDotRelativeRadius,
-                    selectedEditGridSide == GridSide.LeftRight ? Defaults.GreenColor : Defaults.BlueColor,
+                    Defaults.BlueColor,
                     Cv2.FILLED);
                 Cv2.Circle(
                     resultFrame,
                     rightMidPoint.Frame,
                     innerDotRelativeRadius,
-                    selectedEditGridSide == GridSide.LeftRight ? Defaults.GreenColor : Defaults.BlueColor,
+                    Defaults.BlueColor,
                     Cv2.FILLED);
             }
 
@@ -235,38 +227,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
             var dlg = new ModernDialog
             {
                 Title = "Anchor Edit",
-                Content = editor,
-            };
-            var cancelButton = dlg.CancelButton;
-            cancelButton.Content = "Cancel";
-            var okButton = dlg.OkButton;
-            okButton.Content = "Ok";
-            dlg.Buttons = new Button[] { cancelButton, okButton };
-            dlg.MinWidth = 0;
-            dlg.MinHeight = 0;
-            dlg.SizeChanged += (s, e) =>
-            {
-                double screenWidth = SystemParameters.PrimaryScreenWidth;
-                double screenHeight = SystemParameters.PrimaryScreenHeight;
-                double windowWidth = e.NewSize.Width;
-                double windowHeight = e.NewSize.Height;
-                dlg.Left = (screenWidth / 2) - (windowWidth / 2);
-                dlg.Top = (screenHeight / 2) - (windowHeight / 2);
-            };
-            dlg.ShowDialog();
-            if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
-            {
-                editor.Save();
-                GetPersistent();
-            }
-        }
-
-        private void OpenGridSideEditWindow(GridSide side)
-        {
-            var editor = new GridSideEdit(side);
-            var dlg = new ModernDialog
-            {
-                Title = "Grid Point Edit",
                 Content = editor,
             };
             var cancelButton = dlg.CancelButton;
@@ -330,8 +290,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public void PointerDown(RelativePoint point)
         {
             selectedEditAnchor = GetPointAnchor(point);
-            selectedEditGridSide = GetGridSide(point);
-            if (selectedEditAnchor == null && selectedEditGridSide == null) downPoint = point;
         }
 
         public void PointerDoubleDown(RelativePoint point)
@@ -339,7 +297,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
             var anchor = GetPointAnchor(point);
             var gridSide = GetGridSide(point);
             if (anchor.HasValue) OpenAnchorEditWindow(anchor.Value);
-            else if (gridSide.HasValue) OpenGridSideEditWindow(gridSide.Value);
         }
 
         public void PointerMove(RelativePoint point)
@@ -353,7 +310,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public void PointerUp()
         {
             selectedEditAnchor = null;
-            selectedEditGridSide = null;
             SetPersistent();
         }
 
@@ -389,8 +345,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
             Session.GridProjection.TL = tl;
             Session.GridProjection.TR = tr;
             Session.GridProjection.BR = br;
-            Session.GridProjection.TopBottomDistance = topBottomDistance;
-            Session.GridProjection.LeftRightDistance = leftRightDistance;
+            Session.GridProjection.CenterDistance = centerDistance;
+            Session.GridProjection.OriginAngle = originAngle;
         }
 
         public void GetPersistent()
@@ -399,8 +355,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
             tl = Session.GridProjection.TL;
             tr = Session.GridProjection.TR;
             br = Session.GridProjection.BR;
-            topBottomDistance = Session.GridProjection.TopBottomDistance;
-            leftRightDistance = Session.GridProjection.LeftRightDistance;
+            centerDistance = Session.GridProjection.CenterDistance;
+            originAngle = Session.GridProjection.OriginAngle;
             if (bl.FrameWidth == 0 || bl.FrameHeight == 0)
                 bl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
             if (tl.FrameWidth == 0 || tl.FrameHeight == 0)
@@ -419,29 +375,17 @@ namespace SpaceBetweenUs.ViewModels.Pages
             rightMidPoint = GeometryHelpers.GetPoint(tr, br, 0.5);
             bottomMidPoint = GeometryHelpers.GetPoint(br, bl, 0.5);
             gridPoints = new List<RelativePoint>();
-            if (topBottomDistance != 0)
+            if (centerDistance != 0)
             {
-                double currentDist = 0;
-                while (topBottomDistance > (currentDist + Defaults.GridNotchDistance))
-                {
-                    currentDist += Defaults.GridNotchDistance;
-                    gridPoints.Add(GeometryHelpers.GetPoint(tl, tr, currentDist / topBottomDistance));
-                    gridPoints.Add(GeometryHelpers.GetPoint(bl, br, currentDist / topBottomDistance));
-                }
+
             }
-            if (leftRightDistance != 0)
+            if (originAngle != 0)
             {
-                double currentDist = 0;
-                while (leftRightDistance > (currentDist + Defaults.GridNotchDistance))
-                {
-                    currentDist += Defaults.GridNotchDistance;
-                    gridPoints.Add(GeometryHelpers.GetPoint(bl, tl, currentDist / leftRightDistance));
-                    gridPoints.Add(GeometryHelpers.GetPoint(br, tr, currentDist / leftRightDistance));
-                }
+
             }
-            if (topBottomDistance != 0 && leftRightDistance != 0)
+            if (centerDistance != 0 && originAngle != 0)
             {
-                plane = ProjectivePlane.FromPlane(bl, tl, tr, br, topBottomDistance, leftRightDistance);
+
             }
         }
     }
