@@ -25,7 +25,8 @@ It is important to use the mentioned version `10.2`
 4) Copy the `cudnn64_7.dll` from the output directory of point 2. into the project folder.
 
 ## Build requirements
-- Visual Studio 2019
+- [GIT lfs](https://git-lfs.github.com/)
+- [Visual Studio 2019](https://visualstudio.microsoft.com/vs/)
 
 ## Benchmark / Performance
 Average processing speed of test frames
