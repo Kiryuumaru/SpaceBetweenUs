@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -22,6 +23,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
 {
     public class CameraViewModel : BaseViewModel
     {
+        private TimeSpan spanRangeSpeak = TimeSpan.FromSeconds(10);
+        private DateTime lastSpeak = DateTime.UtcNow;
         private readonly Dispatcher dispatcher;
         private RelativePoint downPoint;
         private ProjectivePlane plane;
@@ -49,7 +52,17 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public int ViolationCount
         {
             get => violationCount;
-            set => SetProperty(ref violationCount, value);
+            set
+            {
+                if (violationCount > 0 && lastSpeak + spanRangeSpeak > DateTime.UtcNow)
+                {
+                    var synthesizer = new SpeechSynthesizer();
+                    synthesizer.SetOutputToDefaultAudioDevice();
+                    synthesizer.Speak("Please observe social distancing");
+                    lastSpeak = DateTime.UtcNow;
+                }
+                SetProperty(ref violationCount, value);
+            }
         }
 
         #endregion
