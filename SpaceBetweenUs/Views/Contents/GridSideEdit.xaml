@@ -18,6 +18,9 @@
         <TextBox Grid.Column="1"
                  Margin="3,3,3,3"
                  Text="{Binding Distance}"
+                 GotFocus="TextBox_GotFocus"
+                 GotKeyboardFocus="TextBox_GotKeyboardFocus"
+                 GotMouseCapture="TextBox_GotMouseCapture"
                  PreviewTextInput="TextBox_PreviewTextInput"
                  DataObject.Pasting="TextBox_Pasting" />
     </Grid>

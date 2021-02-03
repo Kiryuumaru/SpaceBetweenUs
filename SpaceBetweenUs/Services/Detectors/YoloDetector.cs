@@ -16,8 +16,15 @@ namespace SpaceBetweenUs.Services.Detectors
         public double FrameHeight { get; private set; }
         public bool GPUMode { get; private set; }
 
-        public YoloDetector(double frameWidth, double frameHeight, YoloConfiguration yoloConfiguration, GpuConfig gpuConfig = null, IYoloSystemValidator yoloSystemValidator = null)
-            : base(yoloConfiguration, gpuConfig, yoloSystemValidator)
+        public YoloDetector(
+            double frameWidth,
+            double frameHeight,
+            string configurationFilename,
+            string weightsFilename,
+            string namesFilename,
+            GpuConfig gpuConfig = null,
+            IYoloSystemValidator yoloSystemValidator = null)
+            : base(configurationFilename, weightsFilename, namesFilename, gpuConfig, yoloSystemValidator)
         {
             FrameWidth = frameWidth;
             FrameHeight = frameHeight;

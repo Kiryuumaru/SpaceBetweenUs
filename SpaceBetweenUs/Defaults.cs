@@ -1,6 +1,7 @@
 ﻿using OpenCvSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,10 @@ namespace SpaceBetweenUs
 {
     public static class Defaults
     {
+        public static readonly string YoloNames = Path.Combine("Assets", "coco.names");
+        public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
+        public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
+
         public const double MaxNormWidth = 1000;
         public const double MaxNormHeight = 1000;
         public const double GridEdgeOffset = 10;

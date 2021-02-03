@@ -68,18 +68,13 @@
     <Compile Include="Services\Datastore.cs" />
     <Compile Include="Services\GeometryHelpers.cs" />
     <Compile Include="Services\GridProjection.cs" />
-    <Compile Include="Services\DowloadableFile.cs" />
     <Compile Include="Services\CommonHelpers.cs" />
     <Compile Include="Services\Detectors\IHumanDetector.cs" />
-    <Compile Include="Services\MLModel.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />
     <Compile Include="ViewModels\Contents\GridSideEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\AnchorPointEditViewModel.cs" />
-    <Compile Include="ViewModels\Contents\MachineLearningSelectViewModel.cs" />
     <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
-    <Compile Include="ViewModels\Pages\GPUSupportViewModel.cs" />
-    <Compile Include="ViewModels\Pages\MachineLearningViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
     <Compile Include="Views\Contents\GridSideEdit.xaml.cs">
       <DependentUpon>GridSideEdit.xaml</DependentUpon>
@@ -87,21 +82,12 @@
     <Compile Include="Views\Contents\AnchorPointEdit.xaml.cs">
       <DependentUpon>AnchorPointEdit.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Contents\MachineLearningSelect.xaml.cs">
-      <DependentUpon>MachineLearningSelect.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Contents\SettingsAppearance.xaml.cs">
       <DependentUpon>SettingsAppearance.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Contents\SettingsAppearanceViewModel.cs" />
     <Compile Include="Views\Pages\Camera.xaml.cs">
       <DependentUpon>Camera.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\MachineLearning.xaml.cs">
-      <DependentUpon>MachineLearning.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Pages\GPUSupport.xaml.cs">
-      <DependentUpon>GPUSupport.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\Introduction.xaml.cs">
       <DependentUpon>Introduction.xaml</DependentUpon>
@@ -134,9 +120,15 @@
     <None Include="..\.editorconfig">
       <Link>.editorconfig</Link>
     </None>
-    <None Include="Assets\coco.names" />
-    <None Include="Assets\yolov3.cfg" />
-    <None Include="Assets\yolov3.weights" />
+    <None Include="Assets\coco.names">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\yolov3.cfg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\yolov3.weights">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -226,23 +218,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Contents\MachineLearningSelect.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Views\Contents\SettingsAppearance.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Pages\Camera.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Pages\MachineLearning.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\Pages\GPUSupport.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -274,9 +254,6 @@
     </PackageReference>
     <PackageReference Include="OpenCvSharp4.Windows">
       <Version>4.5.1.20210123</Version>
-    </PackageReference>
-    <PackageReference Include="QuickConverter">
-      <Version>1.2.5</Version>
     </PackageReference>
     <PackageReference Include="Refractored.MvvmHelpers">
       <Version>1.6.2</Version>

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Alturos.Yolo;
+using SpaceBetweenUs.Services.Detectors;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,43 +26,34 @@ namespace SpaceBetweenUs.Services
             }
         }
         public static IHumanDetector HumanDetector { get; private set; }
-        public static MLModel MLModel
-        {
-            get
-            {
-                string data = Datastore.GetValue("ml_model");
-                return MLModel.GetMLModels().FirstOrDefault(i => i.Name.Equals(data));
-            }
-            set
-            {
-                Datastore.SetValue("ml_model", value.Name);
-            }
-        }
-
-        public static event Action OnHumanDetectorChanges;
-        public static bool IsHumanDetectorInitializing { get; private set; } = false;
 
         public static async Task Start(string frameSourceFile)
         {
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
-            InitializeHumanDetector();
-        }
-
-        public static void InitializeHumanDetector()
-        {
-            Task.Run(async delegate
+            try
             {
-                while (IsHumanDetectorInitializing) { }
-                IsHumanDetectorInitializing = true;
-                OnHumanDetectorChanges?.Invoke();
-                HumanDetector = null;
-                await Task.Delay(5000);
-                HumanDetector = MLModel?.GetDetector(FrameSource.Width, FrameSource.Height, UseGPU);
-                IsHumanDetectorInitializing = false;
-                OnHumanDetectorChanges?.Invoke();
-            });
+                HumanDetector = new YoloDetector(
+                    FrameSource.Width,
+                    FrameSource.Height,
+                    Defaults.YoloConfig,
+                    Defaults.YoloWeights,
+                    Defaults.YoloNames,
+                    new GpuConfig(),
+                    new MLSystemValidator());
+            }
+            catch
+            {
+                HumanDetector = new YoloDetector(
+                    FrameSource.Width,
+                    FrameSource.Height,
+                    Defaults.YoloConfig,
+                    Defaults.YoloWeights,
+                    Defaults.YoloNames,
+                    null,
+                    new MLSystemValidator());
+            }
         }
     }
 }

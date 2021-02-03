@@ -305,19 +305,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private Anchor? GetPointAnchor(RelativePoint point)
         {
-            if (GeometryHelpers.IsInside(point, bl, Defaults.AnchorDotRadius))
+            if (GeometryHelpers.IsInside(point, bl, Defaults.AnchorDotRadius * 2))
             {
                 return Anchor.BottomLeft;
             }
-            else if (GeometryHelpers.IsInside(point, tl, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, tl, Defaults.AnchorDotRadius * 2))
             {
                 return Anchor.TopLeft;
             }
-            else if (GeometryHelpers.IsInside(point, tr, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, tr, Defaults.AnchorDotRadius * 2))
             {
                 return Anchor.TopRight;
             }
-            else if (GeometryHelpers.IsInside(point, br, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, br, Defaults.AnchorDotRadius * 2))
             {
                 return Anchor.BottomRight;
             }
@@ -326,19 +326,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private GridSide? GetGridSide(RelativePoint point)
         {
-            if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius))
+            if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius * 2))
             {
                 return GridSide.Left;
             }
-            else if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius * 2))
             {
                 return GridSide.Top;
             }
-            else if (GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius * 2))
             {
                 return GridSide.Right;
             }
-            else if (GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius))
+            else if (GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius * 2))
             {
                 return GridSide.Bottom;
             }
