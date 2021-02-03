@@ -149,34 +149,41 @@ namespace SpaceBetweenUs.Services
         {
             if (!GeometryHelpers.IsInside(a, bl, tl, tr, br) ||
                 !GeometryHelpers.IsInside(b, bl, tl, tr, br)) throw new Exception("Outside polygon");
-            /*
-             * relative position
-             */
-            double rx = (double)x / sx;
-            double ry = (double)y / sy;
+            return GeometryHelpers.GetDistance(GetPerspectivePoint(a), GetPerspectivePoint(b));
+        }
 
-            /*
-             * get top and bottom position
-             */
-            double topX = TL.X + rx * (TR.X - TL.X);
-            double topY = TL.Y + rx * (TR.Y - TL.Y);
-            double bottomX = LL.X + rx * (LR.X - LL.X);
-            double bottomY = LL.Y + rx * (LR.Y - LL.Y);
-
-            /*
-             * select center between top and bottom point
-             */
-            double centerX = topX + ry * (bottomX - topX);
-            double centerY = topY + ry * (bottomY - topY);
-
-            var axplane = -1;
-            double currentDist = 0;
-            while (topBottomDistance > (currentDist + Defaults.GridPrecision))
+        public Point GetPerspectivePoint(RelativePoint a)
+        {
+            if (!GeometryHelpers.IsInside(a, bl, tl, tr, br)) throw new Exception("Outside polygon");
+            double currentDistX = 0;
+            RelativePoint currentBL = RelativePoint.Zero();
+            RelativePoint currentTL = RelativePoint.Zero();
+            RelativePoint currentTR = RelativePoint.Zero();
+            RelativePoint currentBR = RelativePoint.Zero();
+            while (topBottomDistance > (currentDistX + Defaults.GridPrecision))
             {
-                currentDist += Defaults.GridPrecision;
-                if ()
+                currentDistX += Defaults.GridPrecision;
+                currentBL = currentBR.IsZero ? bl : currentBR;
+                currentTL = currentTR.IsZero ? tl : currentTR;
+                currentTR = GeometryHelpers.GetPoint(tl, tr, currentDistX / topBottomDistance);
+                currentBR = GeometryHelpers.GetPoint(bl, br, currentDistX / topBottomDistance);
+                if (GeometryHelpers.IsInside(a, currentBL, currentTL, currentTR, currentBR)) break;
             }
-            return 0;
+            double currentDistY = 0;
+            currentBL = RelativePoint.Zero();
+            currentTL = RelativePoint.Zero();
+            currentTR = RelativePoint.Zero();
+            currentBR = RelativePoint.Zero();
+            while (leftRightDistance > (currentDistY + Defaults.GridPrecision))
+            {
+                currentDistY += Defaults.GridPrecision;
+                currentBL = currentBR.IsZero ? bl : currentBR;
+                currentTL = currentTR.IsZero ? tl : currentTR;
+                currentTR = GeometryHelpers.GetPoint(tl, tr, currentDistY / leftRightDistance);
+                currentBR = GeometryHelpers.GetPoint(bl, br, currentDistY / leftRightDistance);
+                if (GeometryHelpers.IsInside(a, currentBL, currentTL, currentTR, currentBR)) break;
+            }
+            return new Point(currentDistX, currentDistY);
         }
     }
 
@@ -318,6 +325,14 @@ namespace SpaceBetweenUs.Services
         public static RelativePoint LineIntersection(RelativeLine ab, RelativeLine cd)
         {
             return LineIntersection(ab.A, ab.B, cd.A, cd.B);
+        }
+
+        public static double GetDistance(Point pointA, Point pointB)
+        {
+            double a = pointB.X - pointA.X;
+            double b = pointB.Y - pointA.Y;
+
+            return Math.Sqrt(a * a + b * b);
         }
 
         public static double GetDistance(RelativePoint pointA, RelativePoint pointB)

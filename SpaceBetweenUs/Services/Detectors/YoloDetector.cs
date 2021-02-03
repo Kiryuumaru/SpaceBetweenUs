@@ -12,6 +12,8 @@ namespace SpaceBetweenUs.Services.Detectors
 {
     public class YoloDetector : YoloWrapper, IHumanDetector
     {
+        private ProjectivePlane plane;
+
         public double FrameWidth { get; private set; }
         public double FrameHeight { get; private set; }
         public bool GPUMode { get; private set; }
