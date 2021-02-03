@@ -14,7 +14,7 @@ namespace SpaceBetweenUs.Services
 
     public enum GridSide
     {
-        Left, Top, Right, Bottom
+        TopBottom, LeftRight
     }
 
     public class GridProjection
@@ -159,67 +159,35 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double LeftDistance
+        public double TopBottomDistance
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("l_dist");
+                string data = Session.Datastore.GetValue("tb_dist");
                 if (!double.TryParse(data, out double dist)) return 0;
                 return dist;
             }
             set
             {
-                Session.Datastore.SetValue("l_dist", value.ToString());
+                Session.Datastore.SetValue("tb_dist", value.ToString());
             }
         }
 
-        public double TopDistance
+        public double LeftRightDistance
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("t_dist");
+                string data = Session.Datastore.GetValue("lr_dist");
                 if (!double.TryParse(data, out double dist)) return 0;
                 return dist;
             }
             set
             {
-                Session.Datastore.SetValue("t_dist", value.ToString());
-            }
-        }
-
-        public double RightDistance
-        {
-            get
-            {
-                if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("r_dist");
-                if (!double.TryParse(data, out double dist)) return 0;
-                return dist;
-            }
-            set
-            {
-                Session.Datastore.SetValue("r_dist", value.ToString());
-            }
-        }
-
-        public double BottomDistance
-        {
-            get
-            {
-                if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("b_dist");
-                if (!double.TryParse(data, out double dist)) return 0;
-                return dist;
-            }
-            set
-            {
-                Session.Datastore.SetValue("b_dist", value.ToString());
+                Session.Datastore.SetValue("lr_dist", value.ToString());
             }
         }
 

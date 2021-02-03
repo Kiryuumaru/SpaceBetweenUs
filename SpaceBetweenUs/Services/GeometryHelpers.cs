@@ -16,6 +16,10 @@ namespace SpaceBetweenUs.Services
         public Point Frame;
         public double FrameWidth;
         public double FrameHeight;
+        public bool IsZero
+        {
+            get => Norm.X == 0 && Norm.Y == 0;
+        }
 
         public static RelativePoint Zero()
         {
@@ -121,14 +125,12 @@ namespace SpaceBetweenUs.Services
         private RelativePoint tl;
         private RelativePoint tr;
         private RelativePoint br;
-        private double leftDistance;
-        private double topDistance;
-        private double rightDistance;
-        private double bottomDistance;
+        private double topBottomDistance;
+        private double leftRightDistance;
 
         private ProjectivePlane() { }
 
-        public static ProjectivePlane FromPlane(RelativePoint bl, RelativePoint tl, RelativePoint tr, RelativePoint br, double leftDistance, double topDistance, double rightDistance, double bottomDistance)
+        public static ProjectivePlane FromPlane(RelativePoint bl, RelativePoint tl, RelativePoint tr, RelativePoint br, double topBottomDistance, double leftRightDistance)
         {
             if (!GeometryHelpers.IsRelated(bl, tl, tr, br)) throw new Exception("Coordinates not related");
             var plane = new ProjectivePlane
@@ -137,17 +139,23 @@ namespace SpaceBetweenUs.Services
                 tl = tl,
                 tr = tr,
                 br = br,
-                leftDistance = leftDistance,
-                topDistance = topDistance,
-                rightDistance = rightDistance,
-                bottomDistance = bottomDistance
+                topBottomDistance = topBottomDistance,
+                leftRightDistance = leftRightDistance,
             };
             return plane;
         }
 
         public double GetDistance(RelativePoint a, RelativePoint b)
         {
-            var m = new Matrix();
+            //if (!GeometryHelpers.IsInside(a, bl, tl, tr, br) ||
+            //    !GeometryHelpers.IsInside(b, bl, tl, tr, br)) throw new Exception("Outside polygon");
+            //var axplane = -1;
+            //double currentDist = 0;
+            //while (topBottomDistance > (currentDist + Defaults.GridPrecision))
+            //{
+            //    currentDist += Defaults.GridNotchDistance;
+            //    if ()
+            //}
             return 0;
         }
     }

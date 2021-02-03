@@ -22,31 +22,28 @@ namespace SpaceBetweenUs.ViewModels.Contents
         public GridSideEditViewModel(GridSide side)
         {
             this.side = side;
-            Distance = side switch
+            switch (side)
             {
-                GridSide.Left => Session.GridProjection.LeftDistance,
-                GridSide.Top => Session.GridProjection.TopDistance,
-                GridSide.Right => Session.GridProjection.RightDistance,
-                GridSide.Bottom => Session.GridProjection.BottomDistance,
-                _ => throw new Exception("Nonexistence side error")
-            };
+                case GridSide.TopBottom:
+                    Header = "Top - Bottom";
+                    Distance = Session.GridProjection.TopBottomDistance;
+                    break;
+                case GridSide.LeftRight:
+                    Header = "Left - Right";
+                    Distance = Session.GridProjection.LeftRightDistance;
+                    break;
+            }
         }
 
         public void Save()
         {
             switch (side)
             {
-                case GridSide.Left:
-                    Session.GridProjection.LeftDistance = Distance;
+                case GridSide.TopBottom:
+                    Session.GridProjection.TopBottomDistance = Distance;
                     break;
-                case GridSide.Top:
-                    Session.GridProjection.TopDistance = Distance;
-                    break;
-                case GridSide.Right:
-                    Session.GridProjection.RightDistance = Distance;
-                    break;
-                case GridSide.Bottom:
-                    Session.GridProjection.BottomDistance = Distance;
+                case GridSide.LeftRight:
+                    Session.GridProjection.LeftRightDistance = Distance;
                     break;
             }
         }

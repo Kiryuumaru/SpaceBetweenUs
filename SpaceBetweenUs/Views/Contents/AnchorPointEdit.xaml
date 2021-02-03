@@ -10,21 +10,31 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
 
         <TextBlock Grid.Row="0"
+                   Text="{Binding Header}"
+                   Margin="3,3,3,3"/>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0"
                    Grid.Column="0"
                    Text="X Axis"
                    Margin="3,3,3,3"/>
-        <TextBlock Grid.Row="1"
+            <TextBlock Grid.Row="1"
                    Grid.Column="0"
                    Text="Y Axis"
                    Margin="3,3,3,3"/>
 
-        <TextBox Grid.Row="0"
+            <TextBox Grid.Row="0"
                  Grid.Column="1"
                  Margin="3,3,3,3"
                  Text="{Binding XAxis}"
@@ -33,7 +43,7 @@
                  GotMouseCapture="TextBox_GotMouseCapture"
                  PreviewTextInput="TextBox_PreviewTextInput"
                  DataObject.Pasting="TextBox_Pasting" />
-        <TextBox Grid.Row="1"
+            <TextBox Grid.Row="1"
                  Grid.Column="1"
                  Margin="3,3,3,3"
                  Text="{Binding YAxis}"
@@ -42,6 +52,7 @@
                  GotMouseCapture="TextBox_GotMouseCapture"
                  PreviewTextInput="TextBox_PreviewTextInput"
                  DataObject.Pasting="TextBox_Pasting" />
-        
+
+        </Grid>
     </Grid>
 </UserControl>

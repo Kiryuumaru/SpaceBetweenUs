@@ -44,14 +44,26 @@ namespace SpaceBetweenUs.ViewModels.Contents
         public AnchorPointEditViewModel(Anchor anchor)
         {
             this.anchor = anchor;
-            var point = anchor switch
+            RelativePoint point = RelativePoint.Zero();
+            switch (anchor)
             {
-                Anchor.BottomLeft => Session.GridProjection.BL,
-                Anchor.TopLeft => Session.GridProjection.TL,
-                Anchor.TopRight => Session.GridProjection.TR,
-                Anchor.BottomRight => Session.GridProjection.BR,
-                _ => Session.GridProjection.BL
-            };
+                case Anchor.BottomLeft:
+                    Header = "Bottom Left";
+                    point = Session.GridProjection.BL;
+                    break;
+                case Anchor.TopLeft:
+                    Header = "Top Left";
+                    point = Session.GridProjection.TL;
+                    break;
+                case Anchor.TopRight:
+                    Header = "Top Right";
+                    point = Session.GridProjection.TR;
+                    break;
+                case Anchor.BottomRight:
+                    Header = "Bottom Right";
+                    point = Session.GridProjection.BR;
+                    break;
+            }
             frameWidth = point.FrameWidth;
             frameHeight = point.FrameHeight;
             RelativePoint = point;

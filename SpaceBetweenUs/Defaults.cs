@@ -29,6 +29,7 @@ namespace SpaceBetweenUs
         public const double NonMaximaSupressionThreshold = 0.3;
 
         public const double GridNotchDistance = 1; // meters
+        public const double GridPrecision = 0.1; // meters
 
         public static Scalar RedColor = new Scalar(0, 0, 255);
         public static Scalar GreenColor = new Scalar(0, 255, 0);
