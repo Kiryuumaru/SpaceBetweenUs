@@ -84,7 +84,7 @@ namespace SpaceBetweenUs.Views.Pages
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Session.InitializeHumanDetector();
+
         }
     }
 }

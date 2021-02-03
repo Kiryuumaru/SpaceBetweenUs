@@ -26,12 +26,6 @@
                 <mui:Link DisplayName="Camera" Source="/Views/Pages/Camera.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
-        <mui:LinkGroup DisplayName="Setup">
-            <mui:LinkGroup.Links>
-                <mui:Link DisplayName="ML Model" Source="/Views/Pages/MachineLearning.xaml" />
-                <mui:Link DisplayName="GPU Support" Source="/Views/Pages/GPUSupport.xaml" />
-            </mui:LinkGroup.Links>
-        </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Settings" GroupKey="settings">
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Software" Source="/Views/Pages/Settings.xaml" />

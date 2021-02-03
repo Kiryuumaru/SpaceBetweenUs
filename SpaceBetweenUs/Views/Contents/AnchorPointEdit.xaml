@@ -28,12 +28,18 @@
                  Grid.Column="1"
                  Margin="3,3,3,3"
                  Text="{Binding XAxis}"
+                 GotFocus="TextBox_GotFocus"
+                 GotKeyboardFocus="TextBox_GotKeyboardFocus"
+                 GotMouseCapture="TextBox_GotMouseCapture"
                  PreviewTextInput="TextBox_PreviewTextInput"
                  DataObject.Pasting="TextBox_Pasting" />
         <TextBox Grid.Row="1"
                  Grid.Column="1"
                  Margin="3,3,3,3"
                  Text="{Binding YAxis}"
+                 GotFocus="TextBox_GotFocus"
+                 GotKeyboardFocus="TextBox_GotKeyboardFocus"
+                 GotMouseCapture="TextBox_GotMouseCapture"
                  PreviewTextInput="TextBox_PreviewTextInput"
                  DataObject.Pasting="TextBox_Pasting" />
         

@@ -36,6 +36,21 @@ namespace SpaceBetweenUs.Views.Contents
             DataContext = viewModel;
         }
 
+        private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void TextBox_GotMouseCapture(object sender, MouseEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
+        private void TextBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as TextBox).SelectAll();
+        }
+
         private void TextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var text = ((TextBox)e.Source).Text + e.Text;

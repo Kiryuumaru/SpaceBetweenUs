@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace SpaceBetweenUs.Services
 {
@@ -111,6 +112,43 @@ namespace SpaceBetweenUs.Services
         public override int GetHashCode()
         {
             return base.GetHashCode();
+        }
+    }
+
+    public class ProjectivePlane
+    {
+        private RelativePoint bl;
+        private RelativePoint tl;
+        private RelativePoint tr;
+        private RelativePoint br;
+        private double leftDistance;
+        private double topDistance;
+        private double rightDistance;
+        private double bottomDistance;
+
+        private ProjectivePlane() { }
+
+        public static ProjectivePlane FromPlane(RelativePoint bl, RelativePoint tl, RelativePoint tr, RelativePoint br, double leftDistance, double topDistance, double rightDistance, double bottomDistance)
+        {
+            if (!GeometryHelpers.IsRelated(bl, tl, tr, br)) throw new Exception("Coordinates not related");
+            var plane = new ProjectivePlane
+            {
+                bl = bl,
+                tl = tl,
+                tr = tr,
+                br = br,
+                leftDistance = leftDistance,
+                topDistance = topDistance,
+                rightDistance = rightDistance,
+                bottomDistance = bottomDistance
+            };
+            return plane;
+        }
+
+        public double GetDistance(RelativePoint a, RelativePoint b)
+        {
+            var m = new Matrix();
+            return 0;
         }
     }
 
