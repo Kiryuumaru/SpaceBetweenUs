@@ -25,13 +25,13 @@
                                  Margin="0,0,0,32"
                                  Style="{StaticResource Heading1}"/>
 
-                <TextBlock Text="Center Distance (Meters)"
+                <TextBlock Text="Origin Elevation (Meters)"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,4" />
 
                 <TextBox Grid.Column="1"
                          Margin="3,3,3,3"
-                         Text="{Binding CenterDistance}"
+                         Text="{Binding OriginElevation}"
                          GotFocus="TextBox_GotFocus"
                          GotKeyboardFocus="TextBox_GotKeyboardFocus"
                          GotMouseCapture="TextBox_GotMouseCapture"
@@ -51,11 +51,22 @@
                          PreviewTextInput="TextBox_PreviewTextInput"
                          DataObject.Pasting="TextBox_Pasting" />
 
-                <TextBlock Text="Origin Angle"
+                <TextBlock Text="POV Angle"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,4" />
 
-                <CheckBox Content="Show Projection"
+                <TextBox Grid.Column="1"
+                         Margin="3,3,3,3"
+                         Text="{Binding POVAngle}"
+                         GotFocus="TextBox_GotFocus"
+                         GotKeyboardFocus="TextBox_GotKeyboardFocus"
+                         GotMouseCapture="TextBox_GotMouseCapture"
+                         PreviewTextInput="TextBox_PreviewTextInput"
+                         DataObject.Pasting="TextBox_Pasting" />
+
+                <CheckBox HorizontalAlignment="Center"
+                          Content="Show Projection"
+                          Margin="0,8,0,4"
                           IsChecked="{Binding ShowProjection}"/>
 
             </StackPanel>

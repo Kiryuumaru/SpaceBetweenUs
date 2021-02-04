@@ -33,6 +33,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private int itemDotRelativeRadius;
         private int borderLineRelativeThickness;
         private int itemLineRelativeThickness;
+        private Point gpuTextPos;
         private IEnumerable<Human> items = new List<Human>();
 
         #region ViewBindings
@@ -53,6 +54,38 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref violationCount, value);
         }
 
+
+        public double originElevation;
+        public double OriginElevation
+        {
+            get => originElevation;
+            set => SetProperty(ref originElevation, value);
+        }
+
+
+        public double originAngle;
+        public double OriginAngle
+        {
+            get => originAngle;
+            set => SetProperty(ref originAngle, value);
+        }
+
+
+        public double povAngle;
+        public double POVAngle
+        {
+            get => povAngle;
+            set => SetProperty(ref povAngle, value);
+        }
+
+
+        public bool showProjection;
+        public bool ShowProjection
+        {
+            get => showProjection;
+            set => SetProperty(ref showProjection, value);
+        }
+
         #endregion
 
         #region Properties
@@ -61,8 +94,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private RelativePoint tl;
         private RelativePoint tr;
         private RelativePoint br;
-        private double centerDistance;
-        private double originAngle;
         private RelativePoint leftMidPoint;
         private RelativePoint topMidPoint;
         private RelativePoint rightMidPoint;
@@ -89,7 +120,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
             itemDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.ItemDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            
+            gpuTextPos = new Point(
+                GeometryHelpers.Convert(Defaults.GridEdgeOffset, Defaults.MaxNormWidth, Session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.GridEdgeOffset * 2, Defaults.MaxNormWidth, Session.FrameSource.Width));
+
             var s = new Stopwatch();
             while (true)
             {
@@ -211,6 +245,16 @@ namespace SpaceBetweenUs.ViewModels.Pages
                         Cv2.FILLED);
                 }
             }
+
+            Cv2.PutText(
+                resultFrame,
+                Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF",
+                gpuTextPos,
+                HersheyFonts.HersheyPlain,
+                itemLineRelativeThickness,
+                Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor,
+                itemLineRelativeThickness * 2);
+
             try
             {
                 dispatcher.Invoke(delegate
@@ -274,19 +318,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
             return null;
         }
 
-        private GridSide? GetGridSide(RelativePoint point)
-        {
-            if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius * 2) || GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius * 2))
-            {
-                return GridSide.TopBottom;
-            }
-            else if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius * 2) || GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius * 2))
-            {
-                return GridSide.LeftRight;
-            }
-            return null;
-        }
-
         public void PointerDown(RelativePoint point)
         {
             selectedEditAnchor = GetPointAnchor(point);
@@ -295,7 +326,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public void PointerDoubleDown(RelativePoint point)
         {
             var anchor = GetPointAnchor(point);
-            var gridSide = GetGridSide(point);
             if (anchor.HasValue) OpenAnchorEditWindow(anchor.Value);
         }
 
@@ -345,8 +375,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
             Session.GridProjection.TL = tl;
             Session.GridProjection.TR = tr;
             Session.GridProjection.BR = br;
-            Session.GridProjection.CenterDistance = centerDistance;
-            Session.GridProjection.OriginAngle = originAngle;
+            Session.GridProjection.OriginElevation = OriginElevation;
+            Session.GridProjection.OriginAngle = OriginAngle;
+            Session.GridProjection.POVAngle = POVAngle;
         }
 
         public void GetPersistent()
@@ -355,8 +386,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
             tl = Session.GridProjection.TL;
             tr = Session.GridProjection.TR;
             br = Session.GridProjection.BR;
-            centerDistance = Session.GridProjection.CenterDistance;
-            originAngle = Session.GridProjection.OriginAngle;
+            OriginElevation = Session.GridProjection.OriginElevation;
+            OriginAngle = Session.GridProjection.OriginAngle;
+            POVAngle = Session.GridProjection.POVAngle;
             if (bl.FrameWidth == 0 || bl.FrameHeight == 0)
                 bl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
             if (tl.FrameWidth == 0 || tl.FrameHeight == 0)
@@ -375,15 +407,15 @@ namespace SpaceBetweenUs.ViewModels.Pages
             rightMidPoint = GeometryHelpers.GetPoint(tr, br, 0.5);
             bottomMidPoint = GeometryHelpers.GetPoint(br, bl, 0.5);
             gridPoints = new List<RelativePoint>();
-            if (centerDistance != 0)
+            if (OriginElevation != 0)
             {
 
             }
-            if (originAngle != 0)
+            if (OriginAngle != 0)
             {
 
             }
-            if (centerDistance != 0 && originAngle != 0)
+            if (OriginElevation != 0 && OriginAngle != 0)
             {
 
             }

@@ -121,12 +121,8 @@ namespace SpaceBetweenUs.Services
 
     public class ProjectivePlane
     {
-        private RelativePoint bl;
-        private RelativePoint tl;
-        private RelativePoint tr;
-        private RelativePoint br;
-        private double topBottomDistance;
-        private double leftRightDistance;
+        private double centerDistance;
+        private double originAngle;
 
         private ProjectivePlane() { }
 
@@ -135,53 +131,9 @@ namespace SpaceBetweenUs.Services
             if (!GeometryHelpers.IsRelated(bl, tl, tr, br)) throw new Exception("Coordinates not related");
             var plane = new ProjectivePlane
             {
-                bl = bl,
-                tl = tl,
-                tr = tr,
-                br = br,
-                topBottomDistance = topBottomDistance,
-                leftRightDistance = leftRightDistance,
+
             };
             return plane;
-        }
-
-        public double GetDistance(RelativePoint a, RelativePoint b)
-        {
-            if (!GeometryHelpers.IsInside(a, bl, tl, tr, br) ||
-                !GeometryHelpers.IsInside(b, bl, tl, tr, br)) throw new Exception("Outside polygon");
-            return GeometryHelpers.GetDistance(GetPerspectivePoint(a), GetPerspectivePoint(b));
-        }
-
-        public Point GetPerspectivePoint(RelativePoint a)
-        {
-            if (!GeometryHelpers.IsInside(a, bl, tl, tr, br)) throw new Exception("Outside polygon");
-            double currentDistX = 0;
-            RelativePoint currentBL;
-            RelativePoint currentTL;
-            RelativePoint currentTR = RelativePoint.Zero();
-            RelativePoint currentBR = RelativePoint.Zero();
-            while (topBottomDistance > (currentDistX + Defaults.GridPrecision))
-            {
-                currentDistX += Defaults.GridPrecision;
-                currentBL = currentBR.IsZero ? bl : currentBR;
-                currentTL = currentTR.IsZero ? tl : currentTR;
-                currentTR = GeometryHelpers.GetPoint(tl, tr, currentDistX / topBottomDistance);
-                currentBR = GeometryHelpers.GetPoint(bl, br, currentDistX / topBottomDistance);
-                if (GeometryHelpers.IsInside(a, currentBL, currentTL, currentTR, currentBR)) break;
-            }
-            double currentDistY = 0;
-            currentTR = RelativePoint.Zero();
-            currentBR = RelativePoint.Zero();
-            while (leftRightDistance > (currentDistY + Defaults.GridPrecision))
-            {
-                currentDistY += Defaults.GridPrecision;
-                currentBL = currentBR.IsZero ? bl : currentBR;
-                currentTL = currentTR.IsZero ? tl : currentTR;
-                currentTR = GeometryHelpers.GetPoint(tl, tr, currentDistY / leftRightDistance);
-                currentBR = GeometryHelpers.GetPoint(bl, br, currentDistY / leftRightDistance);
-                if (GeometryHelpers.IsInside(a, currentBL, currentTL, currentTR, currentBR)) break;
-            }
-            return new Point(currentDistX, currentDistY);
         }
     }
 

@@ -159,19 +159,19 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double CenterDistance
+        public double OriginElevation
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("center_dist");
-                if (!double.TryParse(data, out double dist)) return 0;
-                return dist;
+                string data = Session.Datastore.GetValue("orig_elev");
+                if (!double.TryParse(data, out double elev)) return 0;
+                return elev;
             }
             set
             {
-                Session.Datastore.SetValue("center_dist", value.ToString());
+                Session.Datastore.SetValue("orig_elev", value.ToString());
             }
         }
 
@@ -188,6 +188,22 @@ namespace SpaceBetweenUs.Services
             set
             {
                 Session.Datastore.SetValue("orig_angle", value.ToString());
+            }
+        }
+
+        public double POVAngle
+        {
+            get
+            {
+                if (Defaults.MaxNormWidth != MaxNormWidth ||
+                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
+                string data = Session.Datastore.GetValue("pov_angle");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
+            }
+            set
+            {
+                Session.Datastore.SetValue("pov_angle", value.ToString());
             }
         }
 
