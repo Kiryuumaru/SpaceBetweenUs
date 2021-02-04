@@ -23,19 +23,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
 {
     public class CameraViewModel : BaseViewModel
     {
-        private readonly Dispatcher dispatcher;
-        private ProjectivePlane plane;
-        private Anchor? selectedEditAnchor;
-        private Mat currentFrame;
-        private Mat resultFrame;
-        private int dotRelativeRadius;
-        private int innerDotRelativeRadius;
-        private int itemDotRelativeRadius;
-        private int borderLineRelativeThickness;
-        private int itemLineRelativeThickness;
-        private Point gpuTextPos;
-        private IEnumerable<Human> items = new List<Human>();
-
         #region ViewBindings
 
         private ImageSource frame;
@@ -54,30 +41,41 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref violationCount, value);
         }
 
-
         public double originElevation;
         public double OriginElevation
         {
             get => originElevation;
-            set => SetProperty(ref originElevation, value);
+            set
+            {
+                SetProperty(ref originElevation, value);
+                SetPersistent();
+                UpdateGridPoints();
+            }
         }
-
 
         public double originAngle;
         public double OriginAngle
         {
             get => originAngle;
-            set => SetProperty(ref originAngle, value);
+            set
+            {
+                SetProperty(ref originAngle, value);
+                SetPersistent();
+                UpdateGridPoints();
+            }
         }
-
 
         public double fovAngle;
         public double FOVAngle
         {
             get => fovAngle;
-            set => SetProperty(ref fovAngle, value);
+            set
+            {
+                SetProperty(ref fovAngle, value);
+                SetPersistent();
+                UpdateGridPoints();
+            }
         }
-
 
         public bool showProjection;
         public bool ShowProjection
@@ -86,10 +84,18 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref showProjection, value);
         }
 
+        public string test;
+        public string Test
+        {
+            get => test;
+            set => SetProperty(ref test, value);
+        }
+
         #endregion
 
         #region Properties
 
+        private readonly Dispatcher dispatcher;
         private RelativePoint bl;
         private RelativePoint tl;
         private RelativePoint tr;
@@ -98,7 +104,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private RelativePoint topMidPoint;
         private RelativePoint rightMidPoint;
         private RelativePoint bottomMidPoint;
-        private List<RelativePoint> gridPoints;
+        private IEnumerable<RelativePoint> gridPoints;
+        private Anchor? selectedEditAnchor;
+        private Mat currentFrame;
+        private Mat resultFrame;
+        private int dotRelativeRadius;
+        private int innerDotRelativeRadius;
+        private int itemDotRelativeRadius;
+        private int borderLineRelativeThickness;
+        private int itemLineRelativeThickness;
+        private double projectionHeight;
+        private Point gpuTextPos;
+        private IEnumerable<Human> items = new List<Human>();
+
 
         #endregion
 
@@ -132,6 +150,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 Session.FrameSource.ReadFrame(currentFrame);
                 Detect();
                 DrawResult();
+                Test = projectionHeight.ToString();
 
                 int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
                 await Task.Delay(delayMillis > 0 ? delayMillis : 0);
@@ -168,7 +187,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     resultFrame,
                     point.Frame,
                     itemDotRelativeRadius,
-                    Defaults.YellowColor,
+                    Defaults.WhiteColor,
                     Cv2.FILLED);
             }
 
@@ -349,22 +368,19 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 case Anchor.BottomLeft:
                     bl = point;
-                    DrawResult();
                     break;
                 case Anchor.TopLeft:
                     tl = point;
-                    DrawResult();
                     break;
                 case Anchor.TopRight:
                     tr = point;
-                    DrawResult();
                     break;
                 case Anchor.BottomRight:
                     br = point;
-                    DrawResult();
                     break;
             }
             UpdateGridPoints();
+            DrawResult();
         }
 
         public void SetPersistent()
@@ -386,9 +402,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
             tl = Session.GridProjection.TL;
             tr = Session.GridProjection.TR;
             br = Session.GridProjection.BR;
-            OriginElevation = Session.GridProjection.OriginElevation;
-            OriginAngle = Session.GridProjection.OriginAngle;
-            FOVAngle = Session.GridProjection.FOVAngle;
+            originElevation = Session.GridProjection.OriginElevation;
+            originAngle = Session.GridProjection.OriginAngle;
+            fovAngle = Session.GridProjection.FOVAngle;
             if (bl.FrameWidth == 0 || bl.FrameHeight == 0)
                 bl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
             if (tl.FrameWidth == 0 || tl.FrameHeight == 0)
@@ -407,6 +423,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             rightMidPoint = GeometryHelpers.GetPoint(tr, br, 0.5);
             bottomMidPoint = GeometryHelpers.GetPoint(br, bl, 0.5);
             gridPoints = new List<RelativePoint>();
+            projectionHeight = Session.GridProjection.RealFOVHeight;
             if (OriginElevation != 0)
             {
 
@@ -415,7 +432,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
 
             }
-            if (OriginElevation != 0 && OriginAngle != 0)
+            if (OriginElevation != 0 && OriginAngle != 0 && FOVAngle != 0)
             {
 
             }

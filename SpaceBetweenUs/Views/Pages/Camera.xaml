@@ -69,6 +69,10 @@
                           Margin="0,8,0,4"
                           IsChecked="{Binding ShowProjection}"/>
 
+                <TextBlock Text="{Binding Test}"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,4" />
+
             </StackPanel>
         </Grid>
         <Image Grid.Column="1"

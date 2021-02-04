@@ -63,6 +63,7 @@
     </Compile>
     <Compile Include="Appearance.cs" />
     <Compile Include="Defaults.cs" />
+    <Compile Include="Services\Class1.cs" />
     <Compile Include="Services\Detectors\YoloDetector.cs" />
     <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />

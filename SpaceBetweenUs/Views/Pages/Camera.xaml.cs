@@ -110,7 +110,8 @@ namespace SpaceBetweenUs.Views.Pages
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 string text = (string)e.DataObject.GetData(typeof(string));
-                if (regex.IsMatch(text)) return;
+                bool isMatch = regex.IsMatch(text);
+                if (isMatch) return;
             }
             e.CancelCommand();
         }
