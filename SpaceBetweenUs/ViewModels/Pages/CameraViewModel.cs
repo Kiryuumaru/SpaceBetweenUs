@@ -104,7 +104,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private RelativePoint topMidPoint;
         private RelativePoint rightMidPoint;
         private RelativePoint bottomMidPoint;
-        private IEnumerable<RelativePoint> gridPoints;
+        private IEnumerable<RelativeLine> gridLines;
         private Anchor? selectedEditAnchor;
         private Mat currentFrame;
         private Mat resultFrame;
@@ -162,33 +162,28 @@ namespace SpaceBetweenUs.ViewModels.Pages
             items = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
             ViolationCount = items?.Where(i => i.IsViolation).Count() ?? 0;
 
-            if (ViolationCount > 0)
-            {
-                Task.Run(async delegate
-                {
-                    while (isSpeaking) { }
-                    isSpeaking = true;
-                    var synthesizer = new SpeechSynthesizer();
-                    synthesizer.SetOutputToDefaultAudioDevice();
-                    synthesizer.Speak("Please observe social distancing");
-                    await Task.Delay(5000);
-                    isSpeaking = false;
-                });
-            }
+            //if (ViolationCount > 0)
+            //{
+            //    Task.Run(async delegate
+            //    {
+            //        while (isSpeaking) { }
+            //        isSpeaking = true;
+            //        var synthesizer = new SpeechSynthesizer();
+            //        synthesizer.SetOutputToDefaultAudioDevice();
+            //        synthesizer.Speak("Please observe social distancing");
+            //        await Task.Delay(5000);
+            //        isSpeaking = false;
+            //    });
+            //}
         }
 
         public void DrawResult()
         {
             resultFrame = currentFrame.Clone();
 
-            foreach (var point in gridPoints)
+            foreach (var line in gridLines)
             {
-                Cv2.Circle(
-                    resultFrame,
-                    point.Frame,
-                    itemDotRelativeRadius,
-                    Defaults.WhiteColor,
-                    Cv2.FILLED);
+                Cv2.Line(resultFrame, line.A.Frame, line.B.Frame, Defaults.YellowColor, itemLineRelativeThickness);
             }
 
             if (!bl.IsZero)
@@ -358,8 +353,12 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void PointerUp()
         {
-            selectedEditAnchor = null;
-            SetPersistent();
+            if (selectedEditAnchor != null)
+            {
+                selectedEditAnchor = null;
+                SetPersistent();
+                UpdateGridPoints();
+            }
         }
 
         public void SetAnchorAxis(Anchor anchor, RelativePoint point)
@@ -422,8 +421,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
             topMidPoint = GeometryHelpers.GetPoint(tl, tr, 0.5);
             rightMidPoint = GeometryHelpers.GetPoint(tr, br, 0.5);
             bottomMidPoint = GeometryHelpers.GetPoint(br, bl, 0.5);
-            gridPoints = new List<RelativePoint>();
-            projectionHeight = Session.GridProjection.RealFOVHeight;
+            projectionHeight = Session.GridProjection.RealFOVBaseHeight;
+            gridLines = Session.GridProjection.GetGrid();
             if (OriginElevation != 0)
             {
 

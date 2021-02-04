@@ -72,6 +72,7 @@ namespace SpaceBetweenUs.Services
                 data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                 data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_bl", data);
+                SolvePerspective();
             }
         }
 
@@ -100,6 +101,7 @@ namespace SpaceBetweenUs.Services
                 data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                 data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_tl", data);
+                SolvePerspective();
             }
         }
 
@@ -128,6 +130,7 @@ namespace SpaceBetweenUs.Services
                 data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                 data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_tr", data);
+                SolvePerspective();
             }
         }
 
@@ -156,6 +159,7 @@ namespace SpaceBetweenUs.Services
                 data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                 data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
                 Session.Datastore.SetValue("grid_br", data);
+                SolvePerspective();
             }
         }
 
@@ -172,6 +176,7 @@ namespace SpaceBetweenUs.Services
             set
             {
                 Session.Datastore.SetValue("orig_elev", value.ToString());
+                SolvePerspective();
             }
         }
 
@@ -188,6 +193,7 @@ namespace SpaceBetweenUs.Services
             set
             {
                 Session.Datastore.SetValue("orig_angle", value.ToString());
+                SolvePerspective();
             }
         }
 
@@ -204,6 +210,7 @@ namespace SpaceBetweenUs.Services
             set
             {
                 Session.Datastore.SetValue("fov_angle", value.ToString());
+                SolvePerspective();
             }
         }
 
@@ -223,27 +230,32 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double RealFOVHeight
+        public double RealFOVBaseHeight
         {
             get
             {
                 if (FOVAngle == 0) return 0;
                 if ((FOVAngle / 2) > OriginAngle)
                 {
-                    return Math.Tan(GeometryHelpers.ConvertToRadians(FOVAngle)) * OriginElevation;
+
+                    return
+                        Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation +
+                        Math.Tan(GeometryHelpers.ConvertToRadians(FOVAngle - ((FOVAngle / 2) + OriginAngle)) * OriginElevation);
                 }
                 else
                 {
-                    var totalBase = Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation;
                     return
-                         +
-                        Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation;
+                        Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation -
+                        Math.Tan(GeometryHelpers.ConvertToRadians(OriginAngle - (FOVAngle / 2))) * OriginElevation;
                 }
             }
         }
 
+        // This is the projected quadrilateral
+        private Point2d[] P = new Point2d[4];
+
         // homographic coefficients
-        private float A, B, D, E, G, H;
+        private double A, B, D, E, G, H;
 
         private GridProjection() { }
 
@@ -256,10 +268,14 @@ namespace SpaceBetweenUs.Services
 
         private void SolvePerspective()
         {
-            float T;
+            // Initialize corners
+            P[0] = BL.Norm;
+            P[1] = TL.Norm;
+            P[2] = TR.Norm;
+            P[3] = BR.Norm;
 
             // Compute the transform coefficients
-            T = (P[2].X - P[1].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[1].Y);
+            double T = (P[2].X - P[1].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[1].Y);
 
             G = ((P[2].X - P[0].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[0].Y)) / (double)T;
             H = ((P[2].X - P[1].X) * (P[2].Y - P[0].Y) - (P[2].X - P[0].X) * (P[2].Y - P[1].Y)) / (double)T;
@@ -271,6 +287,26 @@ namespace SpaceBetweenUs.Services
 
             G -= 1;
             H -= 1;
+        }
+
+        private RelativePoint Perspective(double U, double V)
+        {
+            // Evaluate the homographic transform
+            double T = G * U + H * V + 1;
+            var point = new Point((A * U + B * V) / (double)T + P[0].X, (D * U + E * V) / (double)T + P[0].Y);
+            return RelativePoint.FromNorm(point, Session.FrameSource.Width, Session.FrameSource.Height);
+        }
+
+        public IEnumerable<RelativeLine> GetGrid()
+        {
+            var grid = new List<RelativeLine>();
+            SolvePerspective();
+            // Draw the perspective grid
+            for (var U = 0.0625; U <= 1 - 0.0625; U += 0.0625)
+                grid.Add(new RelativeLine(Perspective(U, 0), Perspective(U, 1)));
+            for (var V = 0.0625; V <= 1 - 0.0625; V += 0.0625)
+                grid.Add(new RelativeLine(Perspective(0, V), Perspective(1, V)));
+            return grid;
         }
 
         public static RelativePoint GetPoint(Point point)

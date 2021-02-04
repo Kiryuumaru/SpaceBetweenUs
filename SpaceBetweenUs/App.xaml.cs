@@ -19,7 +19,7 @@ namespace SpaceBetweenUs
         protected override async void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            await Session.Start(@"..\..\..\..\Additionals\SampleVideos\test3.mp4");
+            await Session.Start(@"..\..\..\..\Additionals\SampleVideos\test1.mp4");
             Appearance.Initialize();
         }
     }
