@@ -191,19 +191,19 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double POVAngle
+        public double FOVAngle
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("pov_angle");
-                if (!double.TryParse(data, out double dist)) return 0;
-                return dist;
+                string data = Session.Datastore.GetValue("fov_angle");
+                if (!double.TryParse(data, out double angle)) return 0;
+                return angle;
             }
             set
             {
-                Session.Datastore.SetValue("pov_angle", value.ToString());
+                Session.Datastore.SetValue("fov_angle", value.ToString());
             }
         }
 

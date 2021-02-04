@@ -71,11 +71,11 @@ namespace SpaceBetweenUs.ViewModels.Pages
         }
 
 
-        public double povAngle;
-        public double POVAngle
+        public double fovAngle;
+        public double FOVAngle
         {
-            get => povAngle;
-            set => SetProperty(ref povAngle, value);
+            get => fovAngle;
+            set => SetProperty(ref fovAngle, value);
         }
 
 
@@ -377,7 +377,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             Session.GridProjection.BR = br;
             Session.GridProjection.OriginElevation = OriginElevation;
             Session.GridProjection.OriginAngle = OriginAngle;
-            Session.GridProjection.POVAngle = POVAngle;
+            Session.GridProjection.FOVAngle = FOVAngle;
         }
 
         public void GetPersistent()
@@ -388,7 +388,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             br = Session.GridProjection.BR;
             OriginElevation = Session.GridProjection.OriginElevation;
             OriginAngle = Session.GridProjection.OriginAngle;
-            POVAngle = Session.GridProjection.POVAngle;
+            FOVAngle = Session.GridProjection.FOVAngle;
             if (bl.FrameWidth == 0 || bl.FrameHeight == 0)
                 bl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
             if (tl.FrameWidth == 0 || tl.FrameHeight == 0)
