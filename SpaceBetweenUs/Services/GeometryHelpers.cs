@@ -119,24 +119,6 @@ namespace SpaceBetweenUs.Services
         }
     }
 
-    public class ProjectivePlane
-    {
-        private double centerDistance;
-        private double originAngle;
-
-        private ProjectivePlane() { }
-
-        public static ProjectivePlane FromPlane(RelativePoint bl, RelativePoint tl, RelativePoint tr, RelativePoint br, double topBottomDistance, double leftRightDistance)
-        {
-            if (!GeometryHelpers.IsRelated(bl, tl, tr, br)) throw new Exception("Coordinates not related");
-            var plane = new ProjectivePlane
-            {
-
-            };
-            return plane;
-        }
-    }
-
     #endregion
 
     public static class GeometryHelpers
@@ -144,6 +126,11 @@ namespace SpaceBetweenUs.Services
         public static double Convert(double val, double maxVal, double destMax)
         {
             return destMax * (val / maxVal);
+        }
+
+        public static double ConvertToRadians(double angle)
+        {
+            return (angle * (Math.PI)) / 180;
         }
 
         public static bool IsRelated(params RelativePoint[] points)

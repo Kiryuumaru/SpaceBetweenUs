@@ -51,13 +51,13 @@
                          PreviewTextInput="TextBox_PreviewTextInput"
                          DataObject.Pasting="TextBox_Pasting" />
 
-                <TextBlock Text="POV Angle"
+                <TextBlock Text="FOV Angle"
                            HorizontalAlignment="Center"
                            Margin="0,8,0,4" />
 
                 <TextBox Grid.Column="1"
                          Margin="3,3,3,3"
-                         Text="{Binding POVAngle}"
+                         Text="{Binding FOVAngle}"
                          GotFocus="TextBox_GotFocus"
                          GotKeyboardFocus="TextBox_GotKeyboardFocus"
                          GotMouseCapture="TextBox_GotMouseCapture"
@@ -68,6 +68,10 @@
                           Content="Show Projection"
                           Margin="0,8,0,4"
                           IsChecked="{Binding ShowProjection}"/>
+
+                <TextBlock Text="{Binding Test}"
+                           HorizontalAlignment="Center"
+                           Margin="0,8,0,4" />
 
             </StackPanel>
         </Grid>

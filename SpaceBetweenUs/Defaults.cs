@@ -36,5 +36,6 @@ namespace SpaceBetweenUs
         public static Scalar BlueColor = new Scalar(255, 0, 0);
         public static Scalar PurpleColor = new Scalar(128, 0, 128);
         public static Scalar YellowColor = new Scalar(0, 238, 238);
+        public static Scalar WhiteColor = new Scalar(255, 255, 255);
     }
 }

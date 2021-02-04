@@ -191,21 +191,59 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double POVAngle
+        public double FOVAngle
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("pov_angle");
-                if (!double.TryParse(data, out double dist)) return 0;
-                return dist;
+                string data = Session.Datastore.GetValue("fov_angle");
+                if (!double.TryParse(data, out double angle)) return 0;
+                return angle;
             }
             set
             {
-                Session.Datastore.SetValue("pov_angle", value.ToString());
+                Session.Datastore.SetValue("fov_angle", value.ToString());
             }
         }
+
+        public double RealOriginTotalBaseLength
+        {
+            get
+            {
+                if (FOVAngle == 0) return 0;
+                if ((FOVAngle / 2) > OriginAngle)
+                {
+                    return Math.Tan(GeometryHelpers.ConvertToRadians(FOVAngle)) * OriginElevation;
+                }
+                else
+                {
+                    return Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation;
+                }
+            }
+        }
+
+        public double RealFOVHeight
+        {
+            get
+            {
+                if (FOVAngle == 0) return 0;
+                if ((FOVAngle / 2) > OriginAngle)
+                {
+                    return Math.Tan(GeometryHelpers.ConvertToRadians(FOVAngle)) * OriginElevation;
+                }
+                else
+                {
+                    var totalBase = Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation;
+                    return
+                         +
+                        Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation;
+                }
+            }
+        }
+
+        // homographic coefficients
+        private float A, B, D, E, G, H;
 
         private GridProjection() { }
 
@@ -214,6 +252,30 @@ namespace SpaceBetweenUs.Services
             var grid = new GridProjection();
 
             return await Task.FromResult(grid);
+        }
+
+        private void SolvePerspective()
+        {
+            float T;
+
+            // Compute the transform coefficients
+            T = (P[2].X - P[1].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[1].Y);
+
+            G = ((P[2].X - P[0].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[0].Y)) / (double)T;
+            H = ((P[2].X - P[1].X) * (P[2].Y - P[0].Y) - (P[2].X - P[0].X) * (P[2].Y - P[1].Y)) / (double)T;
+
+            A = G * (P[1].X - P[0].X);
+            D = G * (P[1].Y - P[0].Y);
+            B = H * (P[3].X - P[0].X);
+            E = H * (P[3].Y - P[0].Y);
+
+            G -= 1;
+            H -= 1;
+        }
+
+        public static RelativePoint GetPoint(Point point)
+        {
+            return new RelativePoint();
         }
     }
 }
