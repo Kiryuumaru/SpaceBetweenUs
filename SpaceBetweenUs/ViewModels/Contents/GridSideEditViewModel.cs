@@ -24,21 +24,13 @@ namespace SpaceBetweenUs.ViewModels.Contents
             this.side = side;
             switch (side)
             {
-                case GridSide.Left:
-                    Header = "Left";
-                    Distance = Session.GridProjection.LeftDistance;
+                case GridSide.TopBottom:
+                    Header = "Top and Bottom";
+                    Distance = Session.GridProjection.TopBottomDistance;
                     break;
-                case GridSide.Top:
-                    Header = "Top";
-                    Distance = Session.GridProjection.TopDistance;
-                    break;
-                case GridSide.Right:
-                    Header = "Right";
-                    Distance = Session.GridProjection.RightDistance;
-                    break;
-                case GridSide.Bottom:
-                    Header = "Bottom";
-                    Distance = Session.GridProjection.BottomDistance;
+                case GridSide.LeftRight:
+                    Header = "Left and Right";
+                    Distance = Session.GridProjection.LeftRightDistance;
                     break;
             }
         }
@@ -47,17 +39,11 @@ namespace SpaceBetweenUs.ViewModels.Contents
         {
             switch (side)
             {
-                case GridSide.Left:
-                     Session.GridProjection.LeftDistance = Distance;
+                case GridSide.TopBottom:
+                     Session.GridProjection.TopBottomDistance = Distance;
                     break;
-                case GridSide.Top:
-                     Session.GridProjection.TopDistance = Distance;
-                    break;
-                case GridSide.Right:
-                     Session.GridProjection.RightDistance = Distance;
-                    break;
-                case GridSide.Bottom:
-                     Session.GridProjection.BottomDistance = Distance;
+                case GridSide.LeftRight:
+                     Session.GridProjection.LeftRightDistance = Distance;
                     break;
             }
         }

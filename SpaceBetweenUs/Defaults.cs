@@ -17,7 +17,7 @@ namespace SpaceBetweenUs
         public const double MaxNormWidth = 10000;
         public const double MaxNormHeight = 10000;
         public const double GridEdgeOffset = 100;
-        public const double Fps = 40;
+        public const double Fps = 10;
         public const double AnchorDotRadius = 70;
         public const double InnerDotRadius = 60;
         public const double ItemDotRadius = 35;
@@ -26,10 +26,22 @@ namespace SpaceBetweenUs
         public const double GridlineThickness = 10;
         public const double ItemLineThickness = 15;
 
+        public const double LargeTextFontSize = 20;
+        public const double NormalTextFontSize = 15;
+        public const double SmallTextFontSize = 12;
+        public const double LargeTextFontThickness = 30;
+        public const double NormalTextFontThickness = 20;
+        public const double SmallTextFontThickness = 17;
+
+        public const double GPUTextXPos = 25;
+        public const double GPUTextYPos = 300;
+        public const double ViolationTextXPos = 7450;
+        public const double ViolationTextYPos = 600;
+
         public const double ConfidenceThreshold = 0.3;
         public const double NonMaximaSupressionThreshold = 0.3;
 
-        public const double GridNotchDistance = 1; // meters
+        public const double GridNotchDistance = 0.5; // meters
         public const double GridPrecision = 0.1; // meters
 
         public static Scalar RedColor = new Scalar(0, 0, 255);

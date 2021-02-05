@@ -41,16 +41,16 @@ namespace SpaceBetweenUs.Services
         {
             saveRequests++;
             if (isWriting) return;
+            isWriting = true;
             Task.Run(async delegate
             {
-                isWriting = true;
                 while (saveRequests > 0)
                 {
                     try
                     {
                         string contentCopy = fileContent;
                         File.WriteAllText(filePath, contentCopy);
-                        await Task.Delay(50);
+                        await Task.Delay(500);
                     }
                     catch { }
                     saveRequests--;

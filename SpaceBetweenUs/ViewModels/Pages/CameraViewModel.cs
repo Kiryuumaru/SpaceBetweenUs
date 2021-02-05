@@ -46,10 +46,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private RelativePoint topMidPoint;
         private RelativePoint rightMidPoint;
         private RelativePoint bottomMidPoint;
-        private double leftDistance;
-        private double topDistance;
-        private double rightDistance;
-        private double bottomDistance;
+        private double leftRightDistance;
+        private double topBottomDistance;
         private IEnumerable<RelativePoint> gridPoints;
         private Anchor? selectedEditAnchor;
         private GridSide? selectedEditGridSide;
@@ -57,20 +55,28 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private GridSide? hoveredEditGridSide;
         private Mat currentFrame;
         private Mat resultFrame;
+
         private int dotRelativeRadius;
         private int innerDotRelativeRadius;
         private int itemDotRelativeRadius;
         private int gridDotRelativeRadius;
+
         private int borderLineRelativeThickness;
         private int itemLineRelativeThickness;
+
+        private int largeTextFontRelativeSize;
+        private int normalTextFontRelativeSize;
+        private int smallTextFontRelativeSize;
+        private int largeTextFontRelativeThickness;
+        private int normalTextFontRelativeThickness;
+        private int smallTextFontRelativeThickness;
+
         private Point gpuTextPos;
         private Point violationTextPos;
         private IEnumerable<Human> humans = new List<Human>();
         private IEnumerable<Violation> violations = new List<Violation>();
 
-
-        private RelativePoint? mouse;
-        private string mousePos;
+        private RelativePoint mousePos;
 
 
         #endregion
@@ -79,10 +85,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
         {
             this.dispatcher = dispatcher;
             GetPersistent();
-            Task.Run(Start);
+            Start();
         }
 
-        private async void Start()
+        private void Start()
         {
             violationCount = 0;
 
@@ -94,25 +100,46 @@ namespace SpaceBetweenUs.ViewModels.Pages
             gridDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.GridDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            largeTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.LargeTextFontSize, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            normalTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.NormalTextFontSize, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            smallTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.SmallTextFontSize, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            largeTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.LargeTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            normalTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.NormalTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            smallTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.SmallTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+
             gpuTextPos = new Point(
-                GeometryHelpers.Convert(Defaults.GridEdgeOffset, Defaults.MaxNormWidth, Session.FrameSource.Width),
-                GeometryHelpers.Convert(Defaults.GridEdgeOffset * 3, Defaults.MaxNormHeight, Session.FrameSource.Height));
+                GeometryHelpers.Convert(Defaults.GPUTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.GPUTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
             violationTextPos = new Point(
-                GeometryHelpers.Convert(Defaults.GridEdgeOffset, Defaults.MaxNormWidth, Session.FrameSource.Width),
-                GeometryHelpers.Convert(Defaults.MaxNormHeight - (Defaults.GridEdgeOffset * 2), Defaults.MaxNormHeight, Session.FrameSource.Height));
+                GeometryHelpers.Convert(Defaults.ViolationTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.ViolationTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
 
             var s = new Stopwatch();
-            while (true)
+
+            Task.Run(async delegate
             {
-                s.Restart();
+                while (true)
+                {
+                    s.Restart();
 
-                Session.FrameSource.ReadFrame(currentFrame);
-                Detect();
-                DrawResult();
+                    Session.FrameSource.ReadFrame(currentFrame);
+                    Detect();
 
-                int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
-                await Task.Delay(delayMillis > 0 ? delayMillis : 0);
-            }
+                    int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
+                    await Task.Delay(delayMillis > 0 ? delayMillis : 0);
+                }
+            });
+
+            Task.Run(async delegate
+            {
+                while (true)
+                {
+                    s.Restart();
+                    DrawResult();
+                    int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
+                    await Task.Delay(delayMillis > 0 ? delayMillis : 0);
+                }
+            });
         }
 
         public void Detect()
@@ -153,70 +180,64 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 foreach (var point in gridPoints)
                 {
-                    Cv2.Circle(
-                        resultFrame,
-                        point.Frame,
-                        gridDotRelativeRadius,
-                        Defaults.YellowColor,
-                        Cv2.FILLED);
+                    if (!(humans?.Any(i => GeometryHelpers.IsInside(point, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                        Cv2.Circle(resultFrame, point.Frame, gridDotRelativeRadius, Defaults.YellowColor, Cv2.FILLED);
                 }
             }
 
-            if (!bl.IsZero)
-                Cv2.Circle(
-                    resultFrame,
-                    bl.Frame,
-                    dotRelativeRadius,
-                    hoveredEditAnchor == Anchor.BottomLeft ? Defaults.GreenColor : Defaults.BlueColor,
-                    borderLineRelativeThickness);
-            if (!tl.IsZero)
-                Cv2.Circle(
-                    resultFrame,
-                    tl.Frame,
-                    dotRelativeRadius,
-                    hoveredEditAnchor == Anchor.TopLeft ? Defaults.GreenColor : Defaults.BlueColor,
-                    borderLineRelativeThickness);
-            if (!tr.IsZero)
-                Cv2.Circle(
-                    resultFrame,
-                    tr.Frame,
-                    dotRelativeRadius,
-                    hoveredEditAnchor == Anchor.TopRight ? Defaults.GreenColor : Defaults.BlueColor,
-                    borderLineRelativeThickness);
-            if (!br.IsZero)
-                Cv2.Circle(
-                    resultFrame,
-                    br.Frame,
-                    dotRelativeRadius,
-                    hoveredEditAnchor == Anchor.BottomRight ? Defaults.GreenColor : Defaults.BlueColor,
-                    borderLineRelativeThickness);
+            if (!(humans?.Any(i => GeometryHelpers.IsInside(bl, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                Cv2.Circle(resultFrame, bl.Frame, dotRelativeRadius, hoveredEditAnchor == Anchor.BottomLeft ? Defaults.GreenColor : Defaults.BlueColor, borderLineRelativeThickness);
+            else if (hoveredEditAnchor == Anchor.BottomLeft)
+                Cv2.Circle(resultFrame, bl.Frame, dotRelativeRadius, Defaults.GreenColor, borderLineRelativeThickness);
+            if (!(humans?.Any(i => GeometryHelpers.IsInside(tl, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                Cv2.Circle(resultFrame, tl.Frame, dotRelativeRadius, hoveredEditAnchor == Anchor.TopLeft ? Defaults.GreenColor : Defaults.BlueColor, borderLineRelativeThickness);
+            else if (hoveredEditAnchor == Anchor.TopLeft)
+                Cv2.Circle(resultFrame, tl.Frame, dotRelativeRadius, Defaults.GreenColor, borderLineRelativeThickness);
+            if (!(humans?.Any(i => GeometryHelpers.IsInside(tr, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                Cv2.Circle(resultFrame, tr.Frame, dotRelativeRadius, hoveredEditAnchor == Anchor.TopRight ? Defaults.GreenColor : Defaults.BlueColor, borderLineRelativeThickness);
+            else if (hoveredEditAnchor == Anchor.TopRight)
+                Cv2.Circle(resultFrame, tr.Frame, dotRelativeRadius, Defaults.GreenColor, borderLineRelativeThickness);
+            if (!(humans?.Any(i => GeometryHelpers.IsInside(br, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                Cv2.Circle(resultFrame, br.Frame, dotRelativeRadius, hoveredEditAnchor == Anchor.BottomRight ? Defaults.GreenColor : Defaults.BlueColor, borderLineRelativeThickness);
+            else if (hoveredEditAnchor == Anchor.BottomRight)
+                Cv2.Circle(resultFrame, br.Frame, dotRelativeRadius, Defaults.GreenColor, borderLineRelativeThickness);
 
-            if (!bl.IsZero && !tl.IsZero && !tr.IsZero && !br.IsZero)
+            if (hoveredEditGridSide == GridSide.LeftRight)
             {
-                Cv2.Circle(
-                    resultFrame,
-                    leftMidPoint.Frame,
-                    innerDotRelativeRadius,
-                    hoveredEditGridSide == GridSide.Left ? Defaults.GreenColor : Defaults.BlueColor,
-                    Cv2.FILLED);
-                Cv2.Circle(
-                    resultFrame,
-                    topMidPoint.Frame,
-                    innerDotRelativeRadius,
-                    hoveredEditGridSide == GridSide.Top ? Defaults.GreenColor : Defaults.BlueColor,
-                    Cv2.FILLED);
-                Cv2.Circle(
-                    resultFrame,
-                    rightMidPoint.Frame,
-                    innerDotRelativeRadius,
-                    hoveredEditGridSide == GridSide.Right ? Defaults.GreenColor : Defaults.BlueColor,
-                    Cv2.FILLED);
-                Cv2.Circle(
-                    resultFrame,
-                    bottomMidPoint.Frame,
-                    innerDotRelativeRadius,
-                    hoveredEditGridSide == GridSide.Bottom ? Defaults.GreenColor : Defaults.BlueColor,
-                    Cv2.FILLED);
+                Cv2.Circle(resultFrame, leftMidPoint.Frame, innerDotRelativeRadius, Defaults.GreenColor, Cv2.FILLED);
+                Cv2.Circle(resultFrame, rightMidPoint.Frame, innerDotRelativeRadius, Defaults.GreenColor, Cv2.FILLED);
+                Cv2.Line(resultFrame, bl.Frame, tl.Frame, Defaults.GreenColor, borderLineRelativeThickness);
+                Cv2.Line(resultFrame, br.Frame, tr.Frame, Defaults.GreenColor, borderLineRelativeThickness);
+                Cv2.PutText(resultFrame, leftRightDistance.ToString("0.##") + "m", leftMidPoint.Frame, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.BlueColor, normalTextFontRelativeThickness);
+                Cv2.PutText(resultFrame, leftRightDistance.ToString("0.##") + "m", rightMidPoint.Frame, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.BlueColor, normalTextFontRelativeThickness);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(topMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, topMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(bottomMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, bottomMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+            }
+            else if (hoveredEditGridSide == GridSide.TopBottom)
+            {
+                Cv2.Circle(resultFrame, topMidPoint.Frame, innerDotRelativeRadius, Defaults.GreenColor, Cv2.FILLED);
+                Cv2.Circle(resultFrame, bottomMidPoint.Frame, innerDotRelativeRadius, Defaults.GreenColor, Cv2.FILLED);
+                Cv2.Line(resultFrame, tl.Frame, tr.Frame, Defaults.GreenColor, borderLineRelativeThickness);
+                Cv2.Line(resultFrame, bl.Frame, br.Frame, Defaults.GreenColor, borderLineRelativeThickness);
+                Cv2.PutText(resultFrame, topBottomDistance.ToString("0.##") + "m", topMidPoint.Frame, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.BlueColor, normalTextFontRelativeThickness);
+                Cv2.PutText(resultFrame, topBottomDistance.ToString("0.##") + "m", bottomMidPoint.Frame, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.BlueColor, normalTextFontRelativeThickness);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(leftMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, leftMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(rightMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, rightMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+            }
+            else
+            {
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(leftMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, leftMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(topMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, topMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(rightMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, rightMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
+                if (!(humans?.Any(i => GeometryHelpers.IsInside(bottomMidPoint, i.BL, i.TL, i.TR, i.BR)) ?? false))
+                    Cv2.Circle(resultFrame, bottomMidPoint.Frame, innerDotRelativeRadius, Defaults.BlueColor, Cv2.FILLED);
             }
 
             if (humans != null)
@@ -227,12 +248,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
                     Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
                     Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Circle(
-                        resultFrame,
-                        item.BottomCenter.Frame,
-                        itemDotRelativeRadius,
-                        item.IsViolation ? Defaults.RedColor : Defaults.GreenColor,
-                        Cv2.FILLED);
+                    Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, Cv2.FILLED);
                 }
             }
 
@@ -242,51 +258,14 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 {
                     Cv2.Line(resultFrame, item.Line.A.Frame, item.Line.B.Frame, Defaults.RedColor, itemLineRelativeThickness);
                     var center = GeometryHelpers.GetPoint(item.Line, 0.5);
-                    Cv2.PutText(
-                        resultFrame,
-                        item.Distance.ToString("0.##") + "m",
-                        center.Frame,
-                        HersheyFonts.HersheyPlain,
-                        itemLineRelativeThickness / 2,
-                        Defaults.BlueColor,
-                        itemLineRelativeThickness);
+                    Cv2.PutText(resultFrame, item.Distance.ToString("0.##") + "m", center.Frame, HersheyFonts.HersheyPlain, smallTextFontRelativeSize, Defaults.BlueColor, smallTextFontRelativeThickness);
                 }
             }
 
             if (Session.HumanDetector != null)
             {
-                Cv2.PutText(
-                    resultFrame,
-                    Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF",
-                    gpuTextPos,
-                    HersheyFonts.HersheyPlain,
-                    itemLineRelativeThickness,
-                    Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor,
-                    itemLineRelativeThickness * 2);
-            }
-
-            if (Session.HumanDetector != null)
-            {
-                Cv2.PutText(
-                    resultFrame,
-                    "Violation Count: " + violationCount.ToString(),
-                    violationTextPos,
-                    HersheyFonts.HersheyPlain,
-                    itemLineRelativeThickness,
-                    violationCount == 0 ? Defaults.GreenColor : Defaults.RedColor,
-                    itemLineRelativeThickness * 2);
-            }
-
-            if (mouse.HasValue)
-            {
-                Cv2.PutText(
-                    resultFrame,
-                    mousePos,
-                    mouse.Value.Frame,
-                    HersheyFonts.HersheyPlain,
-                    itemLineRelativeThickness / 2,
-                    Defaults.RedColor,
-                    itemLineRelativeThickness);
+                Cv2.PutText(resultFrame, Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF", gpuTextPos, HersheyFonts.HersheyPlain, smallTextFontRelativeSize, Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor, smallTextFontRelativeThickness);
+                Cv2.PutText(resultFrame, "Violation Count: " + violationCount.ToString(), violationTextPos, HersheyFonts.HersheyPlain, largeTextFontRelativeSize, violationCount == 0 ? Defaults.WhiteColor : Defaults.RedColor, largeTextFontRelativeThickness);
             }
 
             try
@@ -386,21 +365,15 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private GridSide? GetGridSide(RelativePoint point)
         {
-            if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius * 2))
+            if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius * 2) ||
+                GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius * 2))
             {
-                return GridSide.Left;
+                return GridSide.TopBottom;
             }
-            else if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius * 2))
+            else if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius * 2) ||
+                GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius * 2))
             {
-                return GridSide.Top;
-            }
-            else if (GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius * 2))
-            {
-                return GridSide.Right;
-            }
-            else if (GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius * 2))
-            {
-                return GridSide.Bottom;
+                return GridSide.LeftRight;
             }
             return null;
         }
@@ -423,26 +396,30 @@ namespace SpaceBetweenUs.ViewModels.Pages
         {
             hoveredEditAnchor = GetPointAnchor(point);
             hoveredEditGridSide = GetGridSide(point);
-            if (!point.IsZero)
-            {
-                var pers = Session.GridProjection.Perspective(point);
-                if (pers.HasValue)
-                {
-                    mouse = point;
-                    mousePos = "x=" + pers.Value.X.ToString("0.##") + "m y=" + pers.Value.Y.ToString("0.##") + "m";
-                    DrawResult();
-                }
-                else
-                {
-                    mouse = null;
-                    DrawResult();
-                }
-            }
+            mousePos = point;
+
             if (selectedEditAnchor != null)
             {
-                SetAnchorAxis(selectedEditAnchor.Value, point);
-                SetPersistent();
-                UpdateGridPoints();
+                if (HasAnchorAxisChanges(selectedEditAnchor.Value, point))
+                {
+                    switch (selectedEditAnchor.Value)
+                    {
+                        case Anchor.BottomLeft:
+                            bl = point;
+                            break;
+                        case Anchor.TopLeft:
+                            tl = point;
+                            break;
+                        case Anchor.TopRight:
+                            tr = point;
+                            break;
+                        case Anchor.BottomRight:
+                            br = point;
+                            break;
+                    }
+                    SetPersistent();
+                    UpdateGridPoints();
+                }
             }
         }
 
@@ -458,25 +435,20 @@ namespace SpaceBetweenUs.ViewModels.Pages
             }
         }
 
-        public void SetAnchorAxis(Anchor anchor, RelativePoint point)
+        public bool HasAnchorAxisChanges(Anchor anchor, RelativePoint point)
         {
             switch (anchor)
             {
                 case Anchor.BottomLeft:
-                    bl = point;
-                    break;
+                    return bl != point;
                 case Anchor.TopLeft:
-                    tl = point;
-                    break;
+                    return tl != point;
                 case Anchor.TopRight:
-                    tr = point;
-                    break;
+                    return tr != point;
                 case Anchor.BottomRight:
-                    br = point;
-                    break;
+                    return br != point;
             }
-            UpdateGridPoints();
-            DrawResult();
+            return false;
         }
 
         public void SetPersistent()
@@ -487,10 +459,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
             Session.GridProjection.TL = tl;
             Session.GridProjection.TR = tr;
             Session.GridProjection.BR = br;
-            Session.GridProjection.LeftDistance = leftDistance;
-            Session.GridProjection.TopDistance = topDistance;
-            Session.GridProjection.RightDistance = rightDistance;
-            Session.GridProjection.BottomDistance = bottomDistance;
+            Session.GridProjection.TopBottomDistance = topBottomDistance;
+            Session.GridProjection.LeftRightDistance = leftRightDistance;
         }
 
         public void GetPersistent()
@@ -499,10 +469,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
             tl = Session.GridProjection.TL;
             tr = Session.GridProjection.TR;
             br = Session.GridProjection.BR;
-            leftDistance = Session.GridProjection.LeftDistance;
-            topDistance = Session.GridProjection.TopDistance;
-            rightDistance = Session.GridProjection.RightDistance;
-            bottomDistance = Session.GridProjection.BottomDistance;
+            topBottomDistance = Session.GridProjection.TopBottomDistance;
+            leftRightDistance = Session.GridProjection.LeftRightDistance;
             UpdateGridPoints();
         }
 

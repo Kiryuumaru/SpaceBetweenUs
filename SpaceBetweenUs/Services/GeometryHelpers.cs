@@ -249,7 +249,7 @@ namespace SpaceBetweenUs.Services
 
             if (determinant == 0)
             {
-                throw new Exception("Lines are in parallel");
+                throw new Exception("Lines are parallel");
             }
             else
             {
