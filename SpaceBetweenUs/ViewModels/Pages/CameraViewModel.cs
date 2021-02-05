@@ -260,14 +260,17 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 }
             }
 
-            Cv2.PutText(
-                resultFrame,
-                Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF",
-                gpuTextPos,
-                HersheyFonts.HersheyPlain,
-                itemLineRelativeThickness,
-                Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor,
-                itemLineRelativeThickness * 2);
+            if (Session.HumanDetector != null)
+            {
+                Cv2.PutText(
+                    resultFrame,
+                    Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF",
+                    gpuTextPos,
+                    HersheyFonts.HersheyPlain,
+                    itemLineRelativeThickness,
+                    Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor,
+                    itemLineRelativeThickness * 2);
+            }
 
             try
             {

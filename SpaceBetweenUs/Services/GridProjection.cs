@@ -268,11 +268,13 @@ namespace SpaceBetweenUs.Services
 
         private void SolvePerspective()
         {
+            
+
             // Initialize corners
-            P[0] = BL.Norm;
-            P[1] = TL.Norm;
-            P[2] = TR.Norm;
-            P[3] = BR.Norm;
+            P[0] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
+            P[1] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
+            P[2] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
+            P[3] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
 
             // Compute the transform coefficients
             double T = (P[2].X - P[1].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[1].Y);
