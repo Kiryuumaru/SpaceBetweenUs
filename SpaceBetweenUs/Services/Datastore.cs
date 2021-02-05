@@ -12,6 +12,7 @@ namespace SpaceBetweenUs.Services
         private string filePath;
         private string fileContent;
         private bool isWriting = false;
+        private int saveRequests = 0;
 
         private Datastore() { }
 
@@ -38,15 +39,22 @@ namespace SpaceBetweenUs.Services
 
         private void Save()
         {
+            saveRequests++;
+            if (isWriting) return;
             Task.Run(async delegate
             {
-                while (isWriting) { await Task.Delay(100); }
                 isWriting = true;
-                try
+                while (saveRequests > 0)
                 {
-                    File.WriteAllText(filePath, fileContent);
+                    try
+                    {
+                        string contentCopy = fileContent;
+                        File.WriteAllText(filePath, contentCopy);
+                        await Task.Delay(50);
+                    }
+                    catch { }
+                    saveRequests--;
                 }
-                catch { }
                 isWriting = false;
             });
         }

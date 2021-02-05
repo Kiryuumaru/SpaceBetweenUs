@@ -14,7 +14,7 @@ namespace SpaceBetweenUs.Services
 
     public enum GridSide
     {
-        TopBottom, LeftRight
+        Top, Bottom, Left, Right
     }
 
     public class GridProjection
@@ -52,14 +52,14 @@ namespace SpaceBetweenUs.Services
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height); ;
                 string data = Session.Datastore.GetValue("grid_bl");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height); ;
                 return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
@@ -81,14 +81,14 @@ namespace SpaceBetweenUs.Services
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
                 string data = Session.Datastore.GetValue("grid_tl");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
                 return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
@@ -110,14 +110,14 @@ namespace SpaceBetweenUs.Services
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
                 string data = Session.Datastore.GetValue("grid_tr");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
                 return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
@@ -139,14 +139,14 @@ namespace SpaceBetweenUs.Services
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
-                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.Zero();
+                    Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
                 string data = Session.Datastore.GetValue("grid_br");
                 if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                     !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.Zero();
+                    !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
                 return new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
             }
             set
@@ -163,99 +163,84 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public double OriginElevation
+        public double LeftDistance
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("orig_elev");
-                if (!double.TryParse(data, out double elev)) return 0;
-                return elev;
+                string data = Session.Datastore.GetValue("l_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
             }
             set
             {
-                Session.Datastore.SetValue("orig_elev", value.ToString());
+                Session.Datastore.SetValue("l_dist", value.ToString());
                 SolvePerspective();
             }
         }
 
-        public double OriginAngle
+        public double TopDistance
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("orig_angle");
-                if (!double.TryParse(data, out double angle)) return 0;
-                return angle;
+                string data = Session.Datastore.GetValue("t_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
             }
             set
             {
-                Session.Datastore.SetValue("orig_angle", value.ToString());
+                Session.Datastore.SetValue("t_dist", value.ToString());
                 SolvePerspective();
             }
         }
 
-        public double FOVAngle
+        public double RightDistance
         {
             get
             {
                 if (Defaults.MaxNormWidth != MaxNormWidth ||
                     Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                string data = Session.Datastore.GetValue("fov_angle");
-                if (!double.TryParse(data, out double angle)) return 0;
-                return angle;
+                string data = Session.Datastore.GetValue("r_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
             }
             set
             {
-                Session.Datastore.SetValue("fov_angle", value.ToString());
+                Session.Datastore.SetValue("r_dist", value.ToString());
                 SolvePerspective();
             }
         }
 
-        public double RealOriginTotalBaseLength
+        public double BottomDistance
         {
             get
             {
-                if (FOVAngle == 0) return 0;
-                if ((FOVAngle / 2) > OriginAngle)
-                {
-                    return Math.Tan(GeometryHelpers.ConvertToRadians(FOVAngle)) * OriginElevation;
-                }
-                else
-                {
-                    return Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation;
-                }
+                if (Defaults.MaxNormWidth != MaxNormWidth ||
+                    Defaults.MaxNormHeight != MaxNormHeight) return 0;
+                string data = Session.Datastore.GetValue("b_dist");
+                if (!double.TryParse(data, out double dist)) return 0;
+                return dist;
             }
-        }
-
-        public double RealFOVBaseHeight
-        {
-            get
+            set
             {
-                if (FOVAngle == 0) return 0;
-                if ((FOVAngle / 2) > OriginAngle)
-                {
-
-                    return
-                        Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation +
-                        Math.Tan(GeometryHelpers.ConvertToRadians(FOVAngle - ((FOVAngle / 2) + OriginAngle)) * OriginElevation);
-                }
-                else
-                {
-                    return
-                        Math.Tan(GeometryHelpers.ConvertToRadians((FOVAngle / 2) + OriginAngle)) * OriginElevation -
-                        Math.Tan(GeometryHelpers.ConvertToRadians(OriginAngle - (FOVAngle / 2))) * OriginElevation;
-                }
+                Session.Datastore.SetValue("b_dist", value.ToString());
+                SolvePerspective();
             }
         }
+
+        public RelativePoint LeftMidPoint => GeometryHelpers.GetPoint(BL, TL, 0.5);
+        public RelativePoint TopMidPoint => GeometryHelpers.GetPoint(TL, TR, 0.5);
+        public RelativePoint RightMidPoint => GeometryHelpers.GetPoint(TR, BR, 0.5);
+        public RelativePoint BottomMidPoint => GeometryHelpers.GetPoint(BR, BL, 0.5);
 
         // This is the projected quadrilateral
-        private Point2d[] P = new Point2d[4];
+        private readonly Point2d[] p = new Point2d[4];
 
         // homographic coefficients
-        private double A, B, D, E, G, H;
+        private double a, b, d, e, g, h;
 
         private GridProjection() { }
 
@@ -268,47 +253,127 @@ namespace SpaceBetweenUs.Services
 
         private void SolvePerspective()
         {
-            
-
             // Initialize corners
-            P[0] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
-            P[1] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
-            P[2] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
-            P[3] = new Point2d(Defaults.MaxNormWidth, Defaults.MaxNormHeight);
+            p[0] = TL.Norm;
+            p[1] = TR.Norm;
+            p[2] = BR.Norm;
+            p[3] = BL.Norm;
 
             // Compute the transform coefficients
-            double T = (P[2].X - P[1].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[1].Y);
+            double T = (p[2].X - p[1].X) * (p[2].Y - p[3].Y) - (p[2].X - p[3].X) * (p[2].Y - p[1].Y);
 
-            G = ((P[2].X - P[0].X) * (P[2].Y - P[3].Y) - (P[2].X - P[3].X) * (P[2].Y - P[0].Y)) / (double)T;
-            H = ((P[2].X - P[1].X) * (P[2].Y - P[0].Y) - (P[2].X - P[0].X) * (P[2].Y - P[1].Y)) / (double)T;
+            g = ((p[2].X - p[0].X) * (p[2].Y - p[3].Y) - (p[2].X - p[3].X) * (p[2].Y - p[0].Y)) / (double)T;
+            h = ((p[2].X - p[1].X) * (p[2].Y - p[0].Y) - (p[2].X - p[0].X) * (p[2].Y - p[1].Y)) / (double)T;
 
-            A = G * (P[1].X - P[0].X);
-            D = G * (P[1].Y - P[0].Y);
-            B = H * (P[3].X - P[0].X);
-            E = H * (P[3].Y - P[0].Y);
+            a = g * (p[1].X - p[0].X);
+            d = g * (p[1].Y - p[0].Y);
+            b = h * (p[3].X - p[0].X);
+            e = h * (p[3].Y - p[0].Y);
 
-            G -= 1;
-            H -= 1;
+            g -= 1;
+            h -= 1;
         }
 
-        private RelativePoint Perspective(double U, double V)
+        public RelativePoint Perspective(Point2d point)
         {
             // Evaluate the homographic transform
-            double T = G * U + H * V + 1;
-            var point = new Point((A * U + B * V) / (double)T + P[0].X, (D * U + E * V) / (double)T + P[0].Y);
-            return RelativePoint.FromNorm(point, Session.FrameSource.Width, Session.FrameSource.Height);
+            double x = point.X / TopDistance;
+            double y = point.Y / LeftDistance;
+            double T = g * x + h * y + 1;
+            var normPoint = new Point((a * x + b * y) / (double)T + p[0].X, (d * x + e * y) / (double)T + p[0].Y);
+            return RelativePoint.FromNorm(normPoint, Session.FrameSource.Width, Session.FrameSource.Height);
+        }
+
+        public Point2d? Perspective(RelativePoint point)
+        {
+            if (!GeometryHelpers.IsInside(point, BL, TL, TR, BR)) return null;
+
+            RelativePoint bl = BL;
+            RelativePoint tl = TL;
+            RelativePoint tr;
+            RelativePoint br;
+            double currentXDist = 0;
+            while (currentXDist <= TopDistance)
+            {
+                currentXDist += Defaults.GridPrecision;
+                tr = Perspective(new Point2d(currentXDist, 0));
+                br = Perspective(new Point2d(currentXDist, LeftDistance));
+                if (GeometryHelpers.IsInside(point, bl, tl, tr, br)) break;
+                bl = br;
+                tl = tr;
+            }
+            tl = TL;
+            tr = TR;
+            double currentYDist = 0;
+            while (currentYDist <= LeftDistance)
+            {
+                currentYDist += Defaults.GridPrecision;
+                bl = Perspective(new Point2d(0, currentYDist));
+                br = Perspective(new Point2d(TopDistance, currentYDist));
+                if (GeometryHelpers.IsInside(point, bl, tl, tr, br)) break;
+                tl = bl;
+                tr = br;
+            }
+            return new Point2d(currentXDist, currentYDist);
         }
 
         public IEnumerable<RelativeLine> GetGrid()
         {
-            var grid = new List<RelativeLine>();
+            if (TopDistance == 0 || BottomDistance == 0 || LeftDistance == 0 || RightDistance == 0) return null;
+
+            var lines = new List<RelativeLine>();
+
             SolvePerspective();
-            // Draw the perspective grid
-            for (var U = 0.0625; U <= 1 - 0.0625; U += 0.0625)
-                grid.Add(new RelativeLine(Perspective(U, 0), Perspective(U, 1)));
-            for (var V = 0.0625; V <= 1 - 0.0625; V += 0.0625)
-                grid.Add(new RelativeLine(Perspective(0, V), Perspective(1, V)));
-            return grid;
+
+            double currentDist = 0;
+            while (currentDist < (LeftDistance + Defaults.GridNotchDistance))
+            {
+                lines.Add(new RelativeLine(Perspective(new Point2d(0, currentDist)), Perspective(new Point2d(1, currentDist))));
+                currentDist += Defaults.GridNotchDistance;
+            }
+            currentDist = 0;
+            while (currentDist < (TopDistance + Defaults.GridNotchDistance))
+            {
+                lines.Add(new RelativeLine(Perspective(new Point2d(currentDist, 0)), Perspective(new Point2d(currentDist, 1))));
+                currentDist += Defaults.GridNotchDistance;
+            }
+
+            return lines;
+        }
+
+        public IEnumerable<RelativePoint> GetGridPoints()
+        {
+            if (TopDistance == 0 || BottomDistance == 0 || LeftDistance == 0 || RightDistance == 0) return null;
+
+            var vLines = new List<RelativeLine>();
+            var hLines = new List<RelativeLine>();
+            var points = new List<RelativePoint>();
+
+            SolvePerspective();
+
+            double currentDist = 0;
+            while (currentDist < (LeftDistance + Defaults.GridNotchDistance))
+            {
+                hLines.Add(new RelativeLine(Perspective(new Point2d(0, currentDist)), Perspective(new Point2d(1, currentDist))));
+                currentDist += Defaults.GridNotchDistance;
+            }
+            currentDist = 0;
+            while (currentDist < (TopDistance + Defaults.GridNotchDistance))
+            {
+                vLines.Add(new RelativeLine(Perspective(new Point2d(currentDist, 0)), Perspective(new Point2d(currentDist, 1))));
+                currentDist += Defaults.GridNotchDistance;
+            }
+
+            foreach (var vLine in vLines)
+            {
+                foreach (var hLine in hLines)
+                {
+                    points.Add(GeometryHelpers.LineIntersection(vLine, hLine));
+
+                }
+            }
+
+            return points;
         }
 
         public static RelativePoint GetPoint(Point point)

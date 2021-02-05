@@ -74,9 +74,13 @@
     <Compile Include="Services\Detectors\IHumanDetector.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />
+    <Compile Include="ViewModels\Contents\GridSideEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\AnchorPointEditViewModel.cs" />
     <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
+    <Compile Include="Views\Contents\GridSizeEdit.xaml.cs">
+      <DependentUpon>GridSizeEdit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Contents\AnchorPointEdit.xaml.cs">
       <DependentUpon>AnchorPointEdit.xaml</DependentUpon>
     </Compile>
@@ -86,6 +90,9 @@
     <Compile Include="ViewModels\Contents\SettingsAppearanceViewModel.cs" />
     <Compile Include="Views\Pages\Camera.xaml.cs">
       <DependentUpon>Camera.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Pages\Logs.xaml.cs">
+      <DependentUpon>Logs.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\Introduction.xaml.cs">
       <DependentUpon>Introduction.xaml</DependentUpon>
@@ -208,6 +215,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Contents\GridSizeEdit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Contents\AnchorPointEdit.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -217,6 +228,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Pages\Camera.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Pages\Logs.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

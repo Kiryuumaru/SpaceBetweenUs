@@ -13,7 +13,8 @@
 
         <TextBlock Grid.Row="0"
                    Text="{Binding Header}"
-                   Margin="3,3,3,3"/>
+                   Style="{StaticResource Heading2}"
+                   Margin="3,3,3,8"/>
 
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>

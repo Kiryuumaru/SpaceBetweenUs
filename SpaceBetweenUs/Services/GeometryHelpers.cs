@@ -201,9 +201,9 @@ namespace SpaceBetweenUs.Services
             return RelativePoint.FromNorm(new Point(GetPointX(a, b, offSet), GetPointY(a, b, offSet)), a.FrameWidth, a.FrameHeight);
         }
 
-        public static Point GetPoint(RelativeLine line, double offSet)
+        public static RelativePoint GetPoint(RelativeLine line, double offSet)
         {
-            return new Point(GetPointX(line, offSet), GetPointY(line, offSet));
+            return GetPoint(line.A, line.B, offSet);
         }
 
         public static bool IsParallel(RelativePoint a, RelativePoint b, RelativePoint c, RelativePoint d)
@@ -265,6 +265,14 @@ namespace SpaceBetweenUs.Services
         }
 
         public static double GetDistance(Point pointA, Point pointB)
+        {
+            double a = pointB.X - pointA.X;
+            double b = pointB.Y - pointA.Y;
+
+            return Math.Sqrt(a * a + b * b);
+        }
+
+        public static double GetDistance(Point2d pointA, Point2d pointB)
         {
             double a = pointB.X - pointA.X;
             double b = pointB.Y - pointA.Y;

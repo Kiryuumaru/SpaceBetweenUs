@@ -24,6 +24,7 @@
         <mui:LinkGroup DisplayName="Stream">
             <mui:LinkGroup.Links>
                 <mui:Link DisplayName="Camera" Source="/Views/Pages/Camera.xaml" />
+                <mui:Link DisplayName="Logs" Source="/Views/Pages/Logs.xaml" />
             </mui:LinkGroup.Links>
         </mui:LinkGroup>
         <mui:LinkGroup DisplayName="Settings" GroupKey="settings">

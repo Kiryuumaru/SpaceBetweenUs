@@ -14,16 +14,17 @@ namespace SpaceBetweenUs
         public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
         public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
 
-        public const double MaxNormWidth = 1000;
-        public const double MaxNormHeight = 1000;
-        public const double GridEdgeOffset = 10;
+        public const double MaxNormWidth = 10000;
+        public const double MaxNormHeight = 10000;
+        public const double GridEdgeOffset = 100;
         public const double Fps = 40;
-        public const double AnchorDotRadius = 7;
-        public const double InnerDotRadius = 6;
-        public const double ItemDotRadius = 3.5;
-        public const double BorderLineThickness = 2;
-        public const double GridlineThickness = 1;
-        public const double ItemLineThickness = 1.5;
+        public const double AnchorDotRadius = 70;
+        public const double InnerDotRadius = 60;
+        public const double ItemDotRadius = 35;
+        public const double GridDotRadius = 20;
+        public const double BorderLineThickness = 20;
+        public const double GridlineThickness = 10;
+        public const double ItemLineThickness = 15;
 
         public const double ConfidenceThreshold = 0.3;
         public const double NonMaximaSupressionThreshold = 0.3;

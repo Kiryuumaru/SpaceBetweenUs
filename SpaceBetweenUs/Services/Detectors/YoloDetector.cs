@@ -31,9 +31,10 @@ namespace SpaceBetweenUs.Services.Detectors
             GPUMode = gpuConfig != null;
         }
 
-        public IEnumerable<Human> DetectHuman(byte[] image)
+        public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) DetectHuman(byte[] image)
         {
             var items = Detect(image).Where(i => i.Confidence > Defaults.ConfidenceThreshold && i.Type.Equals("person")).ToArray();
+            var violations = new List<Violation>();
             CvDnn.NMSBoxes(
                 items.Select(i => new Rect(i.X, i.Y, i.Width, i.Height)),
                 items.Select(i => (float)i.Confidence),
@@ -43,16 +44,13 @@ namespace SpaceBetweenUs.Services.Detectors
             var humans = new List<Human>();
             foreach (var i in indices)
             {
-                var human = new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight, false);
+                var human = new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight);
                 try
                 {
-                    if (GeometryHelpers.IsInside(
-                        human.BottomCenter,
-                        Session.GridProjection.BL,
-                        Session.GridProjection.TL,
-                        Session.GridProjection.TR,
-                        Session.GridProjection.BR))
+                    var pers = Session.GridProjection.Perspective(human.BottomCenter);
+                    if (pers.HasValue)
                     {
+                        human.PerspectivePoint = pers.Value;
                         humans.Add(human);
                     }
                 }
@@ -66,15 +64,16 @@ namespace SpaceBetweenUs.Services.Detectors
                 foreach (var j in humans)
                 {
                     if (i == j) continue;
-                    double dis = GeometryHelpers.GetDistance(i.BottomCenter, j.BottomCenter);
-                    if (dis <= 100)
+                    double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
+                    if (dis <= 2)
                     {
                         i.IsViolation = true;
                         j.IsViolation = true;
+                        violations.Add(new Violation(new RelativeLine(i.BottomCenter, j.BottomCenter), dis));
                     }
                 }
             }
-            return humans;
+            return (violations, humans);
         }
     }
 }

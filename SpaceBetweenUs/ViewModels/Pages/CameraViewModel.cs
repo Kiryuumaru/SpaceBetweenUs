@@ -32,70 +32,12 @@ namespace SpaceBetweenUs.ViewModels.Pages
             set => SetProperty(ref frame, value);
         }
 
-        private bool isSpeaking = false;
-
-        public int violationCount;
-        public int ViolationCount
-        {
-            get => violationCount;
-            set => SetProperty(ref violationCount, value);
-        }
-
-        public double originElevation;
-        public double OriginElevation
-        {
-            get => originElevation;
-            set
-            {
-                SetProperty(ref originElevation, value);
-                SetPersistent();
-                UpdateGridPoints();
-            }
-        }
-
-        public double originAngle;
-        public double OriginAngle
-        {
-            get => originAngle;
-            set
-            {
-                SetProperty(ref originAngle, value);
-                SetPersistent();
-                UpdateGridPoints();
-            }
-        }
-
-        public double fovAngle;
-        public double FOVAngle
-        {
-            get => fovAngle;
-            set
-            {
-                SetProperty(ref fovAngle, value);
-                SetPersistent();
-                UpdateGridPoints();
-            }
-        }
-
-        public bool showProjection;
-        public bool ShowProjection
-        {
-            get => showProjection;
-            set => SetProperty(ref showProjection, value);
-        }
-
-        public string test;
-        public string Test
-        {
-            get => test;
-            set => SetProperty(ref test, value);
-        }
-
         #endregion
 
         #region Properties
 
         private readonly Dispatcher dispatcher;
+        private int violationCount;
         private RelativePoint bl;
         private RelativePoint tl;
         private RelativePoint tr;
@@ -104,18 +46,31 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private RelativePoint topMidPoint;
         private RelativePoint rightMidPoint;
         private RelativePoint bottomMidPoint;
-        private IEnumerable<RelativeLine> gridLines;
+        private double leftDistance;
+        private double topDistance;
+        private double rightDistance;
+        private double bottomDistance;
+        private IEnumerable<RelativePoint> gridPoints;
         private Anchor? selectedEditAnchor;
+        private GridSide? selectedEditGridSide;
+        private Anchor? hoveredEditAnchor;
+        private GridSide? hoveredEditGridSide;
         private Mat currentFrame;
         private Mat resultFrame;
         private int dotRelativeRadius;
         private int innerDotRelativeRadius;
         private int itemDotRelativeRadius;
+        private int gridDotRelativeRadius;
         private int borderLineRelativeThickness;
         private int itemLineRelativeThickness;
-        private double projectionHeight;
         private Point gpuTextPos;
-        private IEnumerable<Human> items = new List<Human>();
+        private Point violationTextPos;
+        private IEnumerable<Human> humans = new List<Human>();
+        private IEnumerable<Violation> violations = new List<Violation>();
+
+
+        private RelativePoint? mouse;
+        private string mousePos;
 
 
         #endregion
@@ -129,18 +84,22 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private async void Start()
         {
-            ViolationCount = 0;
+            violationCount = 0;
 
             currentFrame = new Mat();
             resultFrame = new Mat();
             dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             innerDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.InnerDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             itemDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.ItemDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            gridDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.GridDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
             borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             gpuTextPos = new Point(
                 GeometryHelpers.Convert(Defaults.GridEdgeOffset, Defaults.MaxNormWidth, Session.FrameSource.Width),
-                GeometryHelpers.Convert(Defaults.GridEdgeOffset * 2, Defaults.MaxNormWidth, Session.FrameSource.Width));
+                GeometryHelpers.Convert(Defaults.GridEdgeOffset * 3, Defaults.MaxNormHeight, Session.FrameSource.Height));
+            violationTextPos = new Point(
+                GeometryHelpers.Convert(Defaults.GridEdgeOffset, Defaults.MaxNormWidth, Session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.MaxNormHeight - (Defaults.GridEdgeOffset * 2), Defaults.MaxNormHeight, Session.FrameSource.Height));
 
             var s = new Stopwatch();
             while (true)
@@ -150,7 +109,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 Session.FrameSource.ReadFrame(currentFrame);
                 Detect();
                 DrawResult();
-                Test = projectionHeight.ToString();
 
                 int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
                 await Task.Delay(delayMillis > 0 ? delayMillis : 0);
@@ -159,8 +117,18 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void Detect()
         {
-            items = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
-            ViolationCount = items?.Where(i => i.IsViolation).Count() ?? 0;
+            var detection = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
+            if (detection.HasValue)
+            {
+                violations = detection.Value.Violations;
+                humans = detection.Value.Humans;
+            }
+            else
+            {
+                violations = null;
+                humans = null;
+            }
+            violationCount = humans?.Where(i => i.IsViolation).Count() ?? 0;
 
             //if (ViolationCount > 0)
             //{
@@ -181,9 +149,17 @@ namespace SpaceBetweenUs.ViewModels.Pages
         {
             resultFrame = currentFrame.Clone();
 
-            foreach (var line in gridLines)
+            if (gridPoints != null)
             {
-                Cv2.Line(resultFrame, line.A.Frame, line.B.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                foreach (var point in gridPoints)
+                {
+                    Cv2.Circle(
+                        resultFrame,
+                        point.Frame,
+                        gridDotRelativeRadius,
+                        Defaults.YellowColor,
+                        Cv2.FILLED);
+                }
             }
 
             if (!bl.IsZero)
@@ -191,61 +167,61 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     resultFrame,
                     bl.Frame,
                     dotRelativeRadius,
-                    selectedEditAnchor == Anchor.BottomLeft ? Defaults.GreenColor : Defaults.BlueColor,
+                    hoveredEditAnchor == Anchor.BottomLeft ? Defaults.GreenColor : Defaults.BlueColor,
                     borderLineRelativeThickness);
             if (!tl.IsZero)
                 Cv2.Circle(
                     resultFrame,
                     tl.Frame,
                     dotRelativeRadius,
-                    selectedEditAnchor == Anchor.TopLeft ? Defaults.GreenColor : Defaults.BlueColor,
+                    hoveredEditAnchor == Anchor.TopLeft ? Defaults.GreenColor : Defaults.BlueColor,
                     borderLineRelativeThickness);
             if (!tr.IsZero)
                 Cv2.Circle(
                     resultFrame,
                     tr.Frame,
                     dotRelativeRadius,
-                    selectedEditAnchor == Anchor.TopRight ? Defaults.GreenColor : Defaults.BlueColor,
+                    hoveredEditAnchor == Anchor.TopRight ? Defaults.GreenColor : Defaults.BlueColor,
                     borderLineRelativeThickness);
             if (!br.IsZero)
                 Cv2.Circle(
                     resultFrame,
                     br.Frame,
                     dotRelativeRadius,
-                    selectedEditAnchor == Anchor.BottomRight ? Defaults.GreenColor : Defaults.BlueColor,
+                    hoveredEditAnchor == Anchor.BottomRight ? Defaults.GreenColor : Defaults.BlueColor,
                     borderLineRelativeThickness);
 
             if (!bl.IsZero && !tl.IsZero && !tr.IsZero && !br.IsZero)
             {
                 Cv2.Circle(
                     resultFrame,
-                    topMidPoint.Frame,
-                    innerDotRelativeRadius,
-                    Defaults.BlueColor,
-                    Cv2.FILLED);
-                Cv2.Circle(
-                    resultFrame,
-                    bottomMidPoint.Frame,
-                    innerDotRelativeRadius,
-                    Defaults.BlueColor,
-                    Cv2.FILLED);
-                Cv2.Circle(
-                    resultFrame,
                     leftMidPoint.Frame,
                     innerDotRelativeRadius,
-                    Defaults.BlueColor,
+                    hoveredEditGridSide == GridSide.Left ? Defaults.GreenColor : Defaults.BlueColor,
+                    Cv2.FILLED);
+                Cv2.Circle(
+                    resultFrame,
+                    topMidPoint.Frame,
+                    innerDotRelativeRadius,
+                    hoveredEditGridSide == GridSide.Top ? Defaults.GreenColor : Defaults.BlueColor,
                     Cv2.FILLED);
                 Cv2.Circle(
                     resultFrame,
                     rightMidPoint.Frame,
                     innerDotRelativeRadius,
-                    Defaults.BlueColor,
+                    hoveredEditGridSide == GridSide.Right ? Defaults.GreenColor : Defaults.BlueColor,
+                    Cv2.FILLED);
+                Cv2.Circle(
+                    resultFrame,
+                    bottomMidPoint.Frame,
+                    innerDotRelativeRadius,
+                    hoveredEditGridSide == GridSide.Bottom ? Defaults.GreenColor : Defaults.BlueColor,
                     Cv2.FILLED);
             }
 
-            if (items != null)
+            if (humans != null)
             {
-                foreach (var item in items)
+                foreach (var item in humans)
                 {
                     Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
                     Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
@@ -257,6 +233,23 @@ namespace SpaceBetweenUs.ViewModels.Pages
                         itemDotRelativeRadius,
                         item.IsViolation ? Defaults.RedColor : Defaults.GreenColor,
                         Cv2.FILLED);
+                }
+            }
+
+            if (violations != null)
+            {
+                foreach (var item in violations)
+                {
+                    Cv2.Line(resultFrame, item.Line.A.Frame, item.Line.B.Frame, Defaults.RedColor, itemLineRelativeThickness);
+                    var center = GeometryHelpers.GetPoint(item.Line, 0.5);
+                    Cv2.PutText(
+                        resultFrame,
+                        item.Distance.ToString("0.##") + "m",
+                        center.Frame,
+                        HersheyFonts.HersheyPlain,
+                        itemLineRelativeThickness / 2,
+                        Defaults.BlueColor,
+                        itemLineRelativeThickness);
                 }
             }
 
@@ -272,6 +265,30 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     itemLineRelativeThickness * 2);
             }
 
+            if (Session.HumanDetector != null)
+            {
+                Cv2.PutText(
+                    resultFrame,
+                    "Violation Count: " + violationCount.ToString(),
+                    violationTextPos,
+                    HersheyFonts.HersheyPlain,
+                    itemLineRelativeThickness,
+                    violationCount == 0 ? Defaults.GreenColor : Defaults.RedColor,
+                    itemLineRelativeThickness * 2);
+            }
+
+            if (mouse.HasValue)
+            {
+                Cv2.PutText(
+                    resultFrame,
+                    mousePos,
+                    mouse.Value.Frame,
+                    HersheyFonts.HersheyPlain,
+                    itemLineRelativeThickness / 2,
+                    Defaults.RedColor,
+                    itemLineRelativeThickness);
+            }
+
             try
             {
                 dispatcher.Invoke(delegate
@@ -283,11 +300,43 @@ namespace SpaceBetweenUs.ViewModels.Pages
         }
 
         private void OpenAnchorEditWindow(Anchor anchor)
-        {;
+        {
             var editor = new AnchorPointEdit(anchor);
             var dlg = new ModernDialog
             {
                 Title = "Anchor Edit",
+                Content = editor,
+            };
+            var cancelButton = dlg.CancelButton;
+            cancelButton.Content = "Cancel";
+            var okButton = dlg.OkButton;
+            okButton.Content = "Ok";
+            dlg.Buttons = new Button[] { cancelButton, okButton };
+            dlg.MinWidth = 0;
+            dlg.MinHeight = 0;
+            dlg.SizeChanged += (s, e) =>
+            {
+                double screenWidth = SystemParameters.PrimaryScreenWidth;
+                double screenHeight = SystemParameters.PrimaryScreenHeight;
+                double windowWidth = e.NewSize.Width;
+                double windowHeight = e.NewSize.Height;
+                dlg.Left = (screenWidth / 2) - (windowWidth / 2);
+                dlg.Top = (screenHeight / 2) - (windowHeight / 2);
+            };
+            dlg.ShowDialog();
+            if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+            {
+                editor.Save();
+                GetPersistent();
+            }
+        }
+
+        private void OpenGridSideEditWindow(GridSide side)
+        {
+            var editor = new GridSizeEdit(side);
+            var dlg = new ModernDialog
+            {
+                Title = "Grid Side Edit",
                 Content = editor,
             };
             var cancelButton = dlg.CancelButton;
@@ -335,22 +384,63 @@ namespace SpaceBetweenUs.ViewModels.Pages
             return null;
         }
 
+        private GridSide? GetGridSide(RelativePoint point)
+        {
+            if (GeometryHelpers.IsInside(point, leftMidPoint, Defaults.AnchorDotRadius * 2))
+            {
+                return GridSide.Left;
+            }
+            else if (GeometryHelpers.IsInside(point, topMidPoint, Defaults.AnchorDotRadius * 2))
+            {
+                return GridSide.Top;
+            }
+            else if (GeometryHelpers.IsInside(point, rightMidPoint, Defaults.AnchorDotRadius * 2))
+            {
+                return GridSide.Right;
+            }
+            else if (GeometryHelpers.IsInside(point, bottomMidPoint, Defaults.AnchorDotRadius * 2))
+            {
+                return GridSide.Bottom;
+            }
+            return null;
+        }
+
         public void PointerDown(RelativePoint point)
         {
             selectedEditAnchor = GetPointAnchor(point);
+            selectedEditGridSide = GetGridSide(point);
         }
 
         public void PointerDoubleDown(RelativePoint point)
         {
             var anchor = GetPointAnchor(point);
+            var side = GetGridSide(point);
             if (anchor.HasValue) OpenAnchorEditWindow(anchor.Value);
+            else if (side.HasValue) OpenGridSideEditWindow(side.Value);
         }
 
         public void PointerMove(RelativePoint point)
         {
+            hoveredEditAnchor = GetPointAnchor(point);
+            hoveredEditGridSide = GetGridSide(point);
+            if (!point.IsZero)
+            {
+                var pers = Session.GridProjection.Perspective(point);
+                if (pers.HasValue)
+                {
+                    mouse = point;
+                    mousePos = "x=" + pers.Value.X.ToString("0.##") + "m y=" + pers.Value.Y.ToString("0.##") + "m";
+                }
+                else
+                {
+                    mouse = null;
+                }
+            }
             if (selectedEditAnchor != null)
             {
                 SetAnchorAxis(selectedEditAnchor.Value, point);
+                SetPersistent();
+                UpdateGridPoints();
             }
         }
 
@@ -359,8 +449,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
             if (selectedEditAnchor != null)
             {
                 selectedEditAnchor = null;
-                SetPersistent();
-                UpdateGridPoints();
+            }
+            if (selectedEditGridSide != null)
+            {
+                selectedEditGridSide = null;
             }
         }
 
@@ -393,9 +485,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
             Session.GridProjection.TL = tl;
             Session.GridProjection.TR = tr;
             Session.GridProjection.BR = br;
-            Session.GridProjection.OriginElevation = OriginElevation;
-            Session.GridProjection.OriginAngle = OriginAngle;
-            Session.GridProjection.FOVAngle = FOVAngle;
+            Session.GridProjection.LeftDistance = leftDistance;
+            Session.GridProjection.TopDistance = topDistance;
+            Session.GridProjection.RightDistance = rightDistance;
+            Session.GridProjection.BottomDistance = bottomDistance;
         }
 
         public void GetPersistent()
@@ -404,40 +497,20 @@ namespace SpaceBetweenUs.ViewModels.Pages
             tl = Session.GridProjection.TL;
             tr = Session.GridProjection.TR;
             br = Session.GridProjection.BR;
-            originElevation = Session.GridProjection.OriginElevation;
-            originAngle = Session.GridProjection.OriginAngle;
-            fovAngle = Session.GridProjection.FOVAngle;
-            if (bl.FrameWidth == 0 || bl.FrameHeight == 0)
-                bl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            if (tl.FrameWidth == 0 || tl.FrameHeight == 0)
-                tl = RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            if (tr.FrameWidth == 0 || tr.FrameHeight == 0)
-                tr = RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-            if (br.FrameWidth == 0 || br.FrameHeight == 0)
-                br = RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+            leftDistance = Session.GridProjection.LeftDistance;
+            topDistance = Session.GridProjection.TopDistance;
+            rightDistance = Session.GridProjection.RightDistance;
+            bottomDistance = Session.GridProjection.BottomDistance;
             UpdateGridPoints();
         }
 
         private void UpdateGridPoints()
         {
-            leftMidPoint = GeometryHelpers.GetPoint(bl, tl, 0.5);
-            topMidPoint = GeometryHelpers.GetPoint(tl, tr, 0.5);
-            rightMidPoint = GeometryHelpers.GetPoint(tr, br, 0.5);
-            bottomMidPoint = GeometryHelpers.GetPoint(br, bl, 0.5);
-            projectionHeight = Session.GridProjection.RealFOVBaseHeight;
-            gridLines = Session.GridProjection.GetGrid();
-            if (OriginElevation != 0)
-            {
-
-            }
-            if (OriginAngle != 0)
-            {
-
-            }
-            if (OriginElevation != 0 && OriginAngle != 0 && FOVAngle != 0)
-            {
-
-            }
+            leftMidPoint = Session.GridProjection.LeftMidPoint;
+            topMidPoint = Session.GridProjection.TopMidPoint;
+            rightMidPoint = Session.GridProjection.RightMidPoint;
+            bottomMidPoint = Session.GridProjection.BottomMidPoint;
+            gridPoints = Session.GridProjection.GetGridPoints();
         }
     }
 }
