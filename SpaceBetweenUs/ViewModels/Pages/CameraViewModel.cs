@@ -430,10 +430,12 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 {
                     mouse = point;
                     mousePos = "x=" + pers.Value.X.ToString("0.##") + "m y=" + pers.Value.Y.ToString("0.##") + "m";
+                    DrawResult();
                 }
                 else
                 {
                     mouse = null;
+                    DrawResult();
                 }
             }
             if (selectedEditAnchor != null)
