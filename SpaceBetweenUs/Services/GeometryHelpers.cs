@@ -117,6 +117,11 @@ namespace SpaceBetweenUs.Services
         {
             return base.GetHashCode();
         }
+
+        public bool HasAny(RelativePoint point)
+        {
+            return A == point || B == point;
+        }
     }
 
     #endregion
@@ -138,6 +143,23 @@ namespace SpaceBetweenUs.Services
             if (points.Length < 2) return true;
             var first = points[0];
             return points.All(s => s.FrameWidth == first.FrameWidth && s.FrameHeight == first.FrameHeight);
+        }
+
+        public static bool IsInside(Point interest, params Point[] polygon)
+        {
+            var points = new List<Point> { interest };
+            points.AddRange(polygon);
+
+            bool isInside = false;
+            for (int i = 0, j = polygon.Length - 1; i < polygon.Length; j = i++)
+            {
+                if (((polygon[i].Y > interest.Y) != (polygon[j].Y > interest.Y)) &&
+                (interest.X < (polygon[j].X - polygon[i].X) * (interest.Y - polygon[i].Y) / (polygon[j].Y - polygon[i].Y) + polygon[i].X))
+                {
+                    isInside = !isInside;
+                }
+            }
+            return isInside;
         }
 
         public static bool IsInside(RelativePoint interest, params RelativePoint[] polygon)

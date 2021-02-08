@@ -9,11 +9,9 @@
         <ScrollViewer>
             <DataGrid ItemsSource="{Binding ViolationLogs}" AutoGenerateColumns="False" >
                 <DataGrid.Columns>
-                    <mui:DataGridTextColumn Header="Time"  Binding="{Binding DateTime}"/>
-                    <mui:DataGridTextColumn Header="Violations" Binding="{Binding LastName}" />
-                    <mui:DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
-                    <mui:DataGridCheckBoxColumn Header="Member" Binding="{Binding IsMember}" />
-                    <mui:DataGridComboBoxColumn Header="Order Status" />
+                    <mui:DataGridTextColumn Header="Time" Binding="{Binding DateTimeString}" />
+                    <mui:DataGridTextColumn Header="Violations" Binding="{Binding ViolationCount}" />
+                    <mui:DataGridCheckBoxColumn Header="Select" Binding="{Binding IsSelected}" />
                 </DataGrid.Columns>
             </DataGrid>
         </ScrollViewer>

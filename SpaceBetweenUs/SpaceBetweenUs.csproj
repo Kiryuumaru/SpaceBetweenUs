@@ -63,7 +63,7 @@
     </Compile>
     <Compile Include="Appearance.cs" />
     <Compile Include="Defaults.cs" />
-    <Compile Include="Services\Class1.cs" />
+    <Compile Include="Model\ViolationLog.cs" />
     <Compile Include="Services\Detectors\YoloDetector.cs" />
     <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />
@@ -72,12 +72,18 @@
     <Compile Include="Services\GridProjection.cs" />
     <Compile Include="Services\CommonHelpers.cs" />
     <Compile Include="Services\Detectors\IHumanDetector.cs" />
+    <Compile Include="Services\Logger.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />
+    <Compile Include="ViewModels\Contents\ViolationThresEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\GridSideEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\AnchorPointEditViewModel.cs" />
     <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
+    <Compile Include="ViewModels\Pages\LogsViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
+    <Compile Include="Views\Contents\ViolationThresEdit.xaml.cs">
+      <DependentUpon>ViolationThresEdit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Contents\GridSizeEdit.xaml.cs">
       <DependentUpon>GridSizeEdit.xaml</DependentUpon>
     </Compile>
@@ -215,6 +221,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Contents\ViolationThresEdit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Contents\GridSizeEdit.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -248,9 +258,7 @@
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\Alturos.Yolo\src\Alturos.Yolo\Alturos.Yolo.csproj">
       <Project>{797ac09f-4944-47d4-a223-cc247237cfc5}</Project>

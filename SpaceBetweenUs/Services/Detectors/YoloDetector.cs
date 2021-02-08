@@ -16,6 +16,29 @@ namespace SpaceBetweenUs.Services.Detectors
         public double FrameHeight { get; private set; }
         public bool GPUMode { get; private set; }
 
+        public double? violationThreshold;
+        public double ViolationThreshold
+        {
+            get
+            {
+                if (violationThreshold == null)
+                {
+                    string data = Session.Datastore.GetValue("violation_thres");
+                    if (!double.TryParse(data, out double value)) return Defaults.ViolationDistanceDefault;
+                    violationThreshold = value;
+                }
+                return violationThreshold.Value;
+            }
+            set
+            {
+                violationThreshold = value;
+                Task.Run(delegate
+                {
+                    Session.Datastore.SetValue("violation_thres", value.ToString());
+                });
+            }
+        }
+
         public YoloDetector(
             double frameWidth,
             double frameHeight,
@@ -64,8 +87,13 @@ namespace SpaceBetweenUs.Services.Detectors
                 foreach (var j in humans)
                 {
                     if (i == j) continue;
+                    if (violations.Any(v => 
+                        (i.BottomCenter == v.Line.A && j.BottomCenter == v.Line.B) ||
+                        (i.BottomCenter == v.Line.B && j.BottomCenter == v.Line.A) ||
+                        (j.BottomCenter == v.Line.A && i.BottomCenter == v.Line.B) ||
+                        (j.BottomCenter == v.Line.B && i.BottomCenter == v.Line.A))) continue;
                     double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
-                    if (dis <= 2)
+                    if (dis < ViolationThreshold)
                     {
                         i.IsViolation = true;
                         j.IsViolation = true;

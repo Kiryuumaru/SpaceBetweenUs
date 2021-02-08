@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpaceBetweenUs.ViewModels.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,13 @@ namespace SpaceBetweenUs.Views.Pages
     /// </summary>
     public partial class Logs : UserControl
     {
+        private readonly LogsViewModel viewModel;
+
         public Logs()
         {
             InitializeComponent();
+            viewModel = new LogsViewModel();
+            DataContext = viewModel;
         }
     }
 }

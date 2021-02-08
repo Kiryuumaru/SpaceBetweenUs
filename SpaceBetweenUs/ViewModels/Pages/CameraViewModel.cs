@@ -37,7 +37,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
         #region Properties
 
         private readonly Dispatcher dispatcher;
-        private int violationCount;
+        private int violationsCount;
+        private int violatorsCount;
+        private int lastViolatorsCount;
         private RelativePoint bl;
         private RelativePoint tl;
         private RelativePoint tr;
@@ -73,10 +75,13 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private Point gpuTextPos;
         private Point violationTextPos;
+        private Point violatorsTextPos;
         private IEnumerable<Human> humans = new List<Human>();
         private IEnumerable<Violation> violations = new List<Violation>();
 
         private RelativePoint mousePos;
+
+        private bool logLastFrame = false;
 
 
         #endregion
@@ -90,7 +95,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private void Start()
         {
-            violationCount = 0;
+            violationsCount = 0;
+            violatorsCount = 0;
+            lastViolatorsCount = 0;
 
             currentFrame = new Mat();
             resultFrame = new Mat();
@@ -113,6 +120,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
             violationTextPos = new Point(
                 GeometryHelpers.Convert(Defaults.ViolationTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
                 GeometryHelpers.Convert(Defaults.ViolationTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
+            violatorsTextPos = new Point(
+                GeometryHelpers.Convert(Defaults.ViolatorsTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.ViolatorsTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
 
             var s = new Stopwatch();
 
@@ -145,31 +155,20 @@ namespace SpaceBetweenUs.ViewModels.Pages
         public void Detect()
         {
             var detection = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
-            if (detection.HasValue)
-            {
-                violations = detection.Value.Violations;
-                humans = detection.Value.Humans;
-            }
-            else
-            {
-                violations = null;
-                humans = null;
-            }
-            violationCount = humans?.Where(i => i.IsViolation).Count() ?? 0;
+            violations = detection.HasValue ? detection.Value.Violations : null;
+            humans = detection.HasValue ? detection.Value.Humans : null;
+            violationsCount = violations?.Count() ?? 0;
+            violatorsCount = humans?.Where(i => i.IsViolation).Count() ?? 0;
 
-            //if (ViolationCount > 0)
-            //{
-            //    Task.Run(async delegate
-            //    {
-            //        while (isSpeaking) { }
-            //        isSpeaking = true;
-            //        var synthesizer = new SpeechSynthesizer();
-            //        synthesizer.SetOutputToDefaultAudioDevice();
-            //        synthesizer.Speak("Please observe social distancing");
-            //        await Task.Delay(5000);
-            //        isSpeaking = false;
-            //    });
-            //}
+            if (violationsCount > 0)
+            {
+                if (violatorsCount != lastViolatorsCount)
+                {
+                    logLastFrame = true;
+                }
+            }
+
+            lastViolatorsCount = violatorsCount;
         }
 
         public void DrawResult()
@@ -264,15 +263,34 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
             if (Session.HumanDetector != null)
             {
-                Cv2.PutText(resultFrame, Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF", gpuTextPos, HersheyFonts.HersheyPlain, smallTextFontRelativeSize, Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor, smallTextFontRelativeThickness);
-                Cv2.PutText(resultFrame, "Violation Count: " + violationCount.ToString(), violationTextPos, HersheyFonts.HersheyPlain, largeTextFontRelativeSize, violationCount == 0 ? Defaults.WhiteColor : Defaults.RedColor, largeTextFontRelativeThickness);
+                Cv2.PutText(resultFrame, Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF", gpuTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor, normalTextFontRelativeThickness);
+                if (GeometryHelpers.IsInside(mousePos.Norm, Defaults.ViolationThresAreaBL, Defaults.ViolationThresAreaTL, Defaults.ViolationThresAreaTR, Defaults.ViolationThresAreaBR))
+                {
+                    Cv2.PutText(resultFrame, "Violations Count: " + violationsCount.ToString(), violationTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.GreenColor, normalTextFontRelativeThickness);
+                    Cv2.PutText(resultFrame, "Violators Count: " + violatorsCount.ToString(), violatorsTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.GreenColor, normalTextFontRelativeThickness);
+                }
+                else
+                {
+                    Cv2.PutText(resultFrame, "Violations Count: " + violationsCount.ToString(), violationTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, violationsCount == 0 ? Defaults.WhiteColor : Defaults.RedColor, normalTextFontRelativeThickness);
+                    Cv2.PutText(resultFrame, "Violators Count: " + violatorsCount.ToString(), violatorsTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, violatorsCount == 0 ? Defaults.WhiteColor : Defaults.RedColor, normalTextFontRelativeThickness);
+                }
+            }
+
+            if (logLastFrame)
+            {
+                logLastFrame = false;
+                Session.Logger.SetViolationLog(resultFrame, violationsCount, violatorsCount);
             }
 
             try
             {
                 dispatcher.Invoke(delegate
                 {
-                    Frame = resultFrame.ToWriteableBitmap(PixelFormats.Bgr24);
+                    try
+                    {
+                        Frame = resultFrame.ToWriteableBitmap(PixelFormats.Bgr24);
+                    }
+                    catch { }
                 });
             }
             catch { }
@@ -316,6 +334,38 @@ namespace SpaceBetweenUs.ViewModels.Pages
             var dlg = new ModernDialog
             {
                 Title = "Grid Side Edit",
+                Content = editor,
+            };
+            var cancelButton = dlg.CancelButton;
+            cancelButton.Content = "Cancel";
+            var okButton = dlg.OkButton;
+            okButton.Content = "Ok";
+            dlg.Buttons = new Button[] { cancelButton, okButton };
+            dlg.MinWidth = 0;
+            dlg.MinHeight = 0;
+            dlg.SizeChanged += (s, e) =>
+            {
+                double screenWidth = SystemParameters.PrimaryScreenWidth;
+                double screenHeight = SystemParameters.PrimaryScreenHeight;
+                double windowWidth = e.NewSize.Width;
+                double windowHeight = e.NewSize.Height;
+                dlg.Left = (screenWidth / 2) - (windowWidth / 2);
+                dlg.Top = (screenHeight / 2) - (windowHeight / 2);
+            };
+            dlg.ShowDialog();
+            if (dlg.DialogResult.HasValue && dlg.DialogResult.Value)
+            {
+                editor.Save();
+                GetPersistent();
+            }
+        }
+
+        private void OpenViolationThresEditWindow()
+        {
+            var editor = new ViolationThresEdit();
+            var dlg = new ModernDialog
+            {
+                Title = "Violation Threshold",
                 Content = editor,
             };
             var cancelButton = dlg.CancelButton;
@@ -390,6 +440,10 @@ namespace SpaceBetweenUs.ViewModels.Pages
             var side = GetGridSide(point);
             if (anchor.HasValue) OpenAnchorEditWindow(anchor.Value);
             else if (side.HasValue) OpenGridSideEditWindow(side.Value);
+            else if (GeometryHelpers.IsInside(point.Norm, Defaults.ViolationThresAreaBL, Defaults.ViolationThresAreaTL, Defaults.ViolationThresAreaTR, Defaults.ViolationThresAreaBR))
+            {
+                OpenViolationThresEditWindow();
+            }
         }
 
         public void PointerMove(RelativePoint point)

@@ -70,6 +70,7 @@ namespace SpaceBetweenUs.Services
 
     public interface IHumanDetector
     {
+        double ViolationThreshold { get; set; }
         bool GPUMode { get; }
         (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) DetectHuman(byte[] image);
     }

@@ -13,6 +13,7 @@ namespace SpaceBetweenUs.Services
         public static Datastore Datastore { get; private set; }
         public static FrameSourceFile FrameSource { get; private set; }
         public static GridProjection GridProjection { get; private set; }
+        public static Logger Logger { get; private set; }
         public static bool UseGPU
         {
             get
@@ -32,6 +33,7 @@ namespace SpaceBetweenUs.Services
             Datastore = await Datastore.Initialize();
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
+            Logger = await Logger.Initialize();
             //return;
             try
             {

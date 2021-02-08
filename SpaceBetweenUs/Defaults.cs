@@ -13,6 +13,7 @@ namespace SpaceBetweenUs
         public static readonly string YoloNames = Path.Combine("Assets", "coco.names");
         public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
         public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
+        public static readonly string LogsPath = Path.Combine("Logs");
 
         public const double MaxNormWidth = 10000;
         public const double MaxNormHeight = 10000;
@@ -28,21 +29,29 @@ namespace SpaceBetweenUs
 
         public const double LargeTextFontSize = 20;
         public const double NormalTextFontSize = 15;
-        public const double SmallTextFontSize = 12;
+        public const double SmallTextFontSize = 11;
         public const double LargeTextFontThickness = 30;
         public const double NormalTextFontThickness = 20;
-        public const double SmallTextFontThickness = 17;
+        public const double SmallTextFontThickness = 16;
 
         public const double GPUTextXPos = 25;
-        public const double GPUTextYPos = 300;
-        public const double ViolationTextXPos = 7450;
-        public const double ViolationTextYPos = 600;
+        public const double GPUTextYPos = 250;
+        public const double ViolationTextXPos = 8000;
+        public const double ViolationTextYPos = 500;
+        public const double ViolatorsTextXPos = 8000;
+        public const double ViolatorsTextYPos = 800;
 
         public const double ConfidenceThreshold = 0.3;
         public const double NonMaximaSupressionThreshold = 0.3;
 
+        public const double ViolationDistanceDefault = 1; // meters
         public const double GridNotchDistance = 0.5; // meters
         public const double GridPrecision = 0.1; // meters
+
+        public static Point ViolationThresAreaBL = new Point(8000, 800);
+        public static Point ViolationThresAreaTL = new Point(8000, 200);
+        public static Point ViolationThresAreaTR = new Point(10000, 200);
+        public static Point ViolationThresAreaBR = new Point(10000, 800);
 
         public static Scalar RedColor = new Scalar(0, 0, 255);
         public static Scalar GreenColor = new Scalar(0, 255, 0);
