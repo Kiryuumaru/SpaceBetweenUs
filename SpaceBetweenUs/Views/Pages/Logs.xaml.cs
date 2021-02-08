@@ -1,4 +1,5 @@
-﻿using SpaceBetweenUs.ViewModels.Pages;
+﻿using SpaceBetweenUs.Model;
+using SpaceBetweenUs.ViewModels.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,19 @@ namespace SpaceBetweenUs.Views.Pages
             InitializeComponent();
             viewModel = new LogsViewModel();
             DataContext = viewModel;
+        }
+
+        private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            var grid = (DataGrid)sender;
+            if (Key.Delete == e.Key)
+            {
+                foreach (var row in grid.SelectedItems)
+                {
+                    var log = (ViolationLog)row;
+                    log.Delete();
+                }
+            }
         }
     }
 }
