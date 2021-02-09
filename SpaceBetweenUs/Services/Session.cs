@@ -26,7 +26,7 @@ namespace SpaceBetweenUs.Services
                 Datastore.SetValue("use_gpu", value ? "1" : "0");
             }
         }
-        public static IHumanDetector HumanDetector { get; private set; }
+        public static HumanDetector HumanDetector { get; private set; }
 
         public static async Task Start(string frameSourceFile)
         {
@@ -34,29 +34,7 @@ namespace SpaceBetweenUs.Services
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
             Logger = await Logger.Initialize();
-            //return;
-            try
-            {
-                HumanDetector = new YoloDetector(
-                    FrameSource.Width,
-                    FrameSource.Height,
-                    Defaults.YoloConfig,
-                    Defaults.YoloWeights,
-                    Defaults.YoloNames,
-                    new GpuConfig(),
-                    new MLSystemValidator());
-            }
-            catch
-            {
-                HumanDetector = new YoloDetector(
-                    FrameSource.Width,
-                    FrameSource.Height,
-                    Defaults.YoloConfig,
-                    Defaults.YoloWeights,
-                    Defaults.YoloNames,
-                    null,
-                    new MLSystemValidator());
-            }
+            HumanDetector = await HumanDetector.Initialize(FrameSource.Width, FrameSource.Height);
         }
     }
 }

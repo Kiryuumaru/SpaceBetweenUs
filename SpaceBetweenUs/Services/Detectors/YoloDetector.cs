@@ -4,104 +4,93 @@ using OpenCvSharp;
 using OpenCvSharp.Dnn;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services.Detectors
 {
-    public class YoloDetector : YoloWrapper, IHumanDetector
+    public class YoloDetector : IDetector
     {
         public double FrameWidth { get; private set; }
         public double FrameHeight { get; private set; }
         public bool GPUMode { get; private set; }
 
-        public double? violationThreshold;
-        public double ViolationThreshold
-        {
-            get
-            {
-                if (violationThreshold == null)
-                {
-                    string data = Session.Datastore.GetValue("violation_thres");
-                    if (!double.TryParse(data, out double value)) return Defaults.ViolationDistanceDefault;
-                    violationThreshold = value;
-                }
-                return violationThreshold.Value;
-            }
-            set
-            {
-                violationThreshold = value;
-                Task.Run(delegate
-                {
-                    Session.Datastore.SetValue("violation_thres", value.ToString());
-                });
-            }
-        }
+        private readonly string[] labels;
+        private readonly Net net;
+        private readonly Size configSize;
+        private readonly Scalar blobFromImageMeanParams;
+        private readonly double scalarFactor;
+        private readonly IEnumerable<string> outputNames;
+        private readonly IEnumerable<Mat> outputLayers;
 
         public YoloDetector(
             double frameWidth,
             double frameHeight,
             string configurationFilename,
             string weightsFilename,
-            string namesFilename,
-            GpuConfig gpuConfig = null,
-            IYoloSystemValidator yoloSystemValidator = null)
-            : base(configurationFilename, weightsFilename, namesFilename, gpuConfig, yoloSystemValidator)
+            string namesFilename)
         {
             FrameWidth = frameWidth;
             FrameHeight = frameHeight;
-            GPUMode = gpuConfig != null;
+            labels = File.ReadAllLines(namesFilename).ToArray();
+            net = CvDnn.ReadNetFromDarknet(configurationFilename, weightsFilename);
+            net.SetPreferableBackend(Backend.CUDA);
+            net.SetPreferableTarget(Target.CUDA);
+            outputNames = net.GetUnconnectedOutLayersNames();
+            outputLayers = outputNames.Select(_ => new Mat()).ToArray();
+            var configs = File.ReadAllLines(configurationFilename).ToArray();
+            var configWidth = configs.Where(x => x.StartsWith("width="))
+                .Select(x => int.Parse(x.Split('=')[1]))
+                .FirstOrDefault();
+            var configHeight = configs.Where(x => x.StartsWith("height="))
+                .Select(x => int.Parse(x.Split('=')[1]))
+                .FirstOrDefault();
+            configSize = new Size(configWidth, configHeight);
+            blobFromImageMeanParams = new Scalar();
+            scalarFactor = 1.0 / 255;
         }
 
-        public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) DetectHuman(byte[] image)
+        public IEnumerable<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image)
         {
-            var items = Detect(image).Where(i => i.Confidence > Defaults.ConfidenceThreshold && i.Type.Equals("person")).ToArray();
-            var violations = new List<Violation>();
+            var blob = CvDnn.BlobFromImage(image, scalarFactor, configSize, blobFromImageMeanParams, true, false);
+            net.SetInput(blob);
+            net.Forward(outputLayers, outputNames);
+            var items = new List<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)>();
+            foreach (var prob in outputLayers)
+            {
+                for (var i = 0; i < prob.Rows; i++)
+                {
+                    var confidence = prob.At<float>(i, 4);
+                    if (confidence > Defaults.ConfidenceThreshold)
+                    {
+                        Cv2.MinMaxLoc(prob.Row(i).ColRange(5, prob.Cols), out _, out Point max);
+                        var type = max.X;
+                        var label = labels[type];
+                        var probability = prob.At<float>(i, type + 5);
+                        if (probability > Defaults.ConfidenceThreshold)
+                        {
+                            var centerX = prob.At<float>(i, 0) * FrameWidth;
+                            var centerY = prob.At<float>(i, 1) * FrameHeight;
+                            var width = prob.At<float>(i, 2) * FrameWidth;
+                            var height = prob.At<float>(i, 3) * FrameHeight;
+                            items.Add((label, confidence, centerX, centerY, width, height));
+                        }
+                    }
+                }
+            }
+            //return items;
             CvDnn.NMSBoxes(
-                items.Select(i => new Rect(i.X, i.Y, i.Width, i.Height)),
-                items.Select(i => (float)i.Confidence),
+                items.Select(i => new Rect((int)(i.CenterX - (i.Width / 2)), (int)(i.CenterY - (i.Height / 2)), (int)i.Width, (int)i.Height)),
+                items.Select(i => i.Confidence),
                 (float)Defaults.ConfidenceThreshold,
                 (float)Defaults.NonMaximaSupressionThreshold,
                 out int[] indices);
-            var humans = new List<Human>();
-            foreach (var i in indices)
+            for (int i = 0; i < indices.Length; i++)
             {
-                var human = new Human(items[i].X, items[i].Y, items[i].Width, items[i].Height, FrameWidth, FrameHeight);
-                try
-                {
-                    var pers = Session.GridProjection.Perspective(human.BottomCenter);
-                    if (pers.HasValue)
-                    {
-                        human.PerspectivePoint = pers.Value;
-                        humans.Add(human);
-                    }
-                }
-                catch
-                {
-                    humans.Add(human);
-                }
+                yield return items[indices[i]];
             }
-            foreach (var i in humans)
-            {
-                foreach (var j in humans)
-                {
-                    if (i == j) continue;
-                    if (violations.Any(v => 
-                        (i.BottomCenter == v.Line.A && j.BottomCenter == v.Line.B) ||
-                        (i.BottomCenter == v.Line.B && j.BottomCenter == v.Line.A) ||
-                        (j.BottomCenter == v.Line.A && i.BottomCenter == v.Line.B) ||
-                        (j.BottomCenter == v.Line.B && i.BottomCenter == v.Line.A))) continue;
-                    double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
-                    if (dis < ViolationThreshold)
-                    {
-                        i.IsViolation = true;
-                        j.IsViolation = true;
-                        violations.Add(new Violation(new RelativeLine(i.BottomCenter, j.BottomCenter), dis));
-                    }
-                }
-            }
-            return (violations, humans);
         }
     }
 }

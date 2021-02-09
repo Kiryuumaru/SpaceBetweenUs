@@ -73,7 +73,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
         private int normalTextFontRelativeThickness;
         private int smallTextFontRelativeThickness;
 
-        private Point gpuTextPos;
         private Point violationTextPos;
         private Point violatorsTextPos;
         private IEnumerable<Human> humans = new List<Human>();
@@ -114,9 +113,6 @@ namespace SpaceBetweenUs.ViewModels.Pages
             normalTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.NormalTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
             smallTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.SmallTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
 
-            gpuTextPos = new Point(
-                GeometryHelpers.Convert(Defaults.GPUTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
-                GeometryHelpers.Convert(Defaults.GPUTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
             violationTextPos = new Point(
                 GeometryHelpers.Convert(Defaults.ViolationTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
                 GeometryHelpers.Convert(Defaults.ViolationTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
@@ -154,7 +150,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void Detect()
         {
-            var detection = Session.HumanDetector?.DetectHuman(currentFrame.ToBytes());
+            var detection = Session.HumanDetector?.DetectHuman(currentFrame);
             violations = detection.HasValue ? detection.Value.Violations : null;
             humans = detection.HasValue ? detection.Value.Humans : null;
             violationsCount = violations?.Count() ?? 0;
@@ -263,8 +259,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
             if (Session.HumanDetector != null)
             {
-                Cv2.PutText(resultFrame, Session.HumanDetector.GPUMode ? "GPU ON" : "GPU OFF", gpuTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Session.HumanDetector.GPUMode ? Defaults.GreenColor : Defaults.RedColor, normalTextFontRelativeThickness);
-                if (GeometryHelpers.IsInside(mousePos.Norm, Defaults.ViolationThresAreaBL, Defaults.ViolationThresAreaTL, Defaults.ViolationThresAreaTR, Defaults.ViolationThresAreaBR))
+               if (GeometryHelpers.IsInside(mousePos.Norm, Defaults.ViolationThresAreaBL, Defaults.ViolationThresAreaTL, Defaults.ViolationThresAreaTR, Defaults.ViolationThresAreaBR))
                 {
                     Cv2.PutText(resultFrame, "Violations Count: " + violationsCount.ToString(), violationTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.GreenColor, normalTextFontRelativeThickness);
                     Cv2.PutText(resultFrame, "Violators Count: " + violatorsCount.ToString(), violatorsTextPos, HersheyFonts.HersheyPlain, normalTextFontRelativeSize, Defaults.GreenColor, normalTextFontRelativeThickness);

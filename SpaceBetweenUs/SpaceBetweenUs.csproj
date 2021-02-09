@@ -71,7 +71,8 @@
     <Compile Include="Services\GeometryHelpers.cs" />
     <Compile Include="Services\GridProjection.cs" />
     <Compile Include="Services\CommonHelpers.cs" />
-    <Compile Include="Services\Detectors\IHumanDetector.cs" />
+    <Compile Include="Services\Detectors\IDetector.cs" />
+    <Compile Include="Services\HumanDetector.cs" />
     <Compile Include="Services\Logger.cs" />
     <Compile Include="Services\MLSystemValidator.cs" />
     <Compile Include="Services\Session.cs" />

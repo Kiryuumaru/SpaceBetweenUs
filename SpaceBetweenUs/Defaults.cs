@@ -34,8 +34,6 @@ namespace SpaceBetweenUs
         public const double NormalTextFontThickness = 20;
         public const double SmallTextFontThickness = 16;
 
-        public const double GPUTextXPos = 25;
-        public const double GPUTextYPos = 250;
         public const double ViolationTextXPos = 8000;
         public const double ViolationTextYPos = 500;
         public const double ViolatorsTextXPos = 8000;
