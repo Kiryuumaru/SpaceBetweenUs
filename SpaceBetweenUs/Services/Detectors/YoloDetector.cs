@@ -13,6 +13,10 @@ namespace SpaceBetweenUs.Services.Detectors
 {
     public class YoloDetector : IDetector
     {
+        public static readonly string YoloNames = Path.Combine("Assets", "coco.names");
+        public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
+        public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
+
         public double FrameWidth { get; private set; }
         public double FrameHeight { get; private set; }
         public bool GPUMode { get; private set; }
@@ -25,22 +29,17 @@ namespace SpaceBetweenUs.Services.Detectors
         private readonly IEnumerable<string> outputNames;
         private readonly IEnumerable<Mat> outputLayers;
 
-        public YoloDetector(
-            double frameWidth,
-            double frameHeight,
-            string configurationFilename,
-            string weightsFilename,
-            string namesFilename)
+        public YoloDetector(double frameWidth, double frameHeight)
         {
             FrameWidth = frameWidth;
             FrameHeight = frameHeight;
-            labels = File.ReadAllLines(namesFilename).ToArray();
-            net = CvDnn.ReadNetFromDarknet(configurationFilename, weightsFilename);
+            labels = File.ReadAllLines(YoloNames).ToArray();
+            net = CvDnn.ReadNetFromDarknet(YoloConfig, YoloWeights);
             net.SetPreferableBackend(Backend.CUDA);
             net.SetPreferableTarget(Target.CUDA);
             outputNames = net.GetUnconnectedOutLayersNames();
             outputLayers = outputNames.Select(_ => new Mat()).ToArray();
-            var configs = File.ReadAllLines(configurationFilename).ToArray();
+            var configs = File.ReadAllLines(YoloConfig).ToArray();
             var configWidth = configs.Where(x => x.StartsWith("width="))
                 .Select(x => int.Parse(x.Split('=')[1]))
                 .FirstOrDefault();

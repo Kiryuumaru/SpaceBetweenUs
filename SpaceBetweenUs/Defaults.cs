@@ -10,9 +10,6 @@ namespace SpaceBetweenUs
 {
     public static class Defaults
     {
-        public static readonly string YoloNames = Path.Combine("Assets", "coco.names");
-        public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
-        public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
         public static readonly string LogsPath = Path.Combine("Logs");
 
         public const double MaxNormWidth = 10000;

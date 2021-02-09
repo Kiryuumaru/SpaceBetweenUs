@@ -108,12 +108,7 @@ namespace SpaceBetweenUs.Services
                 {
                     FrameWidth = frameWidth,
                     FrameHeight = frameHeight,
-                    detector = new YoloDetector(
-                    frameWidth,
-                    frameHeight,
-                    Defaults.YoloConfig,
-                    Defaults.YoloWeights,
-                    Defaults.YoloNames)
+                    detector = new YoloDetector(frameWidth, frameHeight)
                 };
                 return humanDetector;
             });
