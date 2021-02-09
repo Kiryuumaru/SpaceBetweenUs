@@ -100,15 +100,16 @@ namespace SpaceBetweenUs.Services
         private IDetector detector;
 
         private HumanDetector() { }
-        public static async Task<HumanDetector> Initialize(double frameWidth, double frameHeight)
+        public static async Task<HumanDetector> Initialize()
         {
             return await Task.Run(delegate
             {
                 var humanDetector = new HumanDetector
                 {
-                    FrameWidth = frameWidth,
-                    FrameHeight = frameHeight,
-                    detector = new YoloV3Detector(frameWidth, frameHeight)
+                    FrameWidth = Session.FrameSource.Width,
+                    FrameHeight = Session.FrameSource.Height,
+                    //detector = new AlturosYoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
+                    detector = new YoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
                 };
                 return humanDetector;
             });

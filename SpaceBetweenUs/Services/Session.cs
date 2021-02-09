@@ -33,7 +33,7 @@ namespace SpaceBetweenUs.Services
             FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
             GridProjection = await GridProjection.Initialize();
             Logger = await Logger.Initialize();
-            HumanDetector = await HumanDetector.Initialize(FrameSource.Width, FrameSource.Height);
+            HumanDetector = await HumanDetector.Initialize();
         }
     }
 }

@@ -17,7 +17,6 @@ namespace SpaceBetweenUs.Services.Detectors
 
         public double FrameWidth { get; private set; }
         public double FrameHeight { get; private set; }
-        public bool GPUMode { get; private set; }
 
         private readonly string[] labels;
         private readonly Net net;
