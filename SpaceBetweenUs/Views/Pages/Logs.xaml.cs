@@ -49,5 +49,12 @@ namespace SpaceBetweenUs.Views.Pages
             var grid = (DataGrid)sender;
             if (grid.SelectedItems.Count == 1) viewModel.SelectFrame((ViolationLog)grid.SelectedItems[0]);
         }
+
+        private void ScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+            e.Handled = true;
+        }
     }
 }
