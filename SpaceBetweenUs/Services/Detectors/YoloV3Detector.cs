@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services.Detectors
 {
-    public class YoloDetector : IDetector
+    public class YoloV3Detector : IDetector
     {
         public static readonly string YoloNames = Path.Combine("Assets", "coco.names");
         public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
@@ -27,7 +27,7 @@ namespace SpaceBetweenUs.Services.Detectors
         private readonly IEnumerable<string> outputNames;
         private readonly IEnumerable<Mat> outputLayers;
 
-        public YoloDetector(double frameWidth, double frameHeight)
+        public YoloV3Detector(double frameWidth, double frameHeight)
         {
             FrameWidth = frameWidth;
             FrameHeight = frameHeight;
