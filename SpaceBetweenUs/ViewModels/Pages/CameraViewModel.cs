@@ -1,5 +1,4 @@
-﻿using Alturos.Yolo.Model;
-using FirstFloor.ModernUI.Windows.Controls;
+﻿using FirstFloor.ModernUI.Windows.Controls;
 using MvvmHelpers;
 using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;

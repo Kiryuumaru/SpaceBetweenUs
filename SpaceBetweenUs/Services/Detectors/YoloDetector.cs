@@ -1,6 +1,4 @@
-﻿using Alturos.Yolo;
-using Alturos.Yolo.Model;
-using OpenCvSharp;
+﻿using OpenCvSharp;
 using OpenCvSharp.Dnn;
 using System;
 using System.Collections.Generic;

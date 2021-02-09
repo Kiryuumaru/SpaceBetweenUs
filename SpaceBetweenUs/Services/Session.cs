@@ -1,5 +1,4 @@
-﻿using Alturos.Yolo;
-using SpaceBetweenUs.Services.Detectors;
+﻿using SpaceBetweenUs.Services.Detectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
