@@ -6,15 +6,31 @@
              xmlns:mui="http://firstfloorsoftware.com/ModernUI"
              mc:Ignorable="d" >
     <Grid Style="{StaticResource ContentRoot}">
-        <ScrollViewer>
-            <DataGrid ItemsSource="{Binding ViolationLogs}" AutoGenerateColumns="False" PreviewKeyDown="DataGrid_PreviewKeyDown">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Column="0" Margin="0,0,32,0">
+            <DataGrid ItemsSource="{Binding ViolationLogs}" AutoGenerateColumns="False" PreviewKeyDown="DataGrid_PreviewKeyDown" SelectionChanged="DataGrid_SelectionChanged">
                 <DataGrid.Columns>
-                    <mui:DataGridTextColumn Header="Date" Binding="{Binding DateString, Mode=OneWay}" />
-                    <mui:DataGridTextColumn Header="Time" Binding="{Binding TimeString, Mode=OneWay}" />
+                    <mui:DataGridTextColumn Header="Time" Binding="{Binding DateTime, Mode=OneWay}" />
                     <mui:DataGridTextColumn Header="Violations" Binding="{Binding ViolationsCount, Mode=OneWay}" />
                     <mui:DataGridTextColumn Header="Violators" Binding="{Binding ViolatorsCount, Mode=OneWay}" />
                 </DataGrid.Columns>
             </DataGrid>
         </ScrollViewer>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" HorizontalAlignment="Center"
+                       Text="{Binding FrameHeader}"
+                       Style="{StaticResource Heading2}"
+                       Margin="3,3,3,8"/>
+            <Image Grid.Row="1" VerticalAlignment="Center"
+               x:Name="frameHolder"
+               Source="{Binding Frame}"/>
+        </Grid>
     </Grid>
 </UserControl>

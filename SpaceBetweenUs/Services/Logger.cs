@@ -12,6 +12,7 @@ namespace SpaceBetweenUs.Services
     public class Logger
     {
         public IEnumerable<ViolationLog> ViolationLogs { get; private set; } = new List<ViolationLog>();
+        public event Action OnRefreshLogs;
         private Logger() { }
         public static async Task<Logger> Initialize()
         {
@@ -32,7 +33,8 @@ namespace SpaceBetweenUs.Services
                     var log = ViolationLog.FromFile(file);
                     if (log != null) logs.Add(log);
                 }
-                ViolationLogs = logs;
+                ViolationLogs = logs.OrderByDescending(i => i.DateTime);
+                OnRefreshLogs?.Invoke();
             });
         }
 

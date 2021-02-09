@@ -51,6 +51,13 @@ namespace SpaceBetweenUs.Model
                 return DateTime.ToLongTimeString();
             }
         }
+        public string DateTimeString
+        {
+            get
+            {
+                return DateString + " " + TimeString;
+            }
+        }
 
         private ViolationLog() { }
         public static void Create(DateTime dateTime, int violationsCount, int violatorsCount, Mat frame)
@@ -82,9 +89,14 @@ namespace SpaceBetweenUs.Model
             }
         }
 
-        public void Delete()
+        public async void Delete()
         {
-            File.Delete(LogFile);
+            try
+            {
+                File.Delete(LogFile);
+                await Session.Logger.RefreshLogs();
+            }
+            catch { }
         }
     }
 }

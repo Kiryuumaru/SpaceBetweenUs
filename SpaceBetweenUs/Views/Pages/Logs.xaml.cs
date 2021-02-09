@@ -27,7 +27,7 @@ namespace SpaceBetweenUs.Views.Pages
         public Logs()
         {
             InitializeComponent();
-            viewModel = new LogsViewModel();
+            viewModel = new LogsViewModel(Dispatcher);
             DataContext = viewModel;
         }
 
@@ -42,6 +42,12 @@ namespace SpaceBetweenUs.Views.Pages
                     log.Delete();
                 }
             }
+        }
+
+        private void DataGrid_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var grid = (DataGrid)sender;
+            if (grid.SelectedItems.Count == 1) viewModel.SelectFrame((ViolationLog)grid.SelectedItems[0]);
         }
     }
 }
