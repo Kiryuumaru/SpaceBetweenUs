@@ -112,12 +112,15 @@ namespace SpaceBetweenUs.Services.Detectors
             }
         }
 
-        public IEnumerable<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image)
+        public IEnumerable<(float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image)
         {
-            var items = new List<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)>();
+            var items = new List<(float Confidence, double CenterX, double CenterY, double Width, double Height)>();
             foreach (var item in yolo.Detect(image.ToBytes()))
             {
-                items.Add((item.Type, (float)item.Confidence, item.X + item.Width / 2.0, item.Y + item.Height / 2.0, (double)item.Width, (double)item.Height));
+                if (item.Type.Equals("person"))
+                {
+                    items.Add(((float)item.Confidence, item.X + item.Width / 2.0, item.Y + item.Height / 2.0, item.Width, item.Height));
+                }
             }
             //return items;
             CvDnn.NMSBoxes(

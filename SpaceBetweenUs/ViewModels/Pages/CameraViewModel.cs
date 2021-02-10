@@ -149,7 +149,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void Detect()
         {
-            var detection = Session.HumanDetector?.DetectHuman(currentFrame);
+            var detection = Session.HumanDetector?.Detect(currentFrame);
             violations = detection.HasValue ? detection.Value.Violations : null;
             humans = detection.HasValue ? detection.Value.Humans : null;
             violationsCount = violations?.Count() ?? 0;

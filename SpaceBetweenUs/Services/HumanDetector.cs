@@ -108,32 +108,29 @@ namespace SpaceBetweenUs.Services
                 {
                     FrameWidth = Session.FrameSource.Width,
                     FrameHeight = Session.FrameSource.Height,
-                    //detector = new AlturosYoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
-                    detector = new YoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
+                    detector = new AlturosYoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
+                    //detector = new YoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
                 };
                 return humanDetector;
             });
         }
 
-        public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) DetectHuman(Mat image)
+        public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) Detect(Mat image)
         {
             var humans = new List<Human>();
             var violations = new List<Violation>();
             try
             {
                 var items = detector.Detect(image);
-                foreach (var (Label, Confidence, CenterX, CenterY, Width, Height) in items)
+                foreach (var (Confidence, CenterX, CenterY, Width, Height) in items)
                 {
-                    if (Label.Equals("person"))
-                    {
-                        var human = new Human(CenterX - (Width / 2), CenterY - (Height / 2), Width, Height, FrameWidth, FrameHeight);
+                    var human = new Human(CenterX - (Width / 2), CenterY - (Height / 2), Width, Height, FrameWidth, FrameHeight);
 
-                        var pers = Session.GridProjection.Perspective(human.BottomCenter);
-                        if (pers.HasValue)
-                        {
-                            human.PerspectivePoint = pers.Value;
-                            humans.Add(human);
-                        }
+                    var pers = Session.GridProjection.Perspective(human.BottomCenter);
+                    if (pers.HasValue)
+                    {
+                        human.PerspectivePoint = pers.Value;
+                        humans.Add(human);
                     }
                 }
                 foreach (var i in humans)

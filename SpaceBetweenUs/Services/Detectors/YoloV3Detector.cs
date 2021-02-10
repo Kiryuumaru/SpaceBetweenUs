@@ -45,15 +45,15 @@ namespace SpaceBetweenUs.Services.Detectors
                 .FirstOrDefault();
             configSize = new Size(configWidth, configHeight);
             blobFromImageMeanParams = new Scalar();
-            scalarFactor = 1.0 / 255;
+            scalarFactor = 1.0 / 255; 
         }
 
-        public IEnumerable<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image)
+        public IEnumerable<(float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image)
         {
             var blob = CvDnn.BlobFromImage(image, scalarFactor, configSize, blobFromImageMeanParams, true, false);
             net.SetInput(blob);
             net.Forward(outputLayers, outputNames);
-            var items = new List<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)>();
+            var items = new List<(float Confidence, double CenterX, double CenterY, double Width, double Height)>();
             foreach (var prob in outputLayers)
             {
                 for (var i = 0; i < prob.Rows; i++)
@@ -65,13 +65,13 @@ namespace SpaceBetweenUs.Services.Detectors
                         var type = max.X;
                         var label = labels[type];
                         var probability = prob.At<float>(i, type + 5);
-                        if (probability > Defaults.ConfidenceThreshold)
+                        if (probability > Defaults.ConfidenceThreshold && label.Equals("person"))
                         {
                             var centerX = prob.At<float>(i, 0) * FrameWidth;
                             var centerY = prob.At<float>(i, 1) * FrameHeight;
                             var width = prob.At<float>(i, 2) * FrameWidth;
                             var height = prob.At<float>(i, 3) * FrameHeight;
-                            items.Add((label, confidence, centerX, centerY, width, height));
+                            items.Add((confidence, centerX, centerY, width, height));
                         }
                     }
                 }

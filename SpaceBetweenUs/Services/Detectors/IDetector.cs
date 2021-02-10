@@ -9,6 +9,6 @@ namespace SpaceBetweenUs.Services.Detectors
 {
     public interface IDetector
     {
-        IEnumerable<(string Label, float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image);
+        IEnumerable<(float Confidence, double CenterX, double CenterY, double Width, double Height)> Detect(Mat image);
     }
 }
