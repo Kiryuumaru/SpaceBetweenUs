@@ -65,6 +65,7 @@
     <Compile Include="Defaults.cs" />
     <Compile Include="Model\ViolationLog.cs" />
     <Compile Include="Services\Detectors\AlturosYoloV3Detector.cs" />
+    <Compile Include="Services\Detectors\EmguYoloV3Detector.cs" />
     <Compile Include="Services\Detectors\YoloV3Detector.cs" />
     <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />
