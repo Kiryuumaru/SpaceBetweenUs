@@ -260,11 +260,20 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Emgu.CV">
+      <Version>4.4.0.4099</Version>
+    </PackageReference>
+    <PackageReference Include="Emgu.CV.runtime.windows">
+      <Version>4.4.0.4099</Version>
+    </PackageReference>
+    <PackageReference Include="Emgu.CV.runtime.windows.cuda">
+      <Version>4.4.0.4099</Version>
+    </PackageReference>
     <PackageReference Include="ModernUI.WPF">
       <Version>1.0.9</Version>
     </PackageReference>
     <PackageReference Include="OpenCvSharp4.Windows">
-      <Version>4.5.1.20210123</Version>
+      <Version>4.5.1.20210208</Version>
     </PackageReference>
     <PackageReference Include="Refractored.MvvmHelpers">
       <Version>1.6.2</Version>
