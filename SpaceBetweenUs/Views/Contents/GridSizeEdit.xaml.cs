@@ -30,15 +30,11 @@ namespace SpaceBetweenUs.Views.Contents
 
         public bool IsReferencedDepth;
 
-        public GridSizeEdit(GridSide side)
+        public GridSizeEdit(Session session, GridSide side)
         {
             InitializeComponent();
-            Loaded += new RoutedEventHandler(delegate
-            {
-                InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
-                viewModel = new GridSideEditViewModel(window.Session, side);
-                DataContext = viewModel;
-            });
+            viewModel = new GridSideEditViewModel(session, side);
+            DataContext = viewModel;
         }
 
         private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

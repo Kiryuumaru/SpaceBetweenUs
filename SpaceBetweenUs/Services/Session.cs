@@ -10,6 +10,7 @@ namespace SpaceBetweenUs.Services
 {
     public class Session
     {
+        private static List<string> sourcesOpen = new List<string>();
         public string Source { get; private set; }
         public string Name { get; private set; }
         public Datastore Datastore { get; private set; }
@@ -21,6 +22,7 @@ namespace SpaceBetweenUs.Services
         private Session() { }
         public static async Task<Session> Start(string source, string name)
         {
+            if (sourcesOpen.Any(i => i.Equals(source))) return null;
             var session = new Session()
             {
                 Source = source,
@@ -31,7 +33,16 @@ namespace SpaceBetweenUs.Services
             session.GridProjection = await GridProjection.Initialize(session);
             session.Logger = await Logger.Initialize(session);
             session.HumanDetector = await HumanDetector.Initialize(session);
+            sourcesOpen.Add(source);
             return session;
+        }
+
+        public static bool HasSourceOpen(string source) => sourcesOpen.Any(i => i.Equals(source));
+
+        public void Stop()
+        {
+            FrameSource.Stop();
+            sourcesOpen.RemoveAll(i => i.Equals(Source));
         }
     }
 }

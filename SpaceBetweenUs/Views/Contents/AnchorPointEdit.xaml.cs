@@ -30,15 +30,11 @@ namespace SpaceBetweenUs.Views.Contents
 
         public bool IsReferencedDepth;
 
-        public AnchorPointEdit(Anchor anchor)
+        public AnchorPointEdit(Session session, Anchor anchor)
         {
             InitializeComponent();
-            Loaded += new RoutedEventHandler(delegate
-            {
-                InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
-                viewModel = new AnchorPointEditViewModel(window.Session, anchor);
-                DataContext = viewModel;
-            });
+            viewModel = new AnchorPointEditViewModel(session, anchor);
+            DataContext = viewModel;
         }
 
         private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

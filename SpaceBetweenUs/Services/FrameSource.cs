@@ -30,18 +30,32 @@ namespace SpaceBetweenUs.Services
             });
         }
 
-        public void ReadFrame(Mat mat)
+        public async Task ReadFrame(Mat mat)
         {
-            capture.Grab();
-            capture.Grab();
-            capture.Grab();
-            capture.Grab();
-            capture.Read(mat);
-            if (mat.Empty())
+            try
             {
-                capture.Set(VideoCaptureProperties.PosAviRatio, 0);
-                capture.Read(mat);
+                await Task.Run(delegate
+                {
+                    capture.Grab();
+                    capture.Grab();
+                    capture.Grab();
+                    capture.Grab();
+                    capture.Read(mat);
+                    if (mat.Empty())
+                    {
+                        capture.Set(VideoCaptureProperties.PosAviRatio, 0);
+                        capture.Read(mat);
+                    }
+                });
             }
+            catch { await Task.Delay(1000); }
+        }
+
+        public void Stop()
+        {
+            capture.Release();
+            capture.Dispose();
+            capture = null;
         }
     }
 }

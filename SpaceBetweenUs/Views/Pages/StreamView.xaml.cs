@@ -20,22 +20,26 @@ using System.Windows.Shapes;
 namespace SpaceBetweenUs.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for GridPerspective.xaml
+    /// Interaction logic for StreamView.xaml
     /// </summary>
-    public partial class Camera : UserControl
+    public partial class StreamView : UserControl
     {
         private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
-        private CameraViewModel viewModel;
+        private StreamViewViewModel viewModel;
         private bool isMouseLeaveWithDown = false;
 
-        public Camera()
+        public StreamView()
         {
             InitializeComponent();
             Loaded += new RoutedEventHandler(delegate
             {
                 InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
-                viewModel = new CameraViewModel(window.Session, Dispatcher);
+                viewModel = new StreamViewViewModel(window.Session, Dispatcher);
                 DataContext = viewModel;
+                window.Closing += delegate
+                {
+                    viewModel.Stop();
+                };
             });
         }
 

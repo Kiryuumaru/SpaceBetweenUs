@@ -78,7 +78,7 @@
     <Compile Include="ViewModels\Contents\ViolationThresEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\GridSideEditViewModel.cs" />
     <Compile Include="ViewModels\Contents\AnchorPointEditViewModel.cs" />
-    <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
+    <Compile Include="ViewModels\Pages\StreamViewViewModel.cs" />
     <Compile Include="ViewModels\Pages\LogsViewModel.cs" />
     <Compile Include="ViewModels\Windows\InstanceWindowViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
@@ -104,8 +104,8 @@
       <DependentUpon>SettingsAppearance.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Contents\SettingsAppearanceViewModel.cs" />
-    <Compile Include="Views\Pages\Camera.xaml.cs">
-      <DependentUpon>Camera.xaml</DependentUpon>
+    <Compile Include="Views\Pages\StreamView.xaml.cs">
+      <DependentUpon>StreamView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Pages\Introduction.xaml.cs">
       <DependentUpon>Introduction.xaml</DependentUpon>
@@ -262,7 +262,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Pages\Camera.xaml">
+    <Page Include="Views\Pages\StreamView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

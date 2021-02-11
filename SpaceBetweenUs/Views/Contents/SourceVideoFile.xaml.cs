@@ -44,14 +44,30 @@ namespace SpaceBetweenUs.Views.Contents
 
         public async void Open()
         {
-            if (File.Exists(Filename.Text))
+            if (Session.HasSourceOpen(Filename.Text))
             {
-                Datastore.GeneralSetValue("video_file_last", Filename.Text);
-                var session = await Session.Start(Filename.Text, Path.GetFileName(Filename.Text));
-                var window = new InstanceWindow(session);
-                window.Show();
+                var dlg = new ModernDialog
+                {
+                    Title = "File already open",
+                    Content = "File provided is already open. Please choose new file to open.",
+                };
+                var okButton = dlg.OkButton;
+                okButton.Content = "Ok";
+                dlg.Buttons = new Button[] { okButton };
+                dlg.MinWidth = 400;
+                dlg.MinHeight = 0;
+                dlg.SizeChanged += (s, e) =>
+                {
+                    double screenWidth = SystemParameters.PrimaryScreenWidth;
+                    double screenHeight = SystemParameters.PrimaryScreenHeight;
+                    double windowWidth = e.NewSize.Width;
+                    double windowHeight = e.NewSize.Height;
+                    dlg.Left = (screenWidth / 2) - (windowWidth / 2);
+                    dlg.Top = (screenHeight / 2) - (windowHeight / 2);
+                };
+                dlg.ShowDialog();
             }
-            else
+            else if (!File.Exists(Filename.Text))
             {
                 var dlg = new ModernDialog
                 {
@@ -73,6 +89,13 @@ namespace SpaceBetweenUs.Views.Contents
                     dlg.Top = (screenHeight / 2) - (windowHeight / 2);
                 };
                 dlg.ShowDialog();
+            }
+            else
+            {
+                Datastore.GeneralSetValue("video_file_last", Filename.Text);
+                var session = await Session.Start(Filename.Text, Path.GetFileName(Filename.Text));
+                var window = new InstanceWindow(session);
+                window.Show();
             }
         }
     }

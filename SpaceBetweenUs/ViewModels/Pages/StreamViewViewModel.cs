@@ -20,7 +20,7 @@ using Point = OpenCvSharp.Point;
 
 namespace SpaceBetweenUs.ViewModels.Pages
 {
-    public class CameraViewModel : BaseViewModel
+    public class StreamViewViewModel : BaseViewModel
     {
         #region ViewBindings
 
@@ -37,6 +37,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private Session session;
         private readonly Dispatcher dispatcher;
+        private bool isStopped = false;
         private int violationsCount;
         private int violatorsCount;
         private int lastViolatorsCount;
@@ -85,7 +86,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         #endregion
 
-        public CameraViewModel(Session session, Dispatcher dispatcher)
+        public StreamViewViewModel(Session session, Dispatcher dispatcher)
         {
             this.session = session;
             this.dispatcher = dispatcher;
@@ -127,10 +128,16 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 while (true)
                 {
+                    if (isStopped) return;
+
                     s.Restart();
 
-                    session.FrameSource.ReadFrame(currentFrame);
-                    Detect();
+                    try
+                    {
+                        await session.FrameSource.ReadFrame(currentFrame);
+                        await Detect();
+                    }
+                    catch { }
 
                     int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
                     await Task.Delay(delayMillis > 0 ? delayMillis : 0);
@@ -141,35 +148,59 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 while (true)
                 {
+                    if (isStopped) return;
+
                     s.Restart();
-                    DrawResult();
+
+                    try
+                    {
+                        DrawResult();
+                    }
+                    catch { }
+
                     int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
                     await Task.Delay(delayMillis > 0 ? delayMillis : 0);
                 }
             });
         }
 
-        public void Detect()
+        public void Stop()
         {
-            var detection = session.HumanDetector?.Detect(currentFrame);
-            violations = detection.HasValue ? detection.Value.Violations : null;
-            humans = detection.HasValue ? detection.Value.Humans : null;
-            violationsCount = violations?.Count() ?? 0;
-            violatorsCount = humans?.Where(i => i.IsViolation).Count() ?? 0;
+            isStopped = true;
+            session.Stop();
+        }
 
-            if (violationsCount > 0)
+        public async Task Detect()
+        {
+            if (currentFrame == null) return;
+
+            await Task.Run(delegate
             {
-                if (violatorsCount != lastViolatorsCount)
+                try
                 {
-                    logLastFrame = true;
-                }
-            }
+                    var detection = session.HumanDetector?.Detect(currentFrame);
+                    violations = detection.HasValue ? detection.Value.Violations : null;
+                    humans = detection.HasValue ? detection.Value.Humans : null;
+                    violationsCount = violations?.Count() ?? 0;
+                    violatorsCount = humans?.Where(i => i.IsViolation).Count() ?? 0;
 
-            lastViolatorsCount = violatorsCount;
+                    if (violationsCount > 0)
+                    {
+                        if (violatorsCount != lastViolatorsCount)
+                        {
+                            logLastFrame = true;
+                        }
+                    }
+
+                    lastViolatorsCount = violatorsCount;
+                }
+                catch { }
+            });
         }
 
         public void DrawResult()
         {
+            if (currentFrame == null) return;
             resultFrame = currentFrame.Clone();
 
             if (gridPoints != null)
@@ -294,7 +325,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private void OpenAnchorEditWindow(Anchor anchor)
         {
-            var editor = new AnchorPointEdit(anchor);
+            var editor = new AnchorPointEdit(session, anchor);
             var dlg = new ModernDialog
             {
                 Title = "Anchor Edit",
@@ -326,7 +357,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private void OpenGridSideEditWindow(GridSide side)
         {
-            var editor = new GridSizeEdit(side);
+            var editor = new GridSizeEdit(session, side);
             var dlg = new ModernDialog
             {
                 Title = "Grid Side Edit",
