@@ -10,8 +10,6 @@ namespace SpaceBetweenUs
 {
     public static class Defaults
     {
-        public static readonly string LogsPath = Path.Combine("Logs");
-
         public const double MaxNormWidth = 10000;
         public const double MaxNormHeight = 10000;
         public const double GridEdgeOffset = 100;

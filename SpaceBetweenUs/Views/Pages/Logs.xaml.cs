@@ -1,5 +1,6 @@
 ﻿using SpaceBetweenUs.Model;
 using SpaceBetweenUs.ViewModels.Pages;
+using SpaceBetweenUs.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,17 @@ namespace SpaceBetweenUs.Views.Pages
     /// </summary>
     public partial class Logs : UserControl
     {
-        private readonly LogsViewModel viewModel;
+        private LogsViewModel viewModel;
 
         public Logs()
         {
             InitializeComponent();
-            viewModel = new LogsViewModel(Dispatcher);
-            DataContext = viewModel;
+            Loaded += new RoutedEventHandler(delegate
+            {
+                InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
+                viewModel = new LogsViewModel(window.Session, Dispatcher);
+                DataContext = viewModel;
+            });
         }
 
         private void DataGrid_PreviewKeyDown(object sender, KeyEventArgs e)

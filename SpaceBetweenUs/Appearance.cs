@@ -48,12 +48,12 @@ namespace SpaceBetweenUs
         {
             get
             {
-                string theme = Session.Datastore.GetValue("theme");
+                string theme = Datastore.GeneralGetValue("theme");
                 return Themes.FirstOrDefault(i => i.DisplayName.Equals(theme)) ?? DefaultTheme;
             }
             set
             {
-                Session.Datastore.SetValue("theme", value.DisplayName);
+                Datastore.GeneralSetValue("theme", value.DisplayName);
                 AppearanceManager.Current.ThemeSource = value.Source;
             }
         }
@@ -62,7 +62,7 @@ namespace SpaceBetweenUs
         {
             get
             {
-                string accent = Session.Datastore.GetValue("accent");
+                string accent = Datastore.GeneralGetValue("accent");
                 string r = CommonHelpers.BlobGetValue(accent, "r", DefaultAccentColor.R.ToString());
                 string g = CommonHelpers.BlobGetValue(accent, "g", DefaultAccentColor.G.ToString());
                 string b = CommonHelpers.BlobGetValue(accent, "b", DefaultAccentColor.B.ToString());
@@ -73,7 +73,7 @@ namespace SpaceBetweenUs
                 string data = CommonHelpers.BlobSetValue("", "r", value.R.ToString());
                 data = CommonHelpers.BlobSetValue(data, "g", value.G.ToString());
                 data = CommonHelpers.BlobSetValue(data, "b", value.B.ToString());
-                Session.Datastore.SetValue("accent", data);
+                Datastore.GeneralSetValue("accent", data);
                 AppearanceManager.Current.AccentColor = value;
             }
         }
@@ -82,12 +82,12 @@ namespace SpaceBetweenUs
         {
             get
             {
-                string font = Session.Datastore.GetValue("font");
+                string font = Datastore.GeneralGetValue("font");
                 return FontSizes.FirstOrDefault(i => i.Equals(font)) ?? DefaultFontSize;
             }
             set
             {
-                Session.Datastore.SetValue("font", value);
+                Datastore.GeneralSetValue("font", value);
                 AppearanceManager.Current.FontSize = value.Equals("small") ? FontSize.Small : FontSize.Large;
             }
         }

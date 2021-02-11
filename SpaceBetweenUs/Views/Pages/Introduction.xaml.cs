@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FirstFloor.ModernUI.Windows.Controls;
+using SpaceBetweenUs.Views.Contents;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +25,65 @@ namespace SpaceBetweenUs.Views.Pages
         public Introduction()
         {
             InitializeComponent();
+        }
+
+        private void OpenWindow(ModernDialog dialog, Action onOk)
+        {
+            var cancelButton = dialog.CancelButton;
+            cancelButton.Content = "Cancel";
+            var okButton = dialog.OkButton;
+            okButton.Content = "Open";
+            dialog.Buttons = new Button[] { cancelButton, okButton };
+            dialog.MinWidth = 400;
+            dialog.MinHeight = 0;
+            dialog.MaxWidth = 400;
+            dialog.SizeChanged += (s, e) =>
+            {
+                double screenWidth = SystemParameters.PrimaryScreenWidth;
+                double screenHeight = SystemParameters.PrimaryScreenHeight;
+                double windowWidth = e.NewSize.Width;
+                double windowHeight = e.NewSize.Height;
+                dialog.Left = (screenWidth / 2) - (windowWidth / 2);
+                dialog.Top = (screenHeight / 2) - (windowHeight / 2);
+            };
+            dialog.ShowDialog();
+            if (dialog.DialogResult.HasValue && dialog.DialogResult.Value)
+            {
+                onOk?.Invoke();
+            }
+        }
+
+        private void Button_Click_IPCam(object sender, RoutedEventArgs e)
+        {
+            var editor = new SourceIPCam();
+            var dlg = new ModernDialog
+            {
+                Title = "IP Cam",
+                Content = editor,
+            };
+            OpenWindow(dlg, editor.Open);
+        }
+
+        private void Button_Click_USBCam(object sender, RoutedEventArgs e)
+        {
+            var editor = new SourceUSBCam();
+            var dlg = new ModernDialog
+            {
+                Title = "USB Cam",
+                Content = editor,
+            };
+            OpenWindow(dlg, editor.Open);
+        }
+
+        private void Button_Click_VideoFile(object sender, RoutedEventArgs e)
+        {
+            var editor = new SourceVideoFile();
+            var dlg = new ModernDialog
+            {
+                Title = "Video File",
+                Content = editor,
+            };
+            OpenWindow(dlg, editor.Open);
         }
     }
 }

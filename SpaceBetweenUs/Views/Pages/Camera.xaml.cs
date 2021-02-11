@@ -1,5 +1,6 @@
 ﻿using SpaceBetweenUs.Services;
 using SpaceBetweenUs.ViewModels.Pages;
+using SpaceBetweenUs.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,14 +25,18 @@ namespace SpaceBetweenUs.Views.Pages
     public partial class Camera : UserControl
     {
         private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
-        private readonly CameraViewModel viewModel;
+        private CameraViewModel viewModel;
         private bool isMouseLeaveWithDown = false;
 
         public Camera()
         {
             InitializeComponent();
-            viewModel = new CameraViewModel(Dispatcher);
-            DataContext = viewModel;
+            Loaded += new RoutedEventHandler(delegate
+            {
+                InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
+                viewModel = new CameraViewModel(window.Session, Dispatcher);
+                DataContext = viewModel;
+            });
         }
 
         private RelativePoint GetRelativePoint(MouseEventArgs e)

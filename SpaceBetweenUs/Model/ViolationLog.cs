@@ -11,6 +11,8 @@ namespace SpaceBetweenUs.Model
 {
     public class ViolationLog
     {
+        public Session session;
+
         public string LogFile { get; private set; }
         public DateTime DateTime
         {
@@ -60,22 +62,23 @@ namespace SpaceBetweenUs.Model
         }
 
         private ViolationLog() { }
-        public static void Create(DateTime dateTime, int violationsCount, int violatorsCount, Mat frame)
+        public static void Create(Session session, DateTime dateTime, int violationsCount, int violatorsCount, Mat frame)
         {
-            Directory.CreateDirectory(Defaults.LogsPath);
+            Directory.CreateDirectory(session.Logger.LogsPath);
             string filename = "";
             filename = CommonHelpers.BlobSetValue(filename, "dt", CommonHelpers.EncodeDateTime(dateTime));
             filename = CommonHelpers.BlobSetValue(filename, "v1", violationsCount.ToString());
             filename = CommonHelpers.BlobSetValue(filename, "v2", violatorsCount.ToString());
             filename += ".jpg";
-            filename = Path.Combine(Defaults.LogsPath, filename);
+            filename = Path.Combine(session.Logger.LogsPath, filename);
             Cv2.ImWrite(filename, frame);
         }
 
-        public static ViolationLog FromFile(string logPath)
+        public static ViolationLog FromFile(Session session, string logPath)
         {
             var log = new ViolationLog()
             {
+                session = session,
                 LogFile = logPath
             };
             try
@@ -94,7 +97,7 @@ namespace SpaceBetweenUs.Model
             try
             {
                 File.Delete(LogFile);
-                await Session.Logger.RefreshLogs();
+                await session.Logger.RefreshLogs();
             }
             catch { }
         }

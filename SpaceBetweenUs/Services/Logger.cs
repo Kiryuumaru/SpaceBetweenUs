@@ -11,12 +11,19 @@ namespace SpaceBetweenUs.Services
 {
     public class Logger
     {
+        private Session session;
+
+        public string LogsPath { get; private set; }
         public IEnumerable<ViolationLog> ViolationLogs { get; private set; } = new List<ViolationLog>();
         public event Action OnRefreshLogs;
         private Logger() { }
-        public static async Task<Logger> Initialize()
+        public static async Task<Logger> Initialize(Session session)
         {
-            var logger = new Logger();
+            var logger = new Logger()
+            {
+                session = session,
+                LogsPath = Path.Combine("Session", session.Name, "Logs")
+            };
             await logger.RefreshLogs();
             return logger;
         }
@@ -25,12 +32,12 @@ namespace SpaceBetweenUs.Services
         {
             await Task.Run(delegate
             {
-                Directory.CreateDirectory(Defaults.LogsPath);
-                string[] files = Directory.GetFiles(Defaults.LogsPath);
+                Directory.CreateDirectory(LogsPath);
+                string[] files = Directory.GetFiles(LogsPath);
                 var logs = new List<ViolationLog>();
                 foreach (var file in files)
                 {
-                    var log = ViolationLog.FromFile(file);
+                    var log = ViolationLog.FromFile(session, file);
                     if (log != null) logs.Add(log);
                 }
                 ViolationLogs = logs.OrderByDescending(i => i.DateTime);
@@ -40,7 +47,7 @@ namespace SpaceBetweenUs.Services
 
         public async void SetViolationLog(Mat frame, int violationsCount, int violatorsCount)
         {
-            ViolationLog.Create(DateTime.Now, violationsCount, violatorsCount, frame);
+            ViolationLog.Create(session, DateTime.Now, violationsCount, violatorsCount, frame);
             await RefreshLogs();
         }
     }

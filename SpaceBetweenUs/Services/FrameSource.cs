@@ -10,54 +10,38 @@ namespace SpaceBetweenUs.Services
 {
     public class FrameSource
     {
-        private Mat matToRead;
-        private bool isReadingFrame = false;
-        private readonly VideoCapture capture;
+        private VideoCapture capture;
 
-        public double Fps => capture.Fps;
+        public double Width => capture.FrameWidth;
+        public double Height => capture.FrameHeight;
 
-        public FrameSource(string file)
+        private FrameSource() { }
+
+        public static async Task<FrameSource> Initialize(Session session)
         {
-            capture = new VideoCapture(file);
-        }
-
-        public async void Start()
-        {
-            // Mock realtime cam simulation
-            var s = new Stopwatch();
-            using var mat = new Mat();
-            while (true)
+            return await Task.Run(delegate
             {
-                s.Restart();
-                if (isReadingFrame)
+                var frameSource = new FrameSource
                 {
-                    capture.Read(matToRead);
-                    if (matToRead.Empty())
-                    {
-                        capture.Set(VideoCaptureProperties.PosAviRatio, 0);
-                        capture.Read(matToRead);
-                    }
-                    isReadingFrame = false;
-                }
-                else
-                {
-                    capture.Read(mat);
-                    if (mat.Empty())
-                    {
-                        capture.Set(VideoCaptureProperties.PosAviRatio, 0);
-                        capture.Read(mat);
-                    }
-                }
-                int delayMillis = (int)((1000 / capture.Fps) - s.ElapsedMilliseconds);
-                await Task.Delay(delayMillis > 0 ? delayMillis : 0);
-            }
+                    capture = new VideoCapture(session.Source),
+                };
+
+                return frameSource;
+            });
         }
 
         public void ReadFrame(Mat mat)
         {
-            matToRead = mat;
-            isReadingFrame = true;
-            while (isReadingFrame) { }
+            capture.Grab();
+            capture.Grab();
+            capture.Grab();
+            capture.Grab();
+            capture.Read(mat);
+            if (mat.Empty())
+            {
+                capture.Set(VideoCaptureProperties.PosAviRatio, 0);
+                capture.Read(mat);
+            }
         }
     }
 }

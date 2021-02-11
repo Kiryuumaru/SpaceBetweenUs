@@ -1,5 +1,6 @@
 ﻿using SpaceBetweenUs.Services;
 using SpaceBetweenUs.ViewModels.Contents;
+using SpaceBetweenUs.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,15 +26,19 @@ namespace SpaceBetweenUs.Views.Contents
     {
         private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
 
-        private readonly GridSideEditViewModel viewModel;
+        private GridSideEditViewModel viewModel;
 
         public bool IsReferencedDepth;
 
         public GridSizeEdit(GridSide side)
         {
             InitializeComponent();
-            viewModel = new GridSideEditViewModel(side);
-            DataContext = viewModel;
+            Loaded += new RoutedEventHandler(delegate
+            {
+                InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
+                viewModel = new GridSideEditViewModel(window.Session, side);
+                DataContext = viewModel;
+            });
         }
 
         private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

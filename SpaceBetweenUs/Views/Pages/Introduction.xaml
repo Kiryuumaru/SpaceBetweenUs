@@ -10,8 +10,27 @@
             <StackPanel >
                 <TextBlock Text="SPACE BETWEEN US" Style="{StaticResource Heading1}" Margin="0,0,0,8"/>
                 <mui:BBCodeBlock BBCode="A state of the art real-time human social distance detection system. This project has [b]CPU[/b] and [b]GPU[/b] support, with GPU the detection works much faster." Margin="0,0,0,32" />
-                <TextBlock Text="MORE" Style="{StaticResource Heading2}" />
-                <mui:BBCodeBlock BBCode="wordings more wordingss" Margin="0,0,0,32"/>
+                <TextBlock Margin="0,0,0,8" Text="Select Source" Style="{StaticResource Heading2}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Margin="8,3,8,3"
+                            Content="IP Cam"
+                            Click="Button_Click_IPCam"/>
+                    <Button Grid.Column="1"
+                            Margin="8,3,8,3"
+                            Content="USB Cam"
+                            Click="Button_Click_USBCam"/>
+                    <Button Grid.Column="2"
+                            Margin="8,3,8,3"
+                            Content="Video File"
+                            Click="Button_Click_VideoFile"/>
+                </Grid>
             </StackPanel>
         </ScrollViewer>
     </Grid>

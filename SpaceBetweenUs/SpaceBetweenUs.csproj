@@ -65,9 +65,7 @@
     <Compile Include="Defaults.cs" />
     <Compile Include="Model\ViolationLog.cs" />
     <Compile Include="Services\Detectors\AlturosYoloV3Detector.cs" />
-    <Compile Include="Services\Detectors\EmguYoloV3Detector.cs" />
     <Compile Include="Services\Detectors\YoloV3Detector.cs" />
-    <Compile Include="Services\FrameSourceFile.cs" />
     <Compile Include="Services\FrameSource.cs" />
     <Compile Include="Services\Datastore.cs" />
     <Compile Include="Services\GeometryHelpers.cs" />
@@ -82,7 +80,17 @@
     <Compile Include="ViewModels\Contents\AnchorPointEditViewModel.cs" />
     <Compile Include="ViewModels\Pages\CameraViewModel.cs" />
     <Compile Include="ViewModels\Pages\LogsViewModel.cs" />
+    <Compile Include="ViewModels\Windows\InstanceWindowViewModel.cs" />
     <Compile Include="ViewModels\Windows\MainWindowViewModel.cs" />
+    <Compile Include="Views\Contents\SourceVideoFile.xaml.cs">
+      <DependentUpon>SourceVideoFile.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Contents\SourceUSBCam.xaml.cs">
+      <DependentUpon>SourceUSBCam.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Contents\SourceIPCam.xaml.cs">
+      <DependentUpon>SourceIPCam.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Contents\ViolationThresEdit.xaml.cs">
       <DependentUpon>ViolationThresEdit.xaml</DependentUpon>
     </Compile>
@@ -99,11 +107,14 @@
     <Compile Include="Views\Pages\Camera.xaml.cs">
       <DependentUpon>Camera.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Pages\Introduction.xaml.cs">
+      <DependentUpon>Introduction.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Pages\Logs.xaml.cs">
       <DependentUpon>Logs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Pages\Introduction.xaml.cs">
-      <DependentUpon>Introduction.xaml</DependentUpon>
+    <Compile Include="Views\Windows\InstanceWindow.xaml.cs">
+      <DependentUpon>InstanceWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Windows\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
@@ -223,6 +234,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Contents\SourceVideoFile.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Contents\SourceUSBCam.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Contents\SourceIPCam.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Contents\ViolationThresEdit.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -243,11 +266,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Views\Pages\Introduction.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Pages\Logs.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Pages\Introduction.xaml">
+    <Page Include="Views\Windows\InstanceWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -261,15 +288,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Emgu.CV">
-      <Version>4.4.0.4099</Version>
-    </PackageReference>
-    <PackageReference Include="Emgu.CV.runtime.windows">
-      <Version>4.4.0.4099</Version>
-    </PackageReference>
-    <PackageReference Include="Emgu.CV.runtime.windows.cuda">
-      <Version>4.4.0.4099</Version>
-    </PackageReference>
     <PackageReference Include="ModernUI.WPF">
       <Version>1.0.9</Version>
     </PackageReference>

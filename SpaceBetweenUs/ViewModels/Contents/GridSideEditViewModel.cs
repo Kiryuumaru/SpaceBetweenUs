@@ -10,6 +10,8 @@ namespace SpaceBetweenUs.ViewModels.Contents
 {
     public class GridSideEditViewModel : BaseViewModel
     {
+        private Session session;
+
         private readonly GridSide side;
 
         private double distance;
@@ -19,18 +21,19 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref distance, value);
         }
 
-        public GridSideEditViewModel(GridSide side)
+        public GridSideEditViewModel(Session session, GridSide side)
         {
+            this.session = session;
             this.side = side;
             switch (side)
             {
                 case GridSide.TopBottom:
                     Header = "Top and Bottom";
-                    Distance = Session.GridProjection.TopBottomDistance;
+                    Distance = session.GridProjection.TopBottomDistance;
                     break;
                 case GridSide.LeftRight:
                     Header = "Left and Right";
-                    Distance = Session.GridProjection.LeftRightDistance;
+                    Distance = session.GridProjection.LeftRightDistance;
                     break;
             }
         }
@@ -40,10 +43,10 @@ namespace SpaceBetweenUs.ViewModels.Contents
             switch (side)
             {
                 case GridSide.TopBottom:
-                     Session.GridProjection.TopBottomDistance = Distance;
+                     session.GridProjection.TopBottomDistance = Distance;
                     break;
                 case GridSide.LeftRight:
-                     Session.GridProjection.LeftRightDistance = Distance;
+                     session.GridProjection.LeftRightDistance = Distance;
                     break;
             }
         }

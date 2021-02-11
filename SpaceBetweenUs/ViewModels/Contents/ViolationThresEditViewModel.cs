@@ -10,6 +10,8 @@ namespace SpaceBetweenUs.ViewModels.Contents
 {
     public class ViolationThresEditViewModel : BaseViewModel
     {
+        private Session session;
+
         private double threshold;
         public double Threshold
         {
@@ -17,14 +19,15 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref threshold, value);
         }
 
-        public ViolationThresEditViewModel()
+        public ViolationThresEditViewModel(Session session)
         {
-            Threshold = Session.HumanDetector?.ViolationThreshold ?? 0;
+            this.session = session;
+            Threshold = session.HumanDetector?.ViolationThreshold ?? 0;
         }
 
         public void Save()
         {
-            if (Session.HumanDetector != null) Session.HumanDetector.ViolationThreshold = Threshold;
+            if (session.HumanDetector != null) session.HumanDetector.ViolationThreshold = Threshold;
         }
     }
 }

@@ -16,11 +16,11 @@ namespace SpaceBetweenUs
     /// </summary>
     public partial class App : Application
     {
-        protected override async void OnStartup(StartupEventArgs e)
+        protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            await Session.Start(@"..\..\..\..\Additionals\SampleVideos\test1.mp4");
             Appearance.Initialize();
+            HumanDetector.InitializeDetector();
         }
     }
 }

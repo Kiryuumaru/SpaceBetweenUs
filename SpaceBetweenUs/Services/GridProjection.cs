@@ -19,6 +19,8 @@ namespace SpaceBetweenUs.Services
 
     public class GridProjection
     {
+        private Session session;
+
         private double? maxNormWidth;
         public double MaxNormWidth
         {
@@ -26,7 +28,7 @@ namespace SpaceBetweenUs.Services
             {
                 if (maxNormWidth == null)
                 {
-                    string data = Session.Datastore.GetValue("max_norm_w");
+                    string data = session.Datastore.GetValue("max_norm_w");
                     if (!double.TryParse(data, out double value)) return Defaults.MaxNormWidth;
                     maxNormWidth = value;
                 }
@@ -37,7 +39,7 @@ namespace SpaceBetweenUs.Services
                 maxNormWidth = value;
                 Task.Run(delegate
                 {
-                    Session.Datastore.SetValue("max_norm_w", value.ToString());
+                    session.Datastore.SetValue("max_norm_w", value.ToString());
                 });
             }
         }
@@ -49,7 +51,7 @@ namespace SpaceBetweenUs.Services
             {
                 if (maxNormHeight == null)
                 {
-                    string data = Session.Datastore.GetValue("max_norm_h");
+                    string data = session.Datastore.GetValue("max_norm_h");
                     if (!double.TryParse(data, out double value)) return Defaults.MaxNormHeight;
                     maxNormHeight = value;
                 }
@@ -60,7 +62,7 @@ namespace SpaceBetweenUs.Services
                 maxNormHeight = value;
                 Task.Run(delegate
                 {
-                    Session.Datastore.SetValue("max_norm_h", value.ToString());
+                    session.Datastore.SetValue("max_norm_h", value.ToString());
                 });
             }
         }
@@ -73,14 +75,14 @@ namespace SpaceBetweenUs.Services
                 if (bl == null)
                 {
                     if (Defaults.MaxNormWidth != MaxNormWidth ||
-                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height); ;
-                    string data = Session.Datastore.GetValue("grid_bl");
+                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height); ;
+                    string data = session.Datastore.GetValue("grid_bl");
                     if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height); ;
+                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height); ;
                     bl = new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
                 }
                 return bl.Value;
@@ -97,7 +99,7 @@ namespace SpaceBetweenUs.Services
                     data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
                     data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                     data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
-                    Session.Datastore.SetValue("grid_bl", data);
+                    session.Datastore.SetValue("grid_bl", data);
                     SolvePerspective();
                 });
             }
@@ -111,14 +113,14 @@ namespace SpaceBetweenUs.Services
                 if (tl == null)
                 {
                     if (Defaults.MaxNormWidth != MaxNormWidth ||
-                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-                    string data = Session.Datastore.GetValue("grid_tl");
+                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height);
+                    string data = session.Datastore.GetValue("grid_tl");
                     if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height);
                     tl = new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
                 }
                 return tl.Value;
@@ -135,7 +137,7 @@ namespace SpaceBetweenUs.Services
                     data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
                     data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                     data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
-                    Session.Datastore.SetValue("grid_tl", data);
+                    session.Datastore.SetValue("grid_tl", data);
                     SolvePerspective();
                 });
             }
@@ -149,14 +151,14 @@ namespace SpaceBetweenUs.Services
                 if (tr == null)
                 {
                     if (Defaults.MaxNormWidth != MaxNormWidth ||
-                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-                    string data = Session.Datastore.GetValue("grid_tr");
+                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height);
+                    string data = session.Datastore.GetValue("grid_tr");
                     if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height);
                     tr = new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
                 }
                 return tr.Value;
@@ -173,7 +175,7 @@ namespace SpaceBetweenUs.Services
                     data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
                     data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                     data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
-                    Session.Datastore.SetValue("grid_tr", data);
+                    session.Datastore.SetValue("grid_tr", data);
                     SolvePerspective();
                 });
             }
@@ -187,14 +189,14 @@ namespace SpaceBetweenUs.Services
                 if (br == null)
                 {
                     if (Defaults.MaxNormWidth != MaxNormWidth ||
-                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
-                    string data = Session.Datastore.GetValue("grid_br");
+                        Defaults.MaxNormHeight != MaxNormHeight) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height);
+                    string data = session.Datastore.GetValue("grid_br");
                     if (!double.TryParse(CommonHelpers.BlobGetValue(data, "x_norm"), out double xNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_norm"), out double yNormAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "x_frame"), out double xFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "y_frame"), out double yFrameAxis) ||
                         !double.TryParse(CommonHelpers.BlobGetValue(data, "w_frame"), out double frameWidth) ||
-                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), Session.FrameSource.Width, Session.FrameSource.Height);
+                        !double.TryParse(CommonHelpers.BlobGetValue(data, "h_frame"), out double frameHeight)) return RelativePoint.FromNorm(new Point(Defaults.MaxNormWidth - Defaults.GridEdgeOffset, Defaults.MaxNormHeight - Defaults.GridEdgeOffset), session.FrameSource.Width, session.FrameSource.Height);
                     br = new RelativePoint(new Point(xNormAxis, yNormAxis), new Point(xFrameAxis, yFrameAxis), frameWidth, frameHeight);
                 }
                 return br.Value;
@@ -211,7 +213,7 @@ namespace SpaceBetweenUs.Services
                     data = CommonHelpers.BlobSetValue(data, "y_frame", value.Frame.Y.ToString());
                     data = CommonHelpers.BlobSetValue(data, "w_frame", value.FrameWidth.ToString());
                     data = CommonHelpers.BlobSetValue(data, "h_frame", value.FrameHeight.ToString());
-                    Session.Datastore.SetValue("grid_br", data);
+                    session.Datastore.SetValue("grid_br", data);
                     SolvePerspective();
                 });
             }
@@ -226,7 +228,7 @@ namespace SpaceBetweenUs.Services
                 {
                     if (Defaults.MaxNormWidth != MaxNormWidth ||
                         Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                    string data = Session.Datastore.GetValue("tb_dist");
+                    string data = session.Datastore.GetValue("tb_dist");
                     if (!double.TryParse(data, out double dist)) return 0;
                     topBottomDistance = dist;
                 }
@@ -237,7 +239,7 @@ namespace SpaceBetweenUs.Services
                 topBottomDistance = value;
                 Task.Run(delegate
                 {
-                    Session.Datastore.SetValue("tb_dist", value.ToString());
+                    session.Datastore.SetValue("tb_dist", value.ToString());
                     SolvePerspective();
                 });
             }
@@ -252,7 +254,7 @@ namespace SpaceBetweenUs.Services
                 {
                     if (Defaults.MaxNormWidth != MaxNormWidth ||
                         Defaults.MaxNormHeight != MaxNormHeight) return 0;
-                    string data = Session.Datastore.GetValue("lr_dist");
+                    string data = session.Datastore.GetValue("lr_dist");
                     if (!double.TryParse(data, out double dist)) return 0;
                     leftRightDistance = dist;
                 }
@@ -263,7 +265,7 @@ namespace SpaceBetweenUs.Services
                 leftRightDistance = value;
                 Task.Run(delegate
                 {
-                    Session.Datastore.SetValue("lr_dist", value.ToString());
+                    session.Datastore.SetValue("lr_dist", value.ToString());
                     SolvePerspective();
                 });
             }
@@ -282,9 +284,12 @@ namespace SpaceBetweenUs.Services
 
         private GridProjection() { }
 
-        public static async Task<GridProjection> Initialize()
+        public static async Task<GridProjection> Initialize(Session session)
         {
-            var grid = new GridProjection();
+            var grid = new GridProjection()
+            {
+                session = session
+            };
             _ = grid.MaxNormWidth;
             _ = grid.MaxNormHeight;
             _ = grid.BL;
@@ -326,7 +331,7 @@ namespace SpaceBetweenUs.Services
             double y = point.Y / LeftRightDistance;
             double T = g * x + h * y + 1;
             var normPoint = new Point((a * x + b * y) / (double)T + p[0].X, (d * x + e * y) / (double)T + p[0].Y);
-            return RelativePoint.FromNorm(normPoint, Session.FrameSource.Width, Session.FrameSource.Height);
+            return RelativePoint.FromNorm(normPoint, session.FrameSource.Width, session.FrameSource.Height);
         }
 
         public Point2d? Perspective(RelativePoint point)

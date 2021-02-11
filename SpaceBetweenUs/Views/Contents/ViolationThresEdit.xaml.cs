@@ -1,5 +1,6 @@
 ﻿using SpaceBetweenUs.Services;
 using SpaceBetweenUs.ViewModels.Contents;
+using SpaceBetweenUs.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,8 +32,9 @@ namespace SpaceBetweenUs.Views.Contents
 
         public ViolationThresEdit()
         {
+            InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
             InitializeComponent();
-            viewModel = new ViolationThresEditViewModel();
+            viewModel = new ViolationThresEditViewModel(window.Session);
             DataContext = viewModel;
         }
 

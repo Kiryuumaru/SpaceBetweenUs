@@ -10,6 +10,8 @@ namespace SpaceBetweenUs.ViewModels.Contents
 {
     public class AnchorPointEditViewModel : BaseViewModel
     {
+        private Session session;
+
         private readonly Anchor anchor;
         private readonly double frameWidth;
         private readonly double frameHeight;
@@ -41,27 +43,28 @@ namespace SpaceBetweenUs.ViewModels.Contents
             set => SetProperty(ref yAxis, value);
         }
 
-        public AnchorPointEditViewModel(Anchor anchor)
+        public AnchorPointEditViewModel(Session session, Anchor anchor)
         {
+            this.session = session;
             this.anchor = anchor;
             RelativePoint point = RelativePoint.Zero();
             switch (anchor)
             {
                 case Anchor.BottomLeft:
                     Header = "Bottom Left";
-                    point = Session.GridProjection.BL;
+                    point = session.GridProjection.BL;
                     break;
                 case Anchor.TopLeft:
                     Header = "Top Left";
-                    point = Session.GridProjection.TL;
+                    point = session.GridProjection.TL;
                     break;
                 case Anchor.TopRight:
                     Header = "Top Right";
-                    point = Session.GridProjection.TR;
+                    point = session.GridProjection.TR;
                     break;
                 case Anchor.BottomRight:
                     Header = "Bottom Right";
-                    point = Session.GridProjection.BR;
+                    point = session.GridProjection.BR;
                     break;
             }
             frameWidth = point.FrameWidth;
@@ -74,16 +77,16 @@ namespace SpaceBetweenUs.ViewModels.Contents
             switch (anchor)
             {
                 case Anchor.BottomLeft:
-                    Session.GridProjection.BL = RelativePoint;
+                    session.GridProjection.BL = RelativePoint;
                     break;
                 case Anchor.TopLeft:
-                    Session.GridProjection.TL = RelativePoint;
+                    session.GridProjection.TL = RelativePoint;
                     break;
                 case Anchor.TopRight:
-                    Session.GridProjection.TR = RelativePoint;
+                    session.GridProjection.TR = RelativePoint;
                     break;
                 case Anchor.BottomRight:
-                    Session.GridProjection.BR = RelativePoint;
+                    session.GridProjection.BR = RelativePoint;
                     break;
             }
         }

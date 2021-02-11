@@ -15,9 +15,6 @@ namespace SpaceBetweenUs.Services.Detectors
         public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
         public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
 
-        public double FrameWidth { get; private set; }
-        public double FrameHeight { get; private set; }
-
         private readonly string[] labels;
         private readonly Net net;
         private readonly Size configSize;
@@ -26,10 +23,8 @@ namespace SpaceBetweenUs.Services.Detectors
         private readonly IEnumerable<string> outputNames;
         private readonly IEnumerable<Mat> outputLayers;
 
-        public YoloV3Detector(double frameWidth, double frameHeight)
+        public YoloV3Detector()
         {
-            FrameWidth = frameWidth;
-            FrameHeight = frameHeight;
             labels = File.ReadAllLines(YoloNames).ToArray();
             net = CvDnn.ReadNetFromDarknet(YoloConfig, YoloWeights);
             net.SetPreferableBackend(Backend.CUDA);
@@ -67,10 +62,10 @@ namespace SpaceBetweenUs.Services.Detectors
                         var probability = prob.At<float>(i, type + 5);
                         if (probability > Defaults.ConfidenceThreshold && label.Equals("person"))
                         {
-                            var centerX = prob.At<float>(i, 0) * FrameWidth;
-                            var centerY = prob.At<float>(i, 1) * FrameHeight;
-                            var width = prob.At<float>(i, 2) * FrameWidth;
-                            var height = prob.At<float>(i, 3) * FrameHeight;
+                            var centerX = prob.At<float>(i, 0) * image.Width;
+                            var centerY = prob.At<float>(i, 1) * image.Height;
+                            var width = prob.At<float>(i, 2) * image.Width;
+                            var height = prob.At<float>(i, 3) * image.Height;
                             items.Add((confidence, centerX, centerY, width, height));
                         }
                     }

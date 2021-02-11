@@ -71,8 +71,9 @@ namespace SpaceBetweenUs.Services
 
     public class HumanDetector
     {
-        public double FrameWidth { get; private set; }
-        public double FrameHeight { get; private set; }
+        private static IDetector detector;
+
+        private Session session;
 
         public double? violationThreshold;
         public double ViolationThreshold
@@ -81,7 +82,7 @@ namespace SpaceBetweenUs.Services
             {
                 if (violationThreshold == null)
                 {
-                    string data = Session.Datastore.GetValue("violation_thres");
+                    string data = session.Datastore.GetValue("violation_thres");
                     if (!double.TryParse(data, out double value)) return Defaults.ViolationDistanceDefault;
                     violationThreshold = value;
                 }
@@ -92,27 +93,32 @@ namespace SpaceBetweenUs.Services
                 violationThreshold = value;
                 Task.Run(delegate
                 {
-                    Session.Datastore.SetValue("violation_thres", value.ToString());
+                    session.Datastore.SetValue("violation_thres", value.ToString());
                 });
             }
         }
 
-        private IDetector detector;
-
         private HumanDetector() { }
-        public static async Task<HumanDetector> Initialize()
+        public static async Task<HumanDetector> Initialize(Session session)
         {
             return await Task.Run(delegate
             {
+                InitializeDetector();
                 var humanDetector = new HumanDetector
                 {
-                    FrameWidth = Session.FrameSource.Width,
-                    FrameHeight = Session.FrameSource.Height,
-                    detector = new AlturosYoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
-                    //detector = new YoloV3Detector(Session.FrameSource.Width, Session.FrameSource.Height)
+                    session = session
                 };
                 return humanDetector;
             });
+        }
+
+        public static void InitializeDetector()
+        {
+            if (detector == null)
+            {
+                detector = new AlturosYoloV3Detector();
+                //detector = new YoloV3Detector();
+            }
         }
 
         public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) Detect(Mat image)
@@ -124,9 +130,9 @@ namespace SpaceBetweenUs.Services
                 var items = detector.Detect(image);
                 foreach (var (Confidence, CenterX, CenterY, Width, Height) in items)
                 {
-                    var human = new Human(CenterX - (Width / 2), CenterY - (Height / 2), Width, Height, FrameWidth, FrameHeight);
+                    var human = new Human(CenterX - (Width / 2), CenterY - (Height / 2), Width, Height, image.Width, image.Height);
 
-                    var pers = Session.GridProjection.Perspective(human.BottomCenter);
+                    var pers = session.GridProjection.Perspective(human.BottomCenter);
                     if (pers.HasValue)
                     {
                         human.PerspectivePoint = pers.Value;

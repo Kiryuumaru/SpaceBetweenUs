@@ -92,15 +92,10 @@ namespace SpaceBetweenUs.Services.Detectors
         public static readonly string YoloConfig = Path.Combine("Assets", "yolov3.cfg");
         public static readonly string YoloWeights = Path.Combine("Assets", "yolov3.weights");
 
-        public double FrameWidth { get; private set; }
-        public double FrameHeight { get; private set; }
-
         private readonly YoloWrapper yolo;
 
-        public AlturosYoloV3Detector(double frameWidth, double frameHeight)
+        public AlturosYoloV3Detector()
         {
-            FrameWidth = frameWidth;
-            FrameHeight = frameHeight;
             var validator = new AlturosValidator();
             try
             {

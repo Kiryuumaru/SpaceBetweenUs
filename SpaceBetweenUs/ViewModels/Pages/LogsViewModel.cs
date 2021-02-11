@@ -17,6 +17,8 @@ namespace SpaceBetweenUs.ViewModels.Pages
 {
     public class LogsViewModel : BaseViewModel
     {
+        private Session session;
+
         private IEnumerable<ViolationLog> violationLogs;
         public IEnumerable<ViolationLog> ViolationLogs
         {
@@ -40,10 +42,11 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private readonly Dispatcher dispatcher;
 
-        public LogsViewModel(Dispatcher dispatcher)
+        public LogsViewModel(Session session, Dispatcher dispatcher)
         {
+            this.session = session;
             this.dispatcher = dispatcher;
-            Session.Logger.OnRefreshLogs += Logger_OnRefreshLogs;
+            session.Logger.OnRefreshLogs += Logger_OnRefreshLogs;
             Logger_OnRefreshLogs();
             if (ViolationLogs.Count() > 0)
             {
@@ -53,7 +56,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private void Logger_OnRefreshLogs()
         {
-            ViolationLogs = Session.Logger.ViolationLogs;
+            ViolationLogs = session.Logger.ViolationLogs;
             if (ViolationLogs.Count() > 0 && Frame == null)
             {
                 try

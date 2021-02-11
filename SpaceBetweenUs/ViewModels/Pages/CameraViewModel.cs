@@ -35,6 +35,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         #region Properties
 
+        private Session session;
         private readonly Dispatcher dispatcher;
         private int violationsCount;
         private int violatorsCount;
@@ -84,8 +85,9 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         #endregion
 
-        public CameraViewModel(Dispatcher dispatcher)
+        public CameraViewModel(Session session, Dispatcher dispatcher)
         {
+            this.session = session;
             this.dispatcher = dispatcher;
             GetPersistent();
             Start();
@@ -99,25 +101,25 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
             currentFrame = new Mat();
             resultFrame = new Mat();
-            dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            innerDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.InnerDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            itemDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.ItemDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            gridDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.GridDotRadius, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            largeTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.LargeTextFontSize, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            normalTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.NormalTextFontSize, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            smallTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.SmallTextFontSize, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            largeTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.LargeTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            normalTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.NormalTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
-            smallTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.SmallTextFontThickness, Defaults.MaxNormWidth, Session.FrameSource.Width);
+            dotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.AnchorDotRadius, Defaults.MaxNormWidth, session.FrameSource.Width);
+            innerDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.InnerDotRadius, Defaults.MaxNormWidth, session.FrameSource.Width);
+            itemDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.ItemDotRadius, Defaults.MaxNormWidth, session.FrameSource.Width);
+            gridDotRelativeRadius = (int)GeometryHelpers.Convert(Defaults.GridDotRadius, Defaults.MaxNormWidth, session.FrameSource.Width);
+            borderLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.BorderLineThickness, Defaults.MaxNormWidth, session.FrameSource.Width);
+            itemLineRelativeThickness = (int)GeometryHelpers.Convert(Defaults.ItemLineThickness, Defaults.MaxNormWidth, session.FrameSource.Width);
+            largeTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.LargeTextFontSize, Defaults.MaxNormWidth, session.FrameSource.Width);
+            normalTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.NormalTextFontSize, Defaults.MaxNormWidth, session.FrameSource.Width);
+            smallTextFontRelativeSize = (int)GeometryHelpers.Convert(Defaults.SmallTextFontSize, Defaults.MaxNormWidth, session.FrameSource.Width);
+            largeTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.LargeTextFontThickness, Defaults.MaxNormWidth, session.FrameSource.Width);
+            normalTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.NormalTextFontThickness, Defaults.MaxNormWidth, session.FrameSource.Width);
+            smallTextFontRelativeThickness = (int)GeometryHelpers.Convert(Defaults.SmallTextFontThickness, Defaults.MaxNormWidth, session.FrameSource.Width);
 
             violationTextPos = new Point(
-                GeometryHelpers.Convert(Defaults.ViolationTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
-                GeometryHelpers.Convert(Defaults.ViolationTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
+                GeometryHelpers.Convert(Defaults.ViolationTextXPos, Defaults.MaxNormWidth, session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.ViolationTextYPos, Defaults.MaxNormHeight, session.FrameSource.Height));
             violatorsTextPos = new Point(
-                GeometryHelpers.Convert(Defaults.ViolatorsTextXPos, Defaults.MaxNormWidth, Session.FrameSource.Width),
-                GeometryHelpers.Convert(Defaults.ViolatorsTextYPos, Defaults.MaxNormHeight, Session.FrameSource.Height));
+                GeometryHelpers.Convert(Defaults.ViolatorsTextXPos, Defaults.MaxNormWidth, session.FrameSource.Width),
+                GeometryHelpers.Convert(Defaults.ViolatorsTextYPos, Defaults.MaxNormHeight, session.FrameSource.Height));
 
             var s = new Stopwatch();
 
@@ -127,7 +129,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 {
                     s.Restart();
 
-                    Session.FrameSource.ReadFrame(currentFrame);
+                    session.FrameSource.ReadFrame(currentFrame);
                     Detect();
 
                     int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
@@ -149,7 +151,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void Detect()
         {
-            var detection = Session.HumanDetector?.Detect(currentFrame);
+            var detection = session.HumanDetector?.Detect(currentFrame);
             violations = detection.HasValue ? detection.Value.Violations : null;
             humans = detection.HasValue ? detection.Value.Humans : null;
             violationsCount = violations?.Count() ?? 0;
@@ -256,7 +258,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
                 }
             }
 
-            if (Session.HumanDetector != null)
+            if (session.HumanDetector != null)
             {
                if (GeometryHelpers.IsInside(mousePos.Norm, Defaults.ViolationThresAreaBL, Defaults.ViolationThresAreaTL, Defaults.ViolationThresAreaTR, Defaults.ViolationThresAreaBR))
                 {
@@ -273,7 +275,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
             if (logLastFrame)
             {
                 logLastFrame = false;
-                Session.Logger.SetViolationLog(resultFrame, violationsCount, violatorsCount);
+                session.Logger.SetViolationLog(resultFrame, violationsCount, violatorsCount);
             }
 
             try
@@ -501,34 +503,34 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         public void SetPersistent()
         {
-            Session.GridProjection.MaxNormWidth = Defaults.MaxNormWidth;
-            Session.GridProjection.MaxNormHeight = Defaults.MaxNormHeight;
-            Session.GridProjection.BL = bl;
-            Session.GridProjection.TL = tl;
-            Session.GridProjection.TR = tr;
-            Session.GridProjection.BR = br;
-            Session.GridProjection.TopBottomDistance = topBottomDistance;
-            Session.GridProjection.LeftRightDistance = leftRightDistance;
+            session.GridProjection.MaxNormWidth = Defaults.MaxNormWidth;
+            session.GridProjection.MaxNormHeight = Defaults.MaxNormHeight;
+            session.GridProjection.BL = bl;
+            session.GridProjection.TL = tl;
+            session.GridProjection.TR = tr;
+            session.GridProjection.BR = br;
+            session.GridProjection.TopBottomDistance = topBottomDistance;
+            session.GridProjection.LeftRightDistance = leftRightDistance;
         }
 
         public void GetPersistent()
         {
-            bl = Session.GridProjection.BL;
-            tl = Session.GridProjection.TL;
-            tr = Session.GridProjection.TR;
-            br = Session.GridProjection.BR;
-            topBottomDistance = Session.GridProjection.TopBottomDistance;
-            leftRightDistance = Session.GridProjection.LeftRightDistance;
+            bl = session.GridProjection.BL;
+            tl = session.GridProjection.TL;
+            tr = session.GridProjection.TR;
+            br = session.GridProjection.BR;
+            topBottomDistance = session.GridProjection.TopBottomDistance;
+            leftRightDistance = session.GridProjection.LeftRightDistance;
             UpdateGridPoints();
         }
 
         private void UpdateGridPoints()
         {
-            leftMidPoint = Session.GridProjection.LeftMidPoint;
-            topMidPoint = Session.GridProjection.TopMidPoint;
-            rightMidPoint = Session.GridProjection.RightMidPoint;
-            bottomMidPoint = Session.GridProjection.BottomMidPoint;
-            gridPoints = Session.GridProjection.GetGridPoints();
+            leftMidPoint = session.GridProjection.LeftMidPoint;
+            topMidPoint = session.GridProjection.TopMidPoint;
+            rightMidPoint = session.GridProjection.RightMidPoint;
+            bottomMidPoint = session.GridProjection.BottomMidPoint;
+            gridPoints = session.GridProjection.GetGridPoints();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using SpaceBetweenUs.Services.Detectors;
+﻿using OpenCvSharp;
+using SpaceBetweenUs.Services.Detectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,33 +8,30 @@ using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
-    public static class Session
+    public class Session
     {
-        public static Datastore Datastore { get; private set; }
-        public static FrameSourceFile FrameSource { get; private set; }
-        public static GridProjection GridProjection { get; private set; }
-        public static Logger Logger { get; private set; }
-        public static bool UseGPU
-        {
-            get
-            {
-                string data = Datastore.GetValue("use_gpu");
-                return data?.Equals("1") ?? false;
-            }
-            set
-            {
-                Datastore.SetValue("use_gpu", value ? "1" : "0");
-            }
-        }
-        public static HumanDetector HumanDetector { get; private set; }
+        public string Source { get; private set; }
+        public string Name { get; private set; }
+        public Datastore Datastore { get; private set; }
+        public FrameSource FrameSource { get; private set; }
+        public GridProjection GridProjection { get; private set; }
+        public Logger Logger { get; private set; }
+        public HumanDetector HumanDetector { get; private set; }
 
-        public static async Task Start(string frameSourceFile)
+        private Session() { }
+        public static async Task<Session> Start(string source, string name)
         {
-            Datastore = await Datastore.Initialize();
-            FrameSource = await FrameSourceFile.Initialize(frameSourceFile);
-            GridProjection = await GridProjection.Initialize();
-            Logger = await Logger.Initialize();
-            HumanDetector = await HumanDetector.Initialize();
+            var session = new Session()
+            {
+                Source = source,
+                Name = name
+            };
+            session.Datastore = await Datastore.Initialize(session);
+            session.FrameSource = await FrameSource.Initialize(session);
+            session.GridProjection = await GridProjection.Initialize(session);
+            session.Logger = await Logger.Initialize(session);
+            session.HumanDetector = await HumanDetector.Initialize(session);
+            return session;
         }
     }
 }

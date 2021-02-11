@@ -9,6 +9,10 @@ namespace SpaceBetweenUs.Services
 {
     public class Datastore
     {
+        private static string generalFilePath;
+        private static string generalFileContent;
+        private static bool generalIsWriting = false;
+        private static int generalSaveRequests = 0;
         private string filePath;
         private string fileContent;
         private bool isWriting = false;
@@ -16,13 +20,13 @@ namespace SpaceBetweenUs.Services
 
         private Datastore() { }
 
-        public static async Task<Datastore> Initialize()
+        public static async Task<Datastore> Initialize(Session session)
         {
             return await Task.Run(delegate
             {
                 var datastore = new Datastore
                 {
-                    filePath = Path.Combine(Directory.GetCurrentDirectory(), "Datastore")
+                    filePath = Path.Combine("Session", session.Name, "Datastore")
                 };
                 try
                 {
@@ -68,6 +72,58 @@ namespace SpaceBetweenUs.Services
         public string GetValue(string key)
         {
             return CommonHelpers.BlobGetValue(fileContent, key);
+        }
+
+        private static void GeneralSave()
+        {
+            generalSaveRequests++;
+            if (generalIsWriting) return;
+            generalIsWriting = true;
+            Task.Run(async delegate
+            {
+                while (generalSaveRequests > 0)
+                {
+                    try
+                    {
+                        string contentCopy = generalFileContent;
+                        File.WriteAllText(generalFilePath, contentCopy);
+                        await Task.Delay(500);
+                    }
+                    catch { }
+                    generalSaveRequests--;
+                }
+                generalIsWriting = false;
+            });
+        }
+
+        public static void GeneralSetValue(string key, string value)
+        {
+            InitializeGeneralDatastore();
+            generalFileContent = CommonHelpers.BlobSetValue(generalFileContent, key, value);
+            GeneralSave();
+        }
+
+        public static string GeneralGetValue(string key)
+        {
+            InitializeGeneralDatastore();
+            return CommonHelpers.BlobGetValue(generalFileContent, key);
+        }
+
+        private static void InitializeGeneralDatastore()
+        {
+            if (string.IsNullOrEmpty(generalFilePath))
+            {
+                generalFilePath = Path.Combine(Directory.GetCurrentDirectory(), "Session", "GeneralDatastore");
+                try
+                {
+                    if (!Directory.Exists(Path.GetDirectoryName(generalFilePath)))
+                        Directory.CreateDirectory(Path.GetDirectoryName(generalFilePath));
+                    if (!File.Exists(generalFilePath))
+                        File.WriteAllText(generalFilePath, "");
+                    generalFileContent = File.ReadAllText(generalFilePath);
+                }
+                catch { }
+            }
         }
     }
 }
