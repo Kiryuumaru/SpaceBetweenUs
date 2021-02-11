@@ -72,7 +72,7 @@ namespace SpaceBetweenUs.Services
     public class HumanDetector
     {
         private static IDetector detector;
-
+        private static bool isDetectorBusy = false;
         private Session session;
 
         public double? violationThreshold;
@@ -116,13 +116,15 @@ namespace SpaceBetweenUs.Services
         {
             if (detector == null)
             {
-                detector = new AlturosYoloV3Detector();
-                //detector = new YoloV3Detector();
+                //detector = new AlturosYoloV3Detector();
+                detector = new YoloV3Detector();
             }
         }
 
         public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) Detect(Mat image)
         {
+            while (isDetectorBusy) { }
+            isDetectorBusy = true;
             var humans = new List<Human>();
             var violations = new List<Violation>();
             try
@@ -163,6 +165,11 @@ namespace SpaceBetweenUs.Services
             {
                 Console.WriteLine(ex.Message);
             }
+            Task.Run(async delegate
+            {
+                await Task.Delay(10);
+                isDetectorBusy = false;
+            });
             return (violations, humans);
         }
     }

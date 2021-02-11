@@ -64,14 +64,18 @@ namespace SpaceBetweenUs.Model
         private ViolationLog() { }
         public static void Create(Session session, DateTime dateTime, int violationsCount, int violatorsCount, Mat frame)
         {
-            Directory.CreateDirectory(session.Logger.LogsPath);
-            string filename = "";
-            filename = CommonHelpers.BlobSetValue(filename, "dt", CommonHelpers.EncodeDateTime(dateTime));
-            filename = CommonHelpers.BlobSetValue(filename, "v1", violationsCount.ToString());
-            filename = CommonHelpers.BlobSetValue(filename, "v2", violatorsCount.ToString());
-            filename += ".jpg";
-            filename = Path.Combine(session.Logger.LogsPath, filename);
-            Cv2.ImWrite(filename, frame);
+            try
+            {
+                Directory.CreateDirectory(session.Logger.LogsPath);
+                string filename = "";
+                filename = CommonHelpers.BlobSetValue(filename, "dt", CommonHelpers.EncodeDateTime(dateTime));
+                filename = CommonHelpers.BlobSetValue(filename, "v1", violationsCount.ToString());
+                filename = CommonHelpers.BlobSetValue(filename, "v2", violatorsCount.ToString());
+                filename += ".jpg";
+                filename = Path.Combine(session.Logger.LogsPath, filename);
+                Cv2.ImWrite(filename, frame);
+            }
+            catch { }
         }
 
         public static ViolationLog FromFile(Session session, string logPath)
