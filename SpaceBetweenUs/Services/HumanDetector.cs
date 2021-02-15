@@ -116,8 +116,8 @@ namespace SpaceBetweenUs.Services
         {
             if (detector == null)
             {
-                //detector = new AlturosYoloV3Detector();
-                detector = new YoloV3Detector();
+                detector = new AlturosYoloV3Detector();
+                //detector = new YoloV3Detector();
             }
         }
 

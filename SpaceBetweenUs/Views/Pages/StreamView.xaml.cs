@@ -27,12 +27,15 @@ namespace SpaceBetweenUs.Views.Pages
         private static readonly Regex regex = new Regex(@"^(\d+(\.\d{0,2})?|\.?\d{1,2})$");
         private StreamViewViewModel viewModel;
         private bool isMouseLeaveWithDown = false;
+        private bool isLoaded = false;
 
         public StreamView()
         {
             InitializeComponent();
             Loaded += new RoutedEventHandler(delegate
             {
+                if (isLoaded) return;
+                isLoaded = true;
                 InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
                 viewModel = new StreamViewViewModel(window.Session, Dispatcher);
                 DataContext = viewModel;
