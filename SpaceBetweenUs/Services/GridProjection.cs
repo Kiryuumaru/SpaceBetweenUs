@@ -340,33 +340,22 @@ namespace SpaceBetweenUs.Services
         {
             if (!GeometryHelpers.IsInside(point, BL, TL, TR, BR)) return null;
 
-            RelativePoint bl = BL;
-            RelativePoint tl = TL;
-            RelativePoint tr;
-            RelativePoint br;
-            double currentXDist = 0;
-            while (currentXDist <= TopBottomDistance)
-            {
-                currentXDist += Defaults.GridPrecision;
-                tr = Perspective(new Point2d(currentXDist, 0));
-                br = Perspective(new Point2d(currentXDist, LeftRightDistance));
-                if (GeometryHelpers.IsInside(point, bl, tl, tr, br)) break;
-                bl = br;
-                tl = tr;
-            }
-            tl = TL;
-            tr = TR;
-            double currentYDist = 0;
-            while (currentYDist <= LeftRightDistance)
-            {
-                currentYDist += Defaults.GridPrecision;
-                bl = Perspective(new Point2d(0, currentYDist));
-                br = Perspective(new Point2d(TopBottomDistance, currentYDist));
-                if (GeometryHelpers.IsInside(point, bl, tl, tr, br)) break;
-                tl = bl;
-                tr = br;
-            }
-            return new Point2d(currentXDist, currentYDist);
+            double px = p[0].X;
+            double py = p[0].Y;
+            double xp = point.Norm.X;
+            double yp = point.Norm.Y;
+
+            double detD = ((a + g * px - g * xp) * (e + h * py - h * yp)) - ((d + g * py - g * yp) * (b + h * px - h * xp));
+            double detDx = ((xp - px) * (e + h * py - h * yp)) - ((yp - py) * (b + h * px - h * xp));
+            double detDy = ((a + g * px - g * xp) * (yp - py)) - ((d + g * py - g * yp) * (xp - px));
+
+            double x = detDx / detD;
+            double y = detDy / detD;
+
+            double normX = x * TopBottomDistance;
+            double normY = y * LeftRightDistance;
+
+            return new Point2d(normX, normY);
         }
 
         public IEnumerable<RelativeLine> GetGrid()
