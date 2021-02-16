@@ -387,7 +387,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private void OpenViolationThresEditWindow()
         {
-            var editor = new ViolationThresEdit();
+            var editor = new ViolationThresEdit(session);
             var dlg = new ModernDialog
             {
                 Title = "Violation Threshold",

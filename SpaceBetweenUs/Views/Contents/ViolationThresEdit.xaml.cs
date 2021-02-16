@@ -30,11 +30,10 @@ namespace SpaceBetweenUs.Views.Contents
 
         public bool IsReferencedDepth;
 
-        public ViolationThresEdit()
+        public ViolationThresEdit(Session session)
         {
-            InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
             InitializeComponent();
-            viewModel = new ViolationThresEditViewModel(window.Session);
+            viewModel = new ViolationThresEditViewModel(session);
             DataContext = viewModel;
         }
 
