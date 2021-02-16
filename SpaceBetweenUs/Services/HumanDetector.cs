@@ -151,12 +151,15 @@ namespace SpaceBetweenUs.Services
                             (i.BottomCenter == v.Line.B && j.BottomCenter == v.Line.A) ||
                             (j.BottomCenter == v.Line.A && i.BottomCenter == v.Line.B) ||
                             (j.BottomCenter == v.Line.B && i.BottomCenter == v.Line.A))) continue;
-                        double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
-                        if (dis < ViolationThreshold)
+                        if (session.GridProjection.IsProjectionReady)
                         {
-                            i.IsViolation = true;
-                            j.IsViolation = true;
-                            violations.Add(new Violation(new RelativeLine(i.BottomCenter, j.BottomCenter), dis));
+                            double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
+                            if (dis < ViolationThreshold)
+                            {
+                                i.IsViolation = true;
+                                j.IsViolation = true;
+                                violations.Add(new Violation(new RelativeLine(i.BottomCenter, j.BottomCenter), dis));
+                            }
                         }
                     }
                 }

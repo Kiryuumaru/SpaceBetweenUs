@@ -271,11 +271,22 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 foreach (var item in humans)
                 {
-                    Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, Cv2.FILLED);
+                    if (session.GridProjection.IsProjectionReady)
+                    {
+                        Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, Cv2.FILLED);
+                    }
+                    else
+                    {
+                        Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, Defaults.YellowColor, Cv2.FILLED);
+                    }
                 }
             }
 

@@ -276,6 +276,8 @@ namespace SpaceBetweenUs.Services
         public RelativePoint RightMidPoint => GeometryHelpers.GetPoint(TR, BR, 0.5);
         public RelativePoint BottomMidPoint => GeometryHelpers.GetPoint(BR, BL, 0.5);
 
+        public bool IsProjectionReady => LeftRightDistance > 0 && TopBottomDistance > 0;
+
         // This is the projected quadrilateral
         private readonly Point2d[] p = new Point2d[4];
 
