@@ -1,6 +1,7 @@
 ﻿using OpenCvSharp;
 using SpaceBetweenUs.Services.Detectors;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -71,6 +72,7 @@ namespace SpaceBetweenUs.Services
 
     public class HumanDetector
     {
+        private static ConcurrentQueue<(Session Session, Mat Image, Action<(IEnumerable<Violation> Violations, IEnumerable<Human> Humans)> onDetection)> detectionTasks = new ConcurrentQueue<(Session Session, Mat image, Action<(IEnumerable<Violation> Violations, IEnumerable<Human> Humans)> onDetection)>();
         private static IDetector detector;
         private static bool isDetectorBusy = false;
         private Session session;
@@ -121,59 +123,60 @@ namespace SpaceBetweenUs.Services
             }
         }
 
-        public (IEnumerable<Violation> Violations, IEnumerable<Human> Humans) Detect(Mat image)
+        public void Detect(Mat image, Action<(IEnumerable<Violation> Violations, IEnumerable<Human> Humans)> onDetection)
         {
-            while (isDetectorBusy) { }
+            detectionTasks.Enqueue((session, image, onDetection));
+            if (isDetectorBusy) return;
             isDetectorBusy = true;
-            var humans = new List<Human>();
-            var violations = new List<Violation>();
-            try
+            while (true)
             {
-                var items = detector.Detect(image);
-                foreach (var (Confidence, CenterX, CenterY, Width, Height) in items)
+                if (!detectionTasks.TryDequeue(out (Session Session, Mat Image, Action<(IEnumerable<Violation> Violations, IEnumerable<Human> Humans)> OnDetection) task)) break;
+                var humans = new List<Human>();
+                var violations = new List<Violation>();
+                try
                 {
-                    var human = new Human(CenterX - (Width / 2), CenterY - (Height / 2), Width, Height, image.Width, image.Height);
+                    var items = detector.Detect(task.Image);
+                    foreach (var (Confidence, CenterX, CenterY, Width, Height) in items)
+                    {
+                        var human = new Human(CenterX - (Width / 2), CenterY - (Height / 2), Width, Height, task.Image.Width, task.Image.Height);
 
-                    var pers = session.GridProjection.Perspective(human.BottomCenter);
-                    if (pers.HasValue)
-                    {
-                        human.PerspectivePoint = pers.Value;
-                        humans.Add(human);
-                    }
-                }
-                foreach (var i in humans)
-                {
-                    foreach (var j in humans)
-                    {
-                        if (i == j) continue;
-                        if (violations.Any(v =>
-                            (i.BottomCenter == v.Line.A && j.BottomCenter == v.Line.B) ||
-                            (i.BottomCenter == v.Line.B && j.BottomCenter == v.Line.A) ||
-                            (j.BottomCenter == v.Line.A && i.BottomCenter == v.Line.B) ||
-                            (j.BottomCenter == v.Line.B && i.BottomCenter == v.Line.A))) continue;
-                        if (session.GridProjection.IsProjectionReady)
+                        var pers = task.Session.GridProjection.Perspective(human.BottomCenter);
+                        if (pers.HasValue)
                         {
-                            double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
-                            if (dis < ViolationThreshold)
+                            human.PerspectivePoint = pers.Value;
+                            humans.Add(human);
+                        }
+                    }
+                    foreach (var i in humans)
+                    {
+                        foreach (var j in humans)
+                        {
+                            if (i == j) continue;
+                            if (violations.Any(v =>
+                                (i.BottomCenter == v.Line.A && j.BottomCenter == v.Line.B) ||
+                                (i.BottomCenter == v.Line.B && j.BottomCenter == v.Line.A) ||
+                                (j.BottomCenter == v.Line.A && i.BottomCenter == v.Line.B) ||
+                                (j.BottomCenter == v.Line.B && i.BottomCenter == v.Line.A))) continue;
+                            if (task.Session.GridProjection.IsProjectionReady)
                             {
-                                i.IsViolation = true;
-                                j.IsViolation = true;
-                                violations.Add(new Violation(new RelativeLine(i.BottomCenter, j.BottomCenter), dis));
+                                double dis = GeometryHelpers.GetDistance(i.PerspectivePoint, j.PerspectivePoint);
+                                if (dis < ViolationThreshold)
+                                {
+                                    i.IsViolation = true;
+                                    j.IsViolation = true;
+                                    violations.Add(new Violation(new RelativeLine(i.BottomCenter, j.BottomCenter), dis));
+                                }
                             }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+                task.OnDetection?.Invoke((violations, humans));
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
-            Task.Run(async delegate
-            {
-                await Task.Delay(10);
-                isDetectorBusy = false;
-            });
-            return (violations, humans);
+            isDetectorBusy = false;
         }
     }
 }
