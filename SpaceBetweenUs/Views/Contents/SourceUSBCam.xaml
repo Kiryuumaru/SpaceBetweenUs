@@ -21,9 +21,9 @@
                        Text="Distance"
                        Margin="3,3,3,3"/>
 
-            <TextBox Grid.Column="1"
-                     Margin="3,3,3,3"
-                     Text="{Binding Distance}" />
+            <ComboBox Grid.Column="1"
+                      Margin="3,3,3,3"
+                      x:Name="cameraList"/>
 
         </Grid>
     </Grid>

@@ -12,6 +12,7 @@ namespace SpaceBetweenUs.Services
     {
         private static List<string> sourcesOpen = new List<string>();
         public string Source { get; private set; }
+        public bool IsSourceFromCamera { get; private set; }
         public string Name { get; private set; }
         public Datastore Datastore { get; private set; }
         public FrameSource FrameSource { get; private set; }
@@ -25,6 +26,7 @@ namespace SpaceBetweenUs.Services
             if (sourcesOpen.Any(i => i.Equals(source))) return null;
             var session = new Session()
             {
+                IsSourceFromCamera = false,
                 Source = source,
                 Name = name
             };
@@ -34,6 +36,24 @@ namespace SpaceBetweenUs.Services
             session.Logger = await Logger.Initialize(session);
             session.HumanDetector = await HumanDetector.Initialize(session);
             sourcesOpen.Add(source);
+            return session;
+        }
+
+        public static async Task<Session> Start(CameraObject cameraObject, string name)
+        {
+            if (sourcesOpen.Any(i => i.Equals(cameraObject.Name))) return null;
+            var session = new Session()
+            {
+                IsSourceFromCamera = true,
+                Source = cameraObject.ToString(),
+                Name = name
+            };
+            session.Datastore = await Datastore.Initialize(session);
+            session.FrameSource = await FrameSource.Initialize(session);
+            session.GridProjection = await GridProjection.Initialize(session);
+            session.Logger = await Logger.Initialize(session);
+            session.HumanDetector = await HumanDetector.Initialize(session);
+            sourcesOpen.Add(cameraObject.ToString());
             return session;
         }
 

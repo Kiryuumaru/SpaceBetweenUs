@@ -3,11 +3,27 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SpaceBetweenUs.Services
 {
+    public class CameraObject
+    {
+        public string Name { get; private set; }
+        public int Index { get; private set; }
+        public CameraObject(int index, string name)
+        {
+            Index = index;
+            Name = name;
+        }
+        public override string ToString()
+        {
+            return Index + ":" + Name;
+        }
+    }
+
     public class FrameSource
     {
         private VideoCapture capture;
@@ -21,13 +37,43 @@ namespace SpaceBetweenUs.Services
         {
             return await Task.Run(delegate
             {
-                var frameSource = new FrameSource
+                if (session.IsSourceFromCamera)
                 {
-                    capture = new VideoCapture(session.Source),
-                };
-
-                return frameSource;
+                    int index = 0;
+                    try
+                    {
+                        index = int.Parse(session.Source.Substring(0, session.Source.IndexOf(':')));
+                    }
+                    catch { }
+                    return new FrameSource
+                    {
+                        capture = new VideoCapture(index),
+                    };
+                }
+                else
+                {
+                    return new FrameSource
+                    {
+                        capture = new VideoCapture(session.Source),
+                    };
+                }
             });
+        }
+
+        public static List<CameraObject> GetAllConnectedCameras()
+        {
+            var cameras = new List<CameraObject>();
+            int index = 0;
+            using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PnPEntity WHERE (PNPClass = 'Image' OR PNPClass = 'Camera')"))
+            {
+                foreach (var device in searcher.Get())
+                {
+                    cameras.Add(new CameraObject(index, device["Caption"].ToString()));
+                    index++;
+                }
+            }
+
+            return cameras;
         }
 
         public async Task ReadFrame(Mat mat)

@@ -30,7 +30,9 @@ namespace SpaceBetweenUs.Views.Contents
         public SourceIPCam()
         {
             InitializeComponent();
+            IPCamLink.Text = Datastore.GeneralGetValue("ip_cam_last");
         }
+
         public static bool PingHost(string nameOrAddress)
         {
             try

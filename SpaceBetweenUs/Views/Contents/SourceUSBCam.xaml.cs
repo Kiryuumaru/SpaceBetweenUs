@@ -1,9 +1,11 @@
 ﻿using FirstFloor.ModernUI.Windows.Controls;
 using SpaceBetweenUs.Services;
 using SpaceBetweenUs.ViewModels.Contents;
+using SpaceBetweenUs.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -27,11 +29,42 @@ namespace SpaceBetweenUs.Views.Contents
         public SourceUSBCam()
         {
             InitializeComponent();
+            var camList = FrameSource.GetAllConnectedCameras();
+            cameraList.ItemsSource = camList;
+            if (camList.Count > 0)
+            {
+                var lastOpen = Datastore.GeneralGetValue("usb_cam_last");
+                cameraList.SelectedItem = camList.FirstOrDefault(i => i.Name.Equals(lastOpen)) ?? camList[0];
+            }
         }
 
-        public void Open()
+        public async void Open()
         {
-            if (Session.HasSourceOpen(""))
+            var selected = (CameraObject)cameraList.SelectedItem;
+            if (selected == null)
+            {
+                var dlg = new ModernDialog
+                {
+                    Title = "None selected",
+                    Content = "Please select a USB camera",
+                };
+                var okButton = dlg.OkButton;
+                okButton.Content = "Ok";
+                dlg.Buttons = new Button[] { okButton };
+                dlg.MinWidth = 400;
+                dlg.MinHeight = 0;
+                dlg.SizeChanged += (s, e) =>
+                {
+                    double screenWidth = SystemParameters.PrimaryScreenWidth;
+                    double screenHeight = SystemParameters.PrimaryScreenHeight;
+                    double windowWidth = e.NewSize.Width;
+                    double windowHeight = e.NewSize.Height;
+                    dlg.Left = (screenWidth / 2) - (windowWidth / 2);
+                    dlg.Top = (screenHeight / 2) - (windowHeight / 2);
+                };
+                dlg.ShowDialog();
+            }
+            else if(Session.HasSourceOpen(selected.Name))
             {
                 var dlg = new ModernDialog
                 {
@@ -54,13 +87,12 @@ namespace SpaceBetweenUs.Views.Contents
                 };
                 dlg.ShowDialog();
             }
-            else if (false)
-            {
-
-            }
             else
             {
-
+                Datastore.GeneralSetValue("usb_cam_last", selected.Name);
+                var session = await Session.Start(selected, selected.Name);
+                var window = new InstanceWindow(session);
+                window.Show();
             }
         }
     }
