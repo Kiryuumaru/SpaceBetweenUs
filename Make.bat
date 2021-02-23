@@ -2,7 +2,7 @@ title Making Repositories
 echo off >nul
 setlocal >nul
 cd /d %~dp0 >nul
-
+cls
 echo .
 echo Cloning repos ...
 echo ----------------------------------------------
