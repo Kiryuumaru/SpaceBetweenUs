@@ -312,5 +312,10 @@
       <Name>Alturos.Yolo</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="cudnn64_7.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

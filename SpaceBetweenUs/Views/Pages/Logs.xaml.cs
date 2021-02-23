@@ -24,12 +24,15 @@ namespace SpaceBetweenUs.Views.Pages
     public partial class Logs : UserControl
     {
         private LogsViewModel viewModel;
+        private bool isLoaded = false;
 
         public Logs()
         {
             InitializeComponent();
             Loaded += new RoutedEventHandler(delegate
             {
+                if (isLoaded) return;
+                isLoaded = true;
                 InstanceWindow window = (InstanceWindow)Window.GetWindow(this);
                 viewModel = new LogsViewModel(window.Session, Dispatcher);
                 DataContext = viewModel;

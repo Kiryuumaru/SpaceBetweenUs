@@ -124,25 +124,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
             var s = new Stopwatch();
 
-            Task.Run(async delegate
-            {
-                while (true)
-                {
-                    if (isStopped) return;
-
-                    s.Restart();
-
-                    try
-                    {
-                        await session.FrameSource.ReadFrame(currentFrame);
-                        await Detect();
-                    }
-                    catch { }
-
-                    int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
-                    await Task.Delay(delayMillis > 0 ? delayMillis : 0);
-                }
-            });
+            StartDetection();
 
             Task.Run(async delegate
             {
@@ -170,17 +152,18 @@ namespace SpaceBetweenUs.ViewModels.Pages
             session.Stop();
         }
 
-        public async Task Detect()
+        public void StartDetection()
         {
-            if (currentFrame == null) return;
-
-            await Task.Run(delegate
+            var s = new Stopwatch();
+            if (isStopped) return;
+            s.Restart();
+            Task.Run(async delegate
             {
-                try
+                await session.FrameSource.ReadFrame(currentFrame);
+                session.HumanDetector.Detect(currentFrame, async detection =>
                 {
-                    var detection = session.HumanDetector?.Detect(currentFrame);
-                    violations = detection.HasValue ? detection.Value.Violations : null;
-                    humans = detection.HasValue ? detection.Value.Humans : null;
+                    violations = detection.Violations;
+                    humans = detection.Humans;
                     violationsCount = violations?.Count() ?? 0;
                     violatorsCount = humans?.Where(i => i.IsViolation).Count() ?? 0;
 
@@ -193,8 +176,12 @@ namespace SpaceBetweenUs.ViewModels.Pages
                     }
 
                     lastViolatorsCount = violatorsCount;
-                }
-                catch { }
+
+                    int delayMillis = (int)((1000 / Defaults.Fps) - s.ElapsedMilliseconds);
+                    await Task.Delay(delayMillis > 0 ? delayMillis : 0);
+
+                    StartDetection();
+                });
             });
         }
 
@@ -271,11 +258,22 @@ namespace SpaceBetweenUs.ViewModels.Pages
             {
                 foreach (var item in humans)
                 {
-                    Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
-                    Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, Cv2.FILLED);
+                    if (session.GridProjection.IsProjectionReady)
+                    {
+                        Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, itemLineRelativeThickness);
+                        Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, item.IsViolation ? Defaults.RedColor : Defaults.GreenColor, Cv2.FILLED);
+                    }
+                    else
+                    {
+                        Cv2.Line(resultFrame, item.BL.Frame, item.TL.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TL.Frame, item.TR.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.TR.Frame, item.BR.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Line(resultFrame, item.BR.Frame, item.BL.Frame, Defaults.YellowColor, itemLineRelativeThickness);
+                        Cv2.Circle(resultFrame, item.BottomCenter.Frame, itemDotRelativeRadius, Defaults.YellowColor, Cv2.FILLED);
+                    }
                 }
             }
 
@@ -389,7 +387,7 @@ namespace SpaceBetweenUs.ViewModels.Pages
 
         private void OpenViolationThresEditWindow()
         {
-            var editor = new ViolationThresEdit();
+            var editor = new ViolationThresEdit(session);
             var dlg = new ModernDialog
             {
                 Title = "Violation Threshold",
