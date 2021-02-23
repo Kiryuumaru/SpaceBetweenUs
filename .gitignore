@@ -5,7 +5,10 @@
 
 # Additional downloadables
 Additionals/
-SpaceBetweenUsPy/env*/
+SpaceBetweenUs/Assets/coco.names
+SpaceBetweenUs/Assets/yolov3.cfg
+SpaceBetweenUs/Assets/yolov3.weights
+SpaceBetweenUs/cudnn64_7.dll
 
 # User-specific files
 *.rsuser
