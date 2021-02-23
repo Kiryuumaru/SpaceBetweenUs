@@ -9,7 +9,7 @@ echo ----------------------------------------------
 if exist "Alturos.Yolo\.git" (
 echo Already cloned
 ) else (
-git clone https://https://github.com/Kiryuumaru/Alturos.Yolo
+git clone https://github.com/Kiryuumaru/Alturos.Yolo
 )
 cd Alturos.Yolo
 git submodule update --init
