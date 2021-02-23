@@ -29,7 +29,6 @@ move "%cd%\Additionals\coco.names" "%cd%\SpaceBetweenUs\Assets\coco.names"
 move "%cd%\Additionals\yolov3.cfg" "%cd%\SpaceBetweenUs\Assets\yolov3.cfg"
 move "%cd%\Additionals\yolov3.weights" "%cd%\SpaceBetweenUs\Assets\yolov3.weights"
 move "%cd%\Additionals\cudnn64_7.dll" "%cd%\SpaceBetweenUs\cudnn64_7.dll"
-pause >nul
 echo ----------------------------------------------
 title Done
 echo Done...
