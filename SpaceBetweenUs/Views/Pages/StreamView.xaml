@@ -1,0 +1,18 @@
+﻿<UserControl x:Class="SpaceBetweenUs.Views.Pages.StreamView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             mc:Ignorable="d" >
+    <Grid>
+        <Image Grid.Column="1"
+               x:Name="frameHolder"
+               Source="{Binding Frame}"
+               MouseDown="FrameHolder_MouseDown"
+               MouseMove="FrameHolder_MouseMove"
+               MouseUp="FrameHolder_MouseUp"
+               MouseLeave="FrameHolder_MouseLeave"
+               MouseEnter="FrameHolder_MouseEnter"/>
+    </Grid>
+</UserControl>

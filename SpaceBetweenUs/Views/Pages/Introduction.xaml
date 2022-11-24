@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="SpaceBetweenUs.Views.Pages.Introduction"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+             mc:Ignorable="d" >
+    <Grid Style="{StaticResource ContentRoot}">
+        <ScrollViewer>
+            <StackPanel >
+                <TextBlock Text="SPACE BETWEEN US" Style="{StaticResource Heading1}" Margin="0,0,0,8"/>
+                <mui:BBCodeBlock BBCode="A state of the art real-time human social distance detection system. This project has [b]CPU[/b] and [b]GPU[/b] support, with GPU the detection works much faster." Margin="0,0,0,32" />
+                <TextBlock Margin="0,0,0,8" Text="Select Source" Style="{StaticResource Heading2}" />
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Margin="8,3,8,3"
+                            Content="IP Cam"
+                            Click="Button_Click_IPCam"/>
+                    <Button Grid.Column="1"
+                            Margin="8,3,8,3"
+                            Content="USB Cam"
+                            Click="Button_Click_USBCam"/>
+                    <Button Grid.Column="2"
+                            Margin="8,3,8,3"
+                            Content="Video File"
+                            Click="Button_Click_VideoFile"/>
+                </Grid>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
