@@ -55,18 +55,6 @@
   <PropertyGroup>
     <ApplicationIcon>App.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>1F99ABAF0E316E75DB53B77CFE2BFB7F1DF23A2E</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>SpaceBetweenUs_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -99,7 +87,7 @@
     <Compile Include="Model\Human.cs" />
     <Compile Include="Model\HumanDistance.cs" />
     <Compile Include="Model\ViolationLog.cs" />
-    <Compile Include="Services\Detectors\YoloV5Detector.cs" />
+    <None Include="Services\Detectors\YoloV5Detector.cs" />
     <Compile Include="Services\Detectors\YoloV3Detector.cs" />
     <Compile Include="Services\FrameSource.cs" />
     <Compile Include="Services\Datastore.cs" />
